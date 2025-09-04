@@ -1,3 +1,8 @@
+<img width="500" height="394" alt="image" src="https://github.com/user-attachments/assets/74e90ff7-2ca9-409e-b385-2ceaa0cf5645" /><img width="500" height="394" alt="image" src="https://github.com/user-attachments/assets/5d0b1536-6639-4c18-8b31-0596d9e4c375" />
+
+
+
+
 # ECE-480-Team-12-TI-EMG-AWS
 Arm Wrestling Evaluation System using EMG (Team 12 MSU ECE 480 Fall 2025)
 
@@ -253,5 +258,3 @@ Texas Instruments (sponsorship & technical guidance)
 MSU ECE 480 faculty & staff
 
 Classmates and reviewers who provided feedback during demos
-
-Yea, that's it i guess
