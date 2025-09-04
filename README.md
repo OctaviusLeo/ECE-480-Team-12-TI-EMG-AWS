@@ -61,9 +61,8 @@ Latency aware comparator (windowed RMS/peak envelope with tunable window).
 Safety & UX: input protection, strain relief, sanitize between users flow.
 
 ---
-Project Status
+Project Status Fall 2025 (MSU ECE 480)
 ---
-Fall 2025 (MSU ECE 480)
 
 Requirements & architecture
 
@@ -86,9 +85,9 @@ ADC (resolution/SPS chosen for EMG bandwidth & comparator latency).
 
 MCU (developed in Code Composer Studio).
 
-Indicators: LCD and/or LED bar; optional HDMI/USB to PC dashboard.
+Indicators: LCD and/or LED bar, optional HDMI/USB to PC dashboard.
 
-BOM: See /docs/bom.md (placeholders provided; fill with final part numbers).
+BOM: See /docs/bom.md (placeholders provided, fill with final part numbers).
 
 
 **Software**
@@ -189,8 +188,8 @@ Code & equipment return: Dec 10, 2025
 ---
 Contributing (course context)
 ---
-Team 12
-
+**Team 12**
+-
 Ervin Alaij — The Sensory Overloader
 
 Symaedchit Leo — Mr. Robot
@@ -199,11 +198,17 @@ Andrew Perez — The Circuit Madman
 
 Pratijit Podder — The Voltage Burner
 
-Facilitator: Prof. Joydeep Mitra (MSU)
 
-Sponsor: Texas Instruments POC: Gerasimos “Jerry” Madalvanos
+**Facilitator**
+-
+Prof. Joydeep Mitra (MSU)
 
-For external visitors: please use GitHub Issues for questions.
+
+**Sponsor**
+-
+Texas Instruments POC: Gerasimos “Jerry” Madalvanos
+
+**For external visitors: please use GitHub Issues for questions.**
 
 ---
 Open Questions (tracked with Sponsor/Facilitator)
