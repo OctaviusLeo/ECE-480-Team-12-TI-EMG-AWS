@@ -141,7 +141,7 @@ Repository Structure (ideally but probably not)
 ---
 Build & Run (Firmware)
 ---
-???
+Symaedchit Leo's job. 
 
 ---
 Validation & Verification (V&V) Summary
@@ -195,13 +195,22 @@ Contributing (course context)
 ---
 **Team 12**
 -
-Ervin Alaij — The Sensory Overloader
+Ervin Alaij - Sensor & Analog Lead,
+			Dry-electrode band handling, input protecting, instrumentation amp, filters, signals.
+		Doc Handler + treasurer
 
-Symaedchit Leo — Mr. Robot
+Symaedchit Leo - Firmware & Data Lead,
+			MCU code that reads ADC, then cleans, then into an integer, then shows using bars or lights or UI, and writes a winner. 
+				Online Coordinator
 
-Andrew Perez — The Circuit Madman
+Andrew Perez - Lab coordinator + Product Demo Manager,
+PCB & Hardware,
+Designs PCB, power, connectors, test points, strain relief.
 
-Pratijit Podder — The Voltage Burner
+
+Pratijit Podder - Freelance agent - start w. Assistance in hardware and then can consider the specifications or goals that are unmet - will flesh it out soon
+Presentation Handler, Manager, Meeting Recorder/Scribe
+
 
 
 **Facilitator**
@@ -214,23 +223,6 @@ Prof. Joydeep Mitra (MSU)
 Texas Instruments POC: Gerasimos “Jerry” Madalvanos
 
 **For external visitors: please use GitHub Issues for questions.**
-
----
-Open Questions (tracked with Sponsor/Facilitator)
----
-“Contactless” definition for the contest vs. sensor skin contact (dry band).
-
-Standard band placement (muscle group, dominant arm) for fairness.
-
-Connector/strain relief/ESD expectations at the electrode interface.
-
-Part path: discrete INA+filters+ADC vs. integrated biopotential AFE.
-
-Demo metrics: window size, RMS/peak logic, latency targets, SNR thresholds.
-
-Form factor & enclosure expectations for the final PCB.
-
-See ??? for resolutions.
 
 ---
 Roadmap (For now)
