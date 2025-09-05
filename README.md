@@ -25,7 +25,7 @@ Why this exists
 
 Make bio-signal sensing tangible and fun.
 
-Practice end-to-end ECE: sensor → analog chain → ADC/MCU → UI → V&V.
+Practice end-to-end ECE: sensor -> analog chain -> ADC/MCU -> UI -> V&V.
 
 Deliver a repeatable, safe, and explainable user experience for Design Day.
 
