@@ -88,17 +88,20 @@ static void oled_smoke_test(void){
   ssd1351_fill(COL_RED);
 
   // These are scripted and must have different colors and delay_ms (i dunno why)
-  gfx_header("COUNTDOWN...",             0xFFFF);  delay_ms(2000);
-  gfx_header("READY?",                0xFFFE);  delay_ms(2001);
+  gfx_header("COUNTDOWN...",             0xFFFF);  delay_ms(3000);
+  gfx_header("READY?",                0xFFFE);  delay_ms(3001);
   gfx_header("3",                     0xFFFD);  delay_ms(1002);
   gfx_header("2",                     0xFFFC);  delay_ms(1003);
   gfx_header("1",                     0x7BEE);  delay_ms(1004);
   gfx_header("FLEX!",                 0xF801);  delay_ms(6000);
   gfx_header("Caluclating...",        0x7BF0);  delay_ms(5000);
   gfx_header("AVERAGE:\n69",        0x7BF1);  delay_ms(2010);
-  gfx_header("YOU'RE STRONGER\nTHAN:", 0xF802);  delay_ms(3005);
-  gfx_header("90%\nof People!",        0xF803); // \n doesn't work
+  gfx_header("YOU'RE STRONGER\nTHAN", 0xF802);  delay_ms(3005);
+  gfx_header("90%\nof People!",        0xF803); delay_ms(5005); // \n doesn't work
 
+  // Send Off
+  ssd1351_fill(COL_BLACK);
+  gfx_header("TEXAS INSTRUMENTS ",             0xF805);  
 
   // park with heartbeat so final frame is visible
   while(1){
