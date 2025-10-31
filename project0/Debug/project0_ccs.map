@@ -1,0 +1,513 @@
+******************************************************************************
+            TI ARM Clang Linker PC v4.0.4                      
+******************************************************************************
+>> Linked Fri Oct 31 00:43:33 2025
+
+OUTPUT FILE NAME:   <project0.out>
+ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 000020fd
+
+
+MEMORY CONFIGURATION
+
+         name            origin    length      used     unused   attr    fill
+----------------------  --------  ---------  --------  --------  ----  --------
+  FLASH                 00000000   00040000  00002bc5  0003d43b  R  X
+  SRAM                  20000000   00008000  0000016f  00007e91  RW X
+
+
+SEGMENT ALLOCATION MAP
+
+run origin  load origin   length   init length attrs members
+----------  ----------- ---------- ----------- ----- -------
+00000000    00000000    00002bc8   00002bc8    r-x
+  00000000    00000000    00002554   00002554    r-x .text
+  00002554    00002554    000000fc   000000fc    r-- .const
+  00002650    00002650    0000053d   0000053d    r-- .rodata
+  00002b90    00002b90    00000038   00000038    r-- .cinit
+20000000    20000000    0000016f   00000000    rw-
+  20000000    20000000    00000100   00000000    rw- .stack
+  20000100    20000100    0000006f   00000000    rw- .data
+
+
+SECTION ALLOCATION MAP
+
+ output                                  attributes/
+section   page    origin      length       input sections
+--------  ----  ----------  ----------   ----------------
+.text      0    00000000    00002554     
+                  00000000    00000368     game.o (.text.game_step)
+                  00000368    000002e8     game.o (.text.draw_bars)
+                  00000650    0000025c     libc.a : _printfi.c.obj (.text:__TI_printfi_minimal)
+                  000008ac    000001e4            : e_expf.c.obj (.text.expf)
+                  00000a90    000001b8     emg_mock.o (.text.emg_mock_read)
+                  00000c48    000001ac     ssd1351.o (.text.ssd1351_init)
+                  00000df4    0000016c     driverlib.lib : gpio.obj (.text:GPIOPadConfigSet)
+                  00000f60    00000168     game.o (.text.game_render)
+                  000010c8    00000124     main.o (.text.oled_smoke_test)
+                  000011ec    0000011c     ssd1351.o (.text.ssd1351_draw_rect)
+                  00001308    00000118     driverlib.lib : sysctl.obj (.text:SysCtlClockGet)
+                  00001420    0000010a     gfx.o (.text.put_char_scaled)
+                  0000152a    00000002     --HOLE-- [fill = 0]
+                  0000152c    000000f4     driverlib.lib : sysctl.obj (.text:SysCtlClockSet)
+                  00001620    000000b6     process.o (.text.process_push)
+                  000016d6    00000002     --HOLE-- [fill = 0]
+                  000016d8    000000ac     process.o (.text.process_get_round_avg)
+                  00001784    00000098     libc.a : s_sinf.c.obj (.text.sinf)
+                  0000181c    00000090     gfx.o (.text.gfx_header)
+                  000018ac    0000008e     gfx.o (.text.gfx_text2)
+                  0000193a    0000008c     main.o (.text.main)
+                  000019c6    00000002     --HOLE-- [fill = 0]
+                  000019c8    0000008c     process.o (.text.process_init)
+                  00001a54    0000008a     emg_mock.o (.text.emg_mock_set_level)
+                  00001ade    00000082     gfx.o (.text._hdr_text_width_px)
+                  00001b60    00000074     libc.a : copy_decompress_lzss.c.obj (.text:decompress:lzss)
+                  00001bd4    00000072     ssd1351.o (.text.ssd1351_set_window)
+                  00001c46    0000006c     gfx.o (.text.gfx_clear_header_band)
+                  00001cb2    00000062     timer.o (.text.delay_ms)
+                  00001d14    0000005a     ssd1351.o (.text.ssi_send8)
+                  00001d6e    00000056     process.o (.text.process_accumulate_round)
+                  00001dc4    00000050     game.o (.text.game_init)
+                  00001e14    0000004c     ssd1351.o (.text.write_cmdN)
+                  00001e60    0000004c     driverlib.lib : gpio.obj (.text:GPIOPinConfigure)
+                  00001eac    00000044     libc.a : snprintf.c.obj (.text.snprintf)
+                  00001ef0    00000040     ssd1351.o (.text._ssi_set)
+                  00001f30    0000003e     gfx.o (.text.gfx_bar)
+                  00001f6e    00000002     --HOLE-- [fill = 0]
+                  00001f70    0000003c     emg_mock.o (.text.frand)
+                  00001fac    0000003c     driverlib.lib : ssi.obj (.text:SSIConfigSetExpClk)
+                  00001fe8    0000003a     main.o (.text.led_blink)
+                  00002022    00000002     --HOLE-- [fill = 0]
+                  00002024    00000038     driverlib.lib : sysctl.obj (.text:SysCtlPeripheralReady)
+                  0000205c    00000038     libc.a : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit)
+                  00002094    00000034     gfx.o (.text.draw_pixel_run)
+                  000020c8    00000034     driverlib.lib : sysctl.obj (.text:SysCtlPeripheralEnable)
+                  000020fc    00000034     libc.a : boot_cortex_m.c.obj (.text:_c_int00_noargs)
+                  00002130    00000032     gfx.o (.text.gfx_text)
+                  00002162    00000032     main.o (.text.led_init)
+                  00002194    00000030     libc.a : snprintf.c.obj (.text._outs)
+                  000021c4    00000030     ssd1351.o (.text.write_cmd1)
+                  000021f4    0000002e     ssd1351.o (.text.bw_delay_ms)
+                  00002222    0000002c     emg_mock.o (.text.emg_mock_init)
+                  0000224e    0000002c     driverlib.lib : gpio.obj (.text:GPIODirModeSet)
+                  0000227a    00000028     game.o (.text.set_state)
+                  000022a2    00000022     libc.a : memccpy.c.obj (.text.memccpy)
+                  000022c4    00000022     process.o (.text.process_reset_round)
+                  000022e6    00000022     timer.o (.text.timer_init)
+                  00002308    00000020     gfx.o (.text.gfx_clear)
+                  00002328    00000020     ssd1351.o (.text.ssd1351_fill)
+                  00002348    00000020     ssd1351.o (.text.write_cmd)
+                  00002368    0000001a     driverlib.lib : gpio.obj (.text:GPIOPinTypeGPIOOutput)
+                  00002382    00000018     libc.a : snprintf.c.obj (.text._outc)
+                  0000239a    00000016     driverlib.lib : gpio.obj (.text:GPIOPinTypeSSI)
+                  000023b0    00000014     ssd1351.o (.text.dc_cmd)
+                  000023c4    00000014     ssd1351.o (.text.dc_dat)
+                  000023d8    00000014     main.o (.text.led_off)
+                  000023ec    00000014     main.o (.text.led_on)
+                  00002400    00000014     driverlib.lib : systick.obj (.text:SysTickEnable)
+                  00002414    00000014                   : systick.obj (.text:SysTickIntEnable)
+                  00002428    00000012                   : ssi.obj (.text:SSIDataGetNonBlocking)
+                  0000243a    00000012     libc.a : memcpy_t2.S.obj (.text:TI_memcpy_small)
+                  0000244c    00000010     ssd1351.o (.text.cs_high)
+                  0000245c    00000010     ssd1351.o (.text.cs_low)
+                  0000246c    00000010     driverlib.lib : interrupt.obj (.text:IntMasterEnable)
+                  0000247c    00000010                   : systick.obj (.text:SysTickPeriodSet)
+                  0000248c    0000000e     process.o (.text.process_envA)
+                  0000249a    0000000e     process.o (.text.process_envB)
+                  000024a8    0000000e     libc.a : _printfi.c.obj (.text.strlen)
+                  000024b6    0000000e            : memset_t2.S.obj (.text:TI_memset_small)
+                  000024c4    0000000e            : copy_decompress_none.c.obj (.text:decompress:none)
+                  000024d2    0000000c     timer.o (.text.millis)
+                  000024de    0000000c     driverlib.lib : cpu.obj (.text:CPUcpsie)
+                  000024ea    00000002     --HOLE-- [fill = 0]
+                  000024ec    0000000a     libclang_rt.builtins.a : aeabi_memset.S.obj (.text.__aeabi_memset)
+                  000024f6    0000000a     driverlib.lib : ssi.obj (.text:SSIDataPut)
+                  00002500    0000000a                   : ssi.obj (.text:SSIDisable)
+                  0000250a    0000000a                   : ssi.obj (.text:SSIEnable)
+                  00002514    00000008     libc.a : aeabi_portable.c.obj (.text.__aeabi_errno_addr)
+                  0000251c    00000008     driverlib.lib : ssi.obj (.text:SSIBusy)
+                  00002524    00000006     startup_ccs.o (.text.ResetISR)
+                  0000252a    00000006     driverlib.lib : gpio.obj (.text:GPIOPinWrite)
+                  00002530    00000006                   : sysctl.obj (.text:SysCtlDelay)
+                  00002536    00000006     libc.a : exit.c.obj (.text:abort)
+                  0000253c    00000004     startup_ccs.o (.text.FaultISR)
+                  00002540    00000004     libsysbm.a : hostexit.c.obj (.text.HOSTexit)
+                  00002544    00000004     startup_ccs.o (.text.IntDefaultHandler)
+                  00002548    00000004     startup_ccs.o (.text.NmiSR)
+                  0000254c    00000004     libclang_rt.builtins.a : aeabi_memcpy.S.obj (.text.__aeabi_memcpy)
+                  00002550    00000004     libc.a : pre_init.c.obj (.text._system_pre_init)
+
+.const     0    00002554    000000fc     
+                  00002554    00000090     driverlib.lib : gpio.obj (.const:g_pui32GPIOBaseAddrs)
+                  000025e4    0000006c                   : sysctl.obj (.const:g_pui32Xtals)
+
+.rodata    0    00002650    0000053d     
+                  00002650    0000026c     startup_ccs.o (.rodata.g_pfnVectors)
+                  000028bc    000001e0     gfx.o (.rodata.F)
+                  00002a9c    00000018     libc.a : e_expf.c.obj (.rodata.cst8)
+                  00002ab4    00000018     main.o (.rodata.str1.16265332423659789559.1)
+                  00002acc    00000012     main.o (.rodata.str1.15159059442110792349.1)
+                  00002ade    00000012     game.o (.rodata.str1.3846330321212824532.1)
+                  00002af0    00000011     libc.a : _printfi.c.obj (.rodata.str1.15363888844622738466.1)
+                  00002b01    0000000f     main.o (.rodata.str1.14112174005742061988.1)
+                  00002b10    0000000f     main.o (.rodata.str1.15996357275703397564.1)
+                  00002b1f    0000000e     game.o (.rodata.str1.6100369776142028819.1)
+                  00002b2d    0000000d     game.o (.rodata.str1.14107836020353751890.1)
+                  00002b3a    0000000d     main.o (.rodata.str1.8154729771448623357.1)
+                  00002b47    0000000c     main.o (.rodata.str1.7702501944640899365.1)
+                  00002b53    0000000b     game.o (.rodata.str1.17708770684071004443.1)
+                  00002b5e    0000000a     game.o (.rodata.str1.8357395868762639450.1)
+                  00002b68    0000000a     game.o (.rodata.str1.9969844259988889360.1)
+                  00002b72    00000007     main.o (.rodata.str1.17100691992556644108.1)
+                  00002b79    00000006     main.o (.rodata.str1.288608917962107522.1)
+                  00002b7f    00000004     game.o (.rodata.str1.6849864942619857425.1)
+                  00002b83    00000002     main.o (.rodata.str1.12180500075719773345.1)
+                  00002b85    00000002     main.o (.rodata.str1.18227636981041470289.1)
+                  00002b87    00000002     main.o (.rodata.str1.2846389346932560359.1)
+                  00002b89    00000002     game.o (.rodata.str1.3989973381034227510.1)
+                  00002b8b    00000002     game.o (.rodata.str1.9707769887897754995.1)
+
+.cinit     0    00002b90    00000038     
+                  00002b90    00000027     (.cinit..data.load) [load image, compression = lzss]
+                  00002bb7    00000001     --HOLE-- [fill = 0]
+                  00002bb8    00000008     (__TI_handler_table)
+                  00002bc0    00000008     (__TI_cinit_table)
+
+.init_array 
+*          0    00000000    00000000     UNINITIALIZED
+
+.data      0    20000100    0000006f     UNINITIALIZED
+                  20000100    00000004     libc.a : aeabi_portable.c.obj (.data.__aeabi_errno)
+                  20000104    00000004     process.o (.data.alpha)
+                  20000108    00000004     game.o (.data.avgA)
+                  2000010c    00000004     game.o (.data.avgB)
+                  20000110    00000004     game.o (.data.demo_cycle)
+                  20000114    00000004     process.o (.data.envA)
+                  20000118    00000004     process.o (.data.envB)
+                  2000011c    00000004     process.o (.data.fs)
+                  20000120    00000004     emg_mock.o (.data.g_interval_ms)
+                  20000124    00000004     emg_mock.o (.data.g_last_ms)
+                  20000128    00000004     emg_mock.o (.data.g_levelA)
+                  2000012c    00000004     emg_mock.o (.data.g_levelB)
+                  20000130    00000004     timer.o (.data.g_ms)
+                  20000134    00000004     game.o (.data.mA)
+                  20000138    00000004     game.o (.data.mB)
+                  2000013c    00000004     emg_mock.o (.data.phaseA)
+                  20000140    00000004     emg_mock.o (.data.phaseB)
+                  20000144    00000004     process.o (.data.r_cnt)
+                  20000148    00000004     process.o (.data.r_sumA)
+                  2000014c    00000004     process.o (.data.r_sumB)
+                  20000150    00000004     emg_mock.o (.data.rng)
+                  20000154    00000004     game.o (.data.sA)
+                  20000158    00000004     game.o (.data.sB)
+                  2000015c    00000004     game.o (.data.t_round_ms)
+                  20000160    00000004     game.o (.data.t_state_ms)
+                  20000164    00000004     game.o (.data.thrA)
+                  20000168    00000004     game.o (.data.thrB)
+                  2000016c    00000001     game.o (.data.s)
+                  2000016d    00000001     game.o (.data.tie)
+                  2000016e    00000001     game.o (.data.winnerA)
+
+.stack     0    20000000    00000100     UNINITIALIZED
+                  20000000    00000004     libc.a : boot_cortex_m.c.obj (.stack)
+                  20000004    000000fc     --HOLE--
+
+__llvm_prf_cnts 
+*          0    20000000    00000000     UNINITIALIZED
+
+__llvm_prf_bits 
+*          0    20000000    00000000     UNINITIALIZED
+
+MODULE SUMMARY
+
+       Module                       code   ro data   rw data
+       ------                       ----   -------   -------
+    .\
+       game.o                       2096   84        47     
+       gfx.o                        986    480       0      
+       ssd1351.o                    1286   0         0      
+       emg_mock.o                   682    0         28     
+       main.o                       580    116       0      
+       process.o                    642    0         28     
+       startup_ccs.o                18     620       0      
+       timer.o                      144    0         4      
+    +--+----------------------------+------+---------+---------+
+       Total:                       6434   1300      107    
+                                                            
+    C:/ti/TivaWare_C_Series-2.2.0.295/driverlib/ccs/Debug/driverlib.lib
+       sysctl.obj                   638    108       0      
+       gpio.obj                     538    144       0      
+       ssi.obj                      116    0         0      
+       systick.obj                  56     0         0      
+       interrupt.obj                16     0         0      
+       cpu.obj                      12     0         0      
+    +--+----------------------------+------+---------+---------+
+       Total:                       1376   252       0      
+                                                            
+    C:\ti\ccs2031\ccs\tools\compiler\ti-cgt-armllvm_4.0.4.LTS\lib\armv7em-ti-none-eabihf/c/libc.a
+       _printfi.c.obj               618    17        0      
+       e_expf.c.obj                 484    24        0      
+       s_sinf.c.obj                 152    0         0      
+       snprintf.c.obj               140    0         0      
+       copy_decompress_lzss.c.obj   116    0         0      
+       autoinit.c.obj               56     0         0      
+       boot_cortex_m.c.obj          52     0         0      
+       memccpy.c.obj                34     0         0      
+       memcpy_t2.S.obj              18     0         0      
+       copy_decompress_none.c.obj   14     0         0      
+       memset_t2.S.obj              14     0         0      
+       aeabi_portable.c.obj         8      0         4      
+       exit.c.obj                   6      0         0      
+       pre_init.c.obj               4      0         0      
+    +--+----------------------------+------+---------+---------+
+       Total:                       1716   41        4      
+                                                            
+    C:\ti\ccs2031\ccs\tools\compiler\ti-cgt-armllvm_4.0.4.LTS\lib\armv7em-ti-none-eabihf/c/libsysbm.a
+       hostexit.c.obj               4      0         0      
+    +--+----------------------------+------+---------+---------+
+       Total:                       4      0         0      
+                                                            
+    C:\ti\ccs2031\ccs\tools\compiler\ti-cgt-armllvm_4.0.4.LTS\lib\armv7em-ti-none-eabihf/libclang_rt.builtins.a
+       aeabi_memset.S.obj           10     0         0      
+       aeabi_memcpy.S.obj           4      0         0      
+    +--+----------------------------+------+---------+---------+
+       Total:                       14     0         0      
+                                                            
+       Stack:                       0      0         256    
+       Linker Generated:            0      55        0      
+    +--+----------------------------+------+---------+---------+
+       Grand Total:                 9544   1648      367    
+
+
+LINKER GENERATED COPY TABLES
+
+__TI_cinit_table @ 00002bc0 records: 1, size/record: 8, table size: 8
+	.data: load addr=00002b90, load size=00000027 bytes, run addr=20000100, run size=0000006f bytes, compression=lzss
+
+
+LINKER GENERATED HANDLER TABLE
+
+__TI_handler_table @ 00002bb8 records: 2, size/record: 4, table size: 8
+	index: 0, handler: __TI_decompress_lzss
+	index: 1, handler: __TI_decompress_none
+
+
+GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name 
+
+address   name                          
+-------   ----                          
+00002540  C$$EXIT                       
+000024df  CPUcpsie                      
+0000224f  GPIODirModeSet                
+00000df5  GPIOPadConfigSet              
+00001e61  GPIOPinConfigure              
+00002369  GPIOPinTypeGPIOOutput         
+0000239b  GPIOPinTypeSSI                
+0000252b  GPIOPinWrite                  
+00002541  HOSTexit                      
+0000246d  IntMasterEnable               
+00002525  ResetISR                      
+0000251d  SSIBusy                       
+00001fad  SSIConfigSetExpClk            
+00002429  SSIDataGetNonBlocking         
+000024f7  SSIDataPut                    
+00002501  SSIDisable                    
+0000250b  SSIEnable                     
+00001309  SysCtlClockGet                
+0000152d  SysCtlClockSet                
+00002531  SysCtlDelay                   
+000020c9  SysCtlPeripheralEnable        
+00002025  SysCtlPeripheralReady         
+00002401  SysTickEnable                 
+00002415  SysTickIntEnable              
+0000247d  SysTickPeriodSet              
+0000243b  TI_memcpy_small               
+000024b7  TI_memset_small               
+20000100  __STACK_END                   
+00000100  __STACK_SIZE                  
+20000100  __STACK_TOP                   
+00000000  __TI_ATRegion0_region_sz      
+00000000  __TI_ATRegion0_src_addr       
+00000000  __TI_ATRegion0_trg_addr       
+00000000  __TI_ATRegion1_region_sz      
+00000000  __TI_ATRegion1_src_addr       
+00000000  __TI_ATRegion1_trg_addr       
+00000000  __TI_ATRegion2_region_sz      
+00000000  __TI_ATRegion2_src_addr       
+00000000  __TI_ATRegion2_trg_addr       
+00002bc0  __TI_CINIT_Base               
+00002bc8  __TI_CINIT_Limit              
+00002bc8  __TI_CINIT_Warm               
+00002bb8  __TI_Handler_Table_Base       
+00002bc0  __TI_Handler_Table_Limit      
+0000205d  __TI_auto_init_nobinit_nopinit
+00001b61  __TI_decompress_lzss          
+000024c5  __TI_decompress_none          
+ffffffff  __TI_pprof_out_hndl           
+00000651  __TI_printfi_minimal          
+ffffffff  __TI_prof_data_size           
+ffffffff  __TI_prof_data_start          
+00000000  __TI_static_base__            
+20000100  __aeabi_errno                 
+00002515  __aeabi_errno_addr            
+0000254d  __aeabi_memcpy                
+0000254d  __aeabi_memcpy4               
+0000254d  __aeabi_memcpy8               
+000024ed  __aeabi_memset                
+000024ed  __aeabi_memset4               
+000024ed  __aeabi_memset8               
+ffffffff  __binit__                     
+UNDEFED   __mpu_init                    
+20000000  __stack                       
+20000000  __start___llvm_prf_bits       
+20000000  __start___llvm_prf_cnts       
+20000000  __stop___llvm_prf_bits        
+20000000  __stop___llvm_prf_cnts        
+000020fd  _c_int00_noargs               
+UNDEFED   _system_post_cinit            
+00002551  _system_pre_init              
+00002537  abort                         
+ffffffff  binit                         
+00001cb3  delay_ms                      
+00002223  emg_mock_init                 
+00000a91  emg_mock_read                 
+00001a55  emg_mock_set_level            
+000008ad  expf                          
+00002650  g_pfnVectors                  
+00001dc5  game_init                     
+00000f61  game_render                   
+00000001  game_step                     
+00001f31  gfx_bar                       
+00002309  gfx_clear                     
+00001c47  gfx_clear_header_band         
+0000181d  gfx_header                    
+00002131  gfx_text                      
+000018ad  gfx_text2                     
+0000193b  main                          
+000022a3  memccpy                       
+000024d3  millis                        
+00001d6f  process_accumulate_round      
+0000248d  process_envA                  
+0000249b  process_envB                  
+000016d9  process_get_round_avg         
+000019c9  process_init                  
+00001621  process_push                  
+000022c5  process_reset_round           
+00001785  sinf                          
+00001ead  snprintf                      
+000011ed  ssd1351_draw_rect             
+00002329  ssd1351_fill                  
+00000c49  ssd1351_init                  
+00001bd5  ssd1351_set_window            
+000022e7  timer_init                    
+
+
+GLOBAL SYMBOLS: SORTED BY Symbol Address 
+
+address   name                          
+-------   ----                          
+00000000  __TI_ATRegion0_region_sz      
+00000000  __TI_ATRegion0_src_addr       
+00000000  __TI_ATRegion0_trg_addr       
+00000000  __TI_ATRegion1_region_sz      
+00000000  __TI_ATRegion1_src_addr       
+00000000  __TI_ATRegion1_trg_addr       
+00000000  __TI_ATRegion2_region_sz      
+00000000  __TI_ATRegion2_src_addr       
+00000000  __TI_ATRegion2_trg_addr       
+00000000  __TI_static_base__            
+00000001  game_step                     
+00000100  __STACK_SIZE                  
+00000651  __TI_printfi_minimal          
+000008ad  expf                          
+00000a91  emg_mock_read                 
+00000c49  ssd1351_init                  
+00000df5  GPIOPadConfigSet              
+00000f61  game_render                   
+000011ed  ssd1351_draw_rect             
+00001309  SysCtlClockGet                
+0000152d  SysCtlClockSet                
+00001621  process_push                  
+000016d9  process_get_round_avg         
+00001785  sinf                          
+0000181d  gfx_header                    
+000018ad  gfx_text2                     
+0000193b  main                          
+000019c9  process_init                  
+00001a55  emg_mock_set_level            
+00001b61  __TI_decompress_lzss          
+00001bd5  ssd1351_set_window            
+00001c47  gfx_clear_header_band         
+00001cb3  delay_ms                      
+00001d6f  process_accumulate_round      
+00001dc5  game_init                     
+00001e61  GPIOPinConfigure              
+00001ead  snprintf                      
+00001f31  gfx_bar                       
+00001fad  SSIConfigSetExpClk            
+00002025  SysCtlPeripheralReady         
+0000205d  __TI_auto_init_nobinit_nopinit
+000020c9  SysCtlPeripheralEnable        
+000020fd  _c_int00_noargs               
+00002131  gfx_text                      
+00002223  emg_mock_init                 
+0000224f  GPIODirModeSet                
+000022a3  memccpy                       
+000022c5  process_reset_round           
+000022e7  timer_init                    
+00002309  gfx_clear                     
+00002329  ssd1351_fill                  
+00002369  GPIOPinTypeGPIOOutput         
+0000239b  GPIOPinTypeSSI                
+00002401  SysTickEnable                 
+00002415  SysTickIntEnable              
+00002429  SSIDataGetNonBlocking         
+0000243b  TI_memcpy_small               
+0000246d  IntMasterEnable               
+0000247d  SysTickPeriodSet              
+0000248d  process_envA                  
+0000249b  process_envB                  
+000024b7  TI_memset_small               
+000024c5  __TI_decompress_none          
+000024d3  millis                        
+000024df  CPUcpsie                      
+000024ed  __aeabi_memset                
+000024ed  __aeabi_memset4               
+000024ed  __aeabi_memset8               
+000024f7  SSIDataPut                    
+00002501  SSIDisable                    
+0000250b  SSIEnable                     
+00002515  __aeabi_errno_addr            
+0000251d  SSIBusy                       
+00002525  ResetISR                      
+0000252b  GPIOPinWrite                  
+00002531  SysCtlDelay                   
+00002537  abort                         
+00002540  C$$EXIT                       
+00002541  HOSTexit                      
+0000254d  __aeabi_memcpy                
+0000254d  __aeabi_memcpy4               
+0000254d  __aeabi_memcpy8               
+00002551  _system_pre_init              
+00002650  g_pfnVectors                  
+00002bb8  __TI_Handler_Table_Base       
+00002bc0  __TI_CINIT_Base               
+00002bc0  __TI_Handler_Table_Limit      
+00002bc8  __TI_CINIT_Limit              
+00002bc8  __TI_CINIT_Warm               
+20000000  __stack                       
+20000000  __start___llvm_prf_bits       
+20000000  __start___llvm_prf_cnts       
+20000000  __stop___llvm_prf_bits        
+20000000  __stop___llvm_prf_cnts        
+20000100  __STACK_END                   
+20000100  __STACK_TOP                   
+20000100  __aeabi_errno                 
+ffffffff  __TI_pprof_out_hndl           
+ffffffff  __TI_prof_data_size           
+ffffffff  __TI_prof_data_start          
+ffffffff  __binit__                     
+ffffffff  binit                         
+UNDEFED   __mpu_init                    
+UNDEFED   _system_post_cinit            
+
+[104 symbols]
