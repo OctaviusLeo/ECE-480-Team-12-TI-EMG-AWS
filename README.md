@@ -97,66 +97,46 @@ BOM: See /docs/bom.md (placeholders provided, fill with final part numbers).
 
 **Software**
 ---
-Firmware: /firmware/ (CCS project)
+This will only have the include (.h) & source (.c) files. 
+Any errors, you can exclude that file (and fix later) or fix that specific error in any steps.
 
-PC dashboard (optional): /tools/dashboard/ (Python)
+1. Download the Software Developement Kit: https://www.ti.com/tool/SW-TM4C?utm_source=google&utm_medium=cpc&utm_campaign=epd-null-null-44700045336317887_prodfolderdynamic-cpc-pf-google-ww_en_int&utm_content=prodfolddynamic&ds_k=DYNAMIC+SEARCH+ADS&DCM=yes&gclsrc=aw.ds&gad_source=1&gad_campaignid=12236057696&gbraid=0AAAAAC068F23ah0bGYvpOZEGrYN7NGfCW&gclid=CjwKCAiAt8bIBhBpEiwAzH1w6TN2LpLLjL4gkm1rOxRtDTfot4sC7BeKlQ9Beu3hVgtyNW1VzUM2lhoCFucQAvD_BwE#downloads
+2. Download CCS (Code Composer Studio).
+4. CCS -> "File" -> "Import Projects" -> ...\driverlib\ccs\Debug\driverlib.lib
+5. "Project" -> "Build All"
+6. "File" -> "Import Projects" -> ...\ti\TivaWare_C_Series-2.2.0.295\examples\boards\ek-tm4c123gxl\project0
+7. "Project" -> "Build All"
+8. Download include and source files (here) to same folder containing "project0".
+9. Right click "Project0" in Explorer (on the left) -> "Add files/folders" -> "Select files to link" -> link ALL of source and include files.
+10. Connect your pc to MCU using the given cable.
+11. "Project" -> "Build All" -> "Run" -> "Debug Project"
+12. in DEBUG window -> "Resume" -> Should work
 
-py -m venv .venv && .venv\Scripts\activate (Win) or source .venv/bin/activate (Unix)
-
-pip install -r requirements.txt
-
-python app.py
+Errors: After "Project" -> "Build All", check "Project" -> "Properties" -> "Arm Linker" look over all options
+Also check: "Run" -> "Debug Properties" -> lookover all 4 windows.
 
 ---
-Repository Structure (ideally but probably not)
+Repository Structure
 ---
 .
 
-|- /docs
+|- include
 
-|  |- design/        # block diagrams, schematics PDFs, gain/bias calcs(Google Drive)
-
-|  |- test/          # V&V plan, test cases, acceptance criteria
-
-|  |- bom.md         # bill of materials
-
-|  |- usage.md       # operator procedure & sanitation SOP
-
-|- /hardware
-
-|  |- pcb/           # KiCad/Altium sources, fab outputs
-
-|  |_ prototypes/    # breadboard/EVM notes, wiring, photos
-
-|- /firmware         # CCS project, drivers, comparator logic, UI
-
-|- /tools
-
-|  |_ dashboard/     # optional PC real-time visualization
-
-|- /assets           # images, logos, demo GIFs
+|- src
 
 |_ README.md
 
 ---
-Build & Run (Firmware)
----
-Symaedchit Leo's job. 
-
----
 Validation & Verification (V&V) Summary
 ---
-Signal detection: ???
+Signal detection: Medium: The frequencies (Hz) from sEMG -> ADC -> MCU
 
-Comparator correctness: ???
+Latency: Medium: Detects every 0.5 seconds.
 
-Latency: ???
+Repeatability: Medium: Every part can be bought.
 
-Repeatability: ???
+Safety: High: No danger.
 
-Safety: ???
-
-Full details: ???
 
 ---
 Safety, Ethics, and Use
@@ -180,7 +160,7 @@ Demo-1 (mid-semester): late Oct
 
 Standards presentation: Nov 7, 2025
 
-Demo-2 (prototype): Nov 10–21, 2025
+Demo-2 (prototype): Nov 17, 2025
 
 Poster due: Dec 2, 2025
 
@@ -195,28 +175,27 @@ Contributing (course context)
 ---
 **Team 12**
 -
-Ervin Alaij - Sensor & Analog Lead,
-			Dry-electrode band handling, input protecting, instrumentation amp, filters, signals.
-		Doc Handler + treasurer
+Ervin Alaij - Hardware
+Doc Handler
+Budget Manager
 
-Symaedchit Leo - Firmware & Data Lead,
-			MCU code that reads ADC, then cleans, then into an integer, then shows using bars or lights or UI, and writes a winner. 
-				Online Coordinator
+Symaedchit Leo - Software
+Online Coordinator
+Meeting/Recorder and Scribe
+DOM
 
-Andrew Perez - Lab coordinator + Product Demo Manager,
-PCB & Hardware,
-Designs PCB, power, connectors, test points, strain relief.
+Andrew Perez - Hardware
+Lab Coordinator
+Project Demo Manager
 
-
-Pratijit Podder - Freelance agent - start w. Assistance in hardware and then can consider the specifications or goals that are unmet - will flesh it out soon
-Presentation Handler, Manager, Meeting Recorder/Scribe
-
-
+Pratijit Podder - Hardware
+Project Manager
+Presentation Handler
+Communications Handler
 
 **Facilitator**
 -
 Prof. Joydeep Mitra (MSU)
-
 
 **Sponsor**
 -
@@ -225,22 +204,9 @@ Texas Instruments POC: Gerasimos “Jerry” Madalvanos
 **For external visitors: please use GitHub Issues for questions.**
 
 ---
-Roadmap (For now)
----
-Lock part selections & EVM prototype path
-
-Bring-up analog chain on bench (gain/CMRR/noise verified)
-
-Firmware comparator + UI MVP
-
-Two-player integration & acceptance tests
-
-Enclosure & demo polish; PC dashboard (stretch)
-
----
 License
 ---
-???
+TI & MSU
 
 ---
 Acknowledgments
