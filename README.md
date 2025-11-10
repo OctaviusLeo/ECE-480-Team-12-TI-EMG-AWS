@@ -21,7 +21,9 @@ Two player “Winner” indicator
 
 Optional PC dashboard (stretch)
 
-Why this exists
+
+**Why this exists**
+---
 
 Make bio-signal sensing tangible and fun.
 
@@ -29,21 +31,7 @@ Practice end-to-end ECE: sensor -> analog chain -> ADC/MCU -> UI -> V&V.
 
 Deliver a repeatable, safe, and explainable user experience for Design Day.
 
----
-**System Overview (Not sure if this is correct)**
----
-
-DRY EMG BAND(differential) -> Instrumentation Amplfier -> HP/BP/Notce?LP Filters -> Anti-alias
-
-                                        |
                                         
-                                        > ADC -> Whatever IDE -> LCD/LEDs + PC UI 
-                                        
-                                        |
-                                        
-                                        > two user comparator (RMS/peak evelope)
-                                        
-
 **Key behaviors**
 ---
 Clear EMG detected indication (single-user).
