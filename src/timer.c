@@ -5,11 +5,11 @@
 #include "driverlib/interrupt.h"
 
 static volatile uint32_t g_ms = 0;
-
-void SysTick_Handler(void){ g_ms++; }
+static void SysTickThunk(void){ g_ms++; }
 
 void timer_init(void){
   SysTickPeriodSet(SysCtlClockGet()/1000u);
+  SysTickIntRegister(SysTickThunk);
   SysTickIntEnable();
   SysTickEnable();
 }
