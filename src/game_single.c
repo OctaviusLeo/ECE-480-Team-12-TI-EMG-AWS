@@ -7,11 +7,17 @@
 #include "ssd1351.h"
 #include "game.h"         // baseline_begin(), game_get_metrics()
 #include "project.h"
+#include "ti_logo.h"
+#include "result1.h"
 
 /* helpers local to single-player */
 static float clampf(float v, float lo, float hi){
   if (v < lo) return lo; if (v > hi) return hi; return v;
 }
+
+static inline void ui_sep_h(uint8_t y){ gfx_bar(0, y, 128, 1, COL_DKGRAY); }
+static inline void ui_sep_v(uint8_t x, uint8_t y, uint8_t h){ gfx_bar(x, y, 1, h, COL_DKGRAY); }
+
 static const char* rank_from_percent(unsigned p){
   if (p >= 99) return "Challenger";
   if (p >= 97) return "Grandmaster";
@@ -55,6 +61,11 @@ static void goto_state(sp_state_t s){
 
 static void draw_flex_body(float hz, float baseline_hz){
   gfx_bar(0, 18, 128, 110, COL_BLACK);
+
+    ui_sep_h(18);   // under header
+    ui_sep_h(58);   // separates text (Hz/baseline) from bar area
+    ui_sep_v(0, 18, 110); ui_sep_v(127, 18, 110);
+
   char line[32]; snprintf(line, sizeof(line), "Hz: %.1f", hz);
   gfx_text2(6, 28, line, COL_WHITE, 2);
   char bline[32]; snprintf(bline, sizeof(bline), "Baseline: %.1f", baseline_hz);
@@ -85,6 +96,12 @@ void game_single_tick(void){
     case ST_BRAND: {
       gfx_clear(COL_BLACK);
       gfx_header("Texas Instruments", COL_RED);
+      ui_sep_h(18);  
+
+      uint8_t x = (uint8_t)((128 - TI_LOGO_W) / 2);
+      uint8_t y = 30;  // adjust if you want it closer/further from the title
+      gfx_blit565(x, y, TI_LOGO_W, TI_LOGO_H, TI_LOGO);
+
       if (dt >= 3000u) goto_state(ST_COUNTDOWN_LABEL);
     } break;
 
@@ -99,6 +116,8 @@ void game_single_tick(void){
 
     case ST_FLEX_CUE:
       gfx_header("FLEX!", COL_RED);
+        ui_sep_h(18);
+
       if (dt >= 1000u){ g_sum_hz = 0.0f; g_cnt_hz = 0; goto_state(ST_FLEXING); }
       break;
 
@@ -118,53 +137,41 @@ void game_single_tick(void){
     } break;
 
     case ST_RESULT: {
-      gfx_clear(COL_BLACK);
-      gfx_header("RESULT", COL_WHITE);
+    // compute once, then delegate the screen to the animator module
+    float avg_hz = (g_cnt_hz > 0) ? (g_sum_hz / (float)g_cnt_hz) : 0.0f;
+    float pct250 = (avg_hz < 0.0f ? 0.0f : (avg_hz > 250.0f ? 250.0f : avg_hz));
+    unsigned rank_pct = (unsigned)((pct250 * 100.0f / 250.0f) + 0.5f);
+    g_last_rank_pct = rank_pct;
 
-      float avg_hz = (g_cnt_hz > 0) ? (g_sum_hz / (float)g_cnt_hz) : 0.0f;
-      float pct250 = clampf(avg_hz, 0.0f, 250.0f);
-      unsigned rank_pct = (unsigned)((pct250 * 100.0f / 250.0f) + 0.5f);
-      g_last_rank_pct = rank_pct;
-
-      char res1[48]; snprintf(res1, sizeof(res1), "Avg Hz: %.1f", avg_hz);
-      gfx_text2(12, 28, res1, COL_WHITE, 1);
-      char res0[48]; snprintf(res0, sizeof(res0), "Baseline: %.1f", base);
-      gfx_text2(12, 40, res0, COL_YELLOW, 1);
-
-      char res2[48]; snprintf(res2, sizeof(res2), "Stronger Than: %u%%", rank_pct);
-      gfx_text2(12, 70, res2, COL_RED, 1);
-      gfx_text2(12, 80, "of People!!!", COL_WHITE, 1);
-
-      const char* rank = rank_from_percent(rank_pct);
-      char res4[48]; snprintf(res4, sizeof(res4), "Ranking: %s", rank);
-      gfx_text2(10, 100, res4, COL_WHITE, 1);
-
-      const uint8_t bx=6, by=110, bw=116, bh=18;
-      uint8_t bwfill = (uint8_t)((pct250 * 116.0f) / 250.0f);
-      gfx_bar(bx, by, bw, bh, COL_GRAY);
-      gfx_bar(bx, by, bwfill, bh, COL_GREEN);
-      const uint8_t cuts[] = {25,45,65,80,90,95,97,99};
-      for (unsigned i=0;i<sizeof(cuts)/sizeof(cuts[0]);++i){
-        uint8_t x = (uint8_t)(bx + (cuts[i] * bw) / 100);
-        gfx_bar(x, by, 1, bh, COL_WHITE);
-      }
-
-      if (dt >= 6000u) goto_state(ST_RANKS);
+    if (!g_drawn_once){
+        result1_start(avg_hz, base);
+        g_drawn_once = true;
+    }
+    if (result1_tick()){
+        goto_state(ST_RANKS);
+    }
     } break;
 
     case ST_RANKS: {
       if (!g_drawn_once){
         gfx_clear(COL_BLACK);
         gfx_header("RANKINGS", COL_RED);
+        ui_sep_h(18);
+
         static const char* ranks[] = {
-          "Challenger  1%","Grandmaster 3%","Master      5%","Diamond     10%",
-          "Platinum    20%","Gold        35%","Silver      55%","Bronze      75%","Iron        100%"
+          "Principal Fellow 1%","TI Senior Fellow 3%","TI Fellow 5%","DMTS 10%",
+          "SMTS 20%","MGTS 35%","Lead 55%","Senior Engineer 75%","Engineer 100%"
         };
         const int base_y=24, row_h=10;
-        for (int i=0;i<9;++i) gfx_text2(0, base_y+i*row_h, ranks[i], COL_WHITE, 1);
+
         int idx = rank_index_from_percent(g_last_rank_pct);
         if (idx<0) idx=0; if (idx>8) idx=8;
-        gfx_text2(110, base_y+idx*row_h, "<-", COL_YELLOW, 1);
+        for (int i=0; i<9; ++i){
+        uint16_t col = (i == idx) ? COL_CYAN : COL_WHITE;   // highlight your rank row
+        gfx_text2(0, base_y + i*row_h, ranks[i], col, 1);
+        }
+        gfx_text2(110, base_y + idx*row_h, "<-", COL_RED, 1);
+
         g_drawn_once = true;
       }
       if (dt >= 6000u) goto_state(ST_BRAND);

@@ -260,3 +260,16 @@ void gfx_header(const char* s, uint16_t color){
   gfx_clear_header_band(COL_BLACK);      // erase header band only
   gfx_text2(x, 2, s, color, scale);      // draw text at y=2 inside band
 }
+
+// for TI logo
+extern void ssd1351_drawPixel(uint8_t x, uint8_t y, uint16_t c);
+
+void gfx_blit565(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint16_t *pixels){
+  for (uint8_t j = 0; j < h; ++j){
+    const uint16_t *row = pixels + (uint16_t)j * w;
+    for (uint8_t i = 0; i < w; ++i){
+      ssd1351_draw_rect((uint8_t)(x + i), (uint8_t)(y + j), 1, 1, row[i]);
+    }
+  }
+}
+

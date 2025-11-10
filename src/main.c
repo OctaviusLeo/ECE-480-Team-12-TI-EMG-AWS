@@ -89,7 +89,6 @@ int main(void){
 
   // Start OLED/game (non-blocking)
   game_init();
-  game_set_mode(1);  // 0 = single, 1 = two-player
 
   baseline_begin(3000u);   // 3 s baseline window aligned with countdown
 

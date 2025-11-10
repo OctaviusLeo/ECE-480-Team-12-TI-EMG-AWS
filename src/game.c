@@ -35,7 +35,6 @@ void game_init(void){
 }
 
 void game_set_mode(uint8_t two_player){
-  g_mode = two_player ? 1u : 0u;
   // re-init the chosen mode immediately
   if (g_mode == 0) game_single_init();
   else             game_two_init();

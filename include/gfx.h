@@ -22,6 +22,9 @@ bool gfx_countdown_tick(uint32_t now_ms);
 void gfx_header(const char* s, uint16_t color);
 void gfx_clear_header_band(uint16_t color);
 
+// for TI logo
+void gfx_blit565(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint16_t *pixels);
+
 /* --------------------------------------------------------------------------
    Inline helpers to FIX missing definitions the linker complained about.
    These center text and auto-scale to the 128x128 OLED using gfx_text2.
