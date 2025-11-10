@@ -16,4 +16,6 @@ void game_tick(void);
 
 void game_set_mode(uint8_t two_player);  // 0 = single (default), 1 = two-player
 
+void game_get_metrics(float *hz, uint8_t *intensity_pct, float *baseline_hz);
+
 #endif
