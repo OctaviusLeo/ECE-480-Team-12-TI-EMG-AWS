@@ -102,6 +102,7 @@ Any errors, you can exclude that file (and fix later) or fix that specific error
 
 Errors: After "Project" -> "Build All", check "Project" -> "Properties" -> "Arm Linker" look over all options
 Also check: "Run" -> "Debug Properties" -> lookover all 4 windows.
+For this MCU, if a file has too much code in it, the debugging will NOT work. You must create more files and reference those (#include) to that main file in order for the MCU to process it. 
 
 ---
 Repository Structure
