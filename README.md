@@ -10,18 +10,6 @@ A no-contact arm-wrestling challenge powered by surface EMG. A dry electrode arm
 
 **Not a medical device. Research/education prototype only.**
 
----
-Demo (preview)
----
-<!-- Replace with actual media once available -->
-
-Real-time EMG strength bar (single-user)
-
-Two player “Winner” indicator
-
-Optional PC dashboard (stretch)
-
-
 **Why this exists**
 ---
 
@@ -34,11 +22,10 @@ Deliver a repeatable, safe, and explainable user experience for Design Day.
                                         
 **Key behaviors**
 ---
-Clear EMG detected indication (single-user).
-
-Two-player mode: simultaneous readout + winner decision logic.
-
-Optional stored averages/difficulty tiers for solo play.
+Playground Mode: Clear EMG detected indication (single-user).
+PVP Mode: simultaneous readout + winner decision logic.
+Tower Mode: Challenge every difficulty tear by flexing.
+Story Mode: Actual store with lore, decisions and battles determined by flexing.
 
 
 **Features**
