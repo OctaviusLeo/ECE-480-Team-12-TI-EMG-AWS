@@ -9,6 +9,8 @@
 #include "project.h"
 #include "ti_logo.h"
 #include "result1.h"
+#include "rankhist.h"
+#include "team.h"
 
 /* helpers local to single-player */
 static float clampf(float v, float lo, float hi){
@@ -18,17 +20,6 @@ static float clampf(float v, float lo, float hi){
 static inline void ui_sep_h(uint8_t y){ gfx_bar(0, y, 128, 1, COL_DKGRAY); }
 static inline void ui_sep_v(uint8_t x, uint8_t y, uint8_t h){ gfx_bar(x, y, 1, h, COL_DKGRAY); }
 
-static const char* rank_from_percent(unsigned p){
-  if (p >= 99) return "Challenger";
-  if (p >= 97) return "Grandmaster";
-  if (p >= 95) return "Master";
-  if (p >= 90) return "Diamond";
-  if (p >= 80) return "Platinum";
-  if (p >= 65) return "Gold";
-  if (p >= 45) return "Silver";
-  if (p >= 25) return "Bronze";
-  return "Iron";
-}
 static inline int rank_index_from_percent(unsigned p){
   if (p >= 99) return 0; if (p >= 97) return 1; if (p >= 95) return 2;
   if (p >= 90) return 3; if (p >= 80) return 4; if (p >= 65) return 5;
@@ -37,10 +28,13 @@ static inline int rank_index_from_percent(unsigned p){
 
 typedef enum {
   ST_BRAND = 0,
+  ST_PMODE,
   ST_COUNTDOWN_LABEL,
   ST_COUNT_3, ST_COUNT_2, ST_COUNT_1,
   ST_FLEX_CUE, ST_FLEXING,
-  ST_RESULT, ST_RANKS
+  ST_RESULT, ST_RANKS,
+  ST_OVERALL_RANKS,          
+  ST_ENDING_SCENE          
 } sp_state_t;
 
 static sp_state_t g_state;
@@ -90,7 +84,7 @@ void game_single_tick(void){
   uint32_t dt  = now - g_t0_ms;
 
   float hz=0.0f, base=0.0f; uint8_t pct=0;
-  game_get_metrics(&hz, &pct, &base);
+  game_get_metrics(&hz, &pct, &base);  
 
   switch(g_state){
     case ST_BRAND: {
@@ -99,11 +93,18 @@ void game_single_tick(void){
       ui_sep_h(18);  
 
       uint8_t x = (uint8_t)((128 - TI_LOGO_W) / 2);
-      uint8_t y = 30;  // adjust if you want it closer/further from the title
+      uint8_t y = 30; 
       gfx_blit565(x, y, TI_LOGO_W, TI_LOGO_H, TI_LOGO);
 
-      if (dt >= 3000u) goto_state(ST_COUNTDOWN_LABEL);
+      if (dt >= 3000u) goto_state(ST_PMODE);
     } break;
+
+    case ST_PMODE:
+      gfx_header("Mode: PLAYGROUND", COL_WHITE);
+        ui_sep_h(18);
+
+      if (dt >= 3000u) goto_state(ST_COUNTDOWN_LABEL);
+      break;
 
     case ST_COUNTDOWN_LABEL:
       gfx_header("COUNTDOWN", COL_WHITE);
@@ -153,28 +154,76 @@ void game_single_tick(void){
     } break;
 
     case ST_RANKS: {
+      int __idx = rank_index_from_percent(g_last_rank_pct);
+      rankhist_add_single(__idx);          // keep adding this attempt to history (once)
+
       if (!g_drawn_once){
         gfx_clear(COL_BLACK);
         gfx_header("RANKINGS", COL_RED);
         ui_sep_h(18);
 
+        // TI-style tiers (keep your preferred labels)
         static const char* ranks[] = {
-          "Principal Fellow 1%","TI Senior Fellow 3%","TI Fellow 5%","DMTS 10%",
-          "SMTS 20%","MGTS 35%","Lead 55%","Senior Engineer 75%","Engineer 100%"
+          "Principal Fellow","TI Senior Fellow","TI Fellow","DMTS",
+          "SMTS","MGTS","Lead","Senior Engineer","Engineer"
         };
-        const int base_y=24, row_h=10;
 
+        const int base_y=24, row_h=10;
         int idx = rank_index_from_percent(g_last_rank_pct);
         if (idx<0) idx=0; if (idx>8) idx=8;
-        for (int i=0; i<9; ++i){
-        uint16_t col = (i == idx) ? COL_CYAN : COL_WHITE;   // highlight your rank row
-        gfx_text2(0, base_y + i*row_h, ranks[i], col, 1);
+
+        for (int i=0;i<9;++i){
+          uint16_t col = (i==idx) ? COL_CYAN : COL_WHITE;   // highlight only
+          gfx_text2(0, base_y + i*row_h, ranks[i], col, 1);
         }
-        gfx_text2(110, base_y + idx*row_h, "<-", COL_RED, 1);
+        gfx_text2(110, base_y + idx*row_h, "<-", COL_CYAN, 1);
 
         g_drawn_once = true;
       }
-      if (dt >= 6000u) goto_state(ST_BRAND);
+
+      if (dt >= 6000u){
+        goto_state(ST_OVERALL_RANKS);      // NEXT: totals screen
+      }
+    } break;
+
+    case ST_OVERALL_RANKS: {
+      if (!g_drawn_once){
+        gfx_clear(COL_BLACK);
+        gfx_header("OVERALL RANKS", COL_WHITE);
+        ui_sep_h(18);
+
+        static const char* ranks[] = {
+          "Principal Fellow","TI Senior Fellow","TI Fellow","DMTS",
+          "SMTS","MGTS","Lead","Senior Engineer","Engineer"
+        };
+        uint16_t hc[9]; rankhist_get_single(hc);
+
+        const int base_y=24, row_h=10;
+        for (int i=0;i<9;++i){
+          char line[28];
+          // e.g., "DMTS           12"
+          snprintf(line, sizeof(line), "%-16s %u", ranks[i], (unsigned)hc[i]);
+          gfx_text2(0, base_y + i*row_h, line, COL_WHITE, 1);
+        }
+        g_drawn_once = true;
+      }
+
+      if (dt >= 6000u){
+        goto_state(ST_ENDING_SCENE);       // NEXT: video scene
+      }
+    } break;
+
+    case ST_ENDING_SCENE: {
+      gfx_clear(COL_BLACK);
+      gfx_header("TEAM #12", COL_WHITE);
+
+      uint8_t x = (uint8_t)((128 - TEAM_W) / 2);
+      uint8_t y = 24;                
+      gfx_blit565(x, y, TEAM_W, TEAM_H, TEAM);
+
+      if (dt >= 3000u){
+        goto_state(ST_BRAND);     
+      }
     } break;
   }
 }
