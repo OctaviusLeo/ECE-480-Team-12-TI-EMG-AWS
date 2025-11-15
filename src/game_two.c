@@ -113,7 +113,7 @@ void game_two_tick(void){
     } break;
 
     case ST_PMODE:
-      gfx_header("Mode: TWO PLAYER", COL_WHITE);
+      gfx_header("Mode: PVP", COL_WHITE);
         ui_sep_h(18);
 
       if (dt >= 3000u) goto_state(ST_COUNTDOWN_LABEL);

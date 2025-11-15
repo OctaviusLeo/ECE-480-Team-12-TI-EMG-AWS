@@ -40,7 +40,7 @@ bool intermission_tick(void){
   gfx_text2(10, 30, line, COL_YELLOW, 1);
 
     uint8_t x = (uint8_t)((128 - TI_LOGO_W) / 2);
-    uint8_t y = 30;  // adjust if you want it closer/further from the title
+    uint8_t y = 50;  // adjust if you want it closer/further from the title
     gfx_blit565(x, y, TI_LOGO_W, TI_LOGO_H, TI_LOGO);
 
   if ((int32_t)(millis() - g_end_ms) >= 0){

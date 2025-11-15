@@ -3,6 +3,14 @@
 
 #include <stdint.h>
 
+typedef enum {
+  MODE_PLAYGROUND = 0,   // former singleplayer
+  MODE_PVP       = 1,   // former twoplayer
+  MODE_STORY     = 2,
+  MODE_TOWER     = 3,
+  MODE_CREDITS   = 4
+} game_mode_t;
+
 /* Initialize OLED + game state machine (non-blocking) */
 void game_init(void);
 
@@ -17,5 +25,8 @@ void game_tick(void);
 void game_set_mode(uint8_t two_player);  // 0 = single (default), 1 = two-player
 
 void game_get_metrics(float *hz, uint8_t *intensity_pct, float *baseline_hz);
+
+void game_set_mode(uint8_t mode);
+
 
 #endif

@@ -11,6 +11,7 @@
 #include "result1.h"
 #include "rankhist.h"
 #include "team.h"
+#include "MSU_logo.h"
 
 /* helpers local to single-player */
 static float clampf(float v, float lo, float hi){
@@ -164,8 +165,8 @@ void game_single_tick(void){
 
         // TI-style tiers (keep your preferred labels)
         static const char* ranks[] = {
-          "Principal Fellow","TI Senior Fellow","TI Fellow","DMTS",
-          "SMTS","MGTS","Lead","Senior Engineer","Engineer"
+          "Challenger 1%","Grandmaster 3%","Master 5%","Diamond 10%",
+          "Platinum 20%","Gold 35%","Silver 55%","Bronze 75%","Iron 100%"
         };
 
         const int base_y=24, row_h=10;
@@ -193,8 +194,8 @@ void game_single_tick(void){
         ui_sep_h(18);
 
         static const char* ranks[] = {
-          "Principal Fellow","TI Senior Fellow","TI Fellow","DMTS",
-          "SMTS","MGTS","Lead","Senior Engineer","Engineer"
+          "Challenger 1%","Grandmaster 3%","Master 5%","Diamond 10%",
+          "Platinum 20%","Gold 35%","Silver 55%","Bronze 75%","Iron 100%"
         };
         uint16_t hc[9]; rankhist_get_single(hc);
 
@@ -215,11 +216,10 @@ void game_single_tick(void){
 
     case ST_ENDING_SCENE: {
       gfx_clear(COL_BLACK);
-      gfx_header("TEAM #12", COL_WHITE);
 
-      uint8_t x = (uint8_t)((128 - TEAM_W) / 2);
+      uint8_t x = (uint8_t)((128 - MSU_LOGO_W) / 2);
       uint8_t y = 24;                
-      gfx_blit565(x, y, TEAM_W, TEAM_H, TEAM);
+      gfx_blit565(x, y, MSU_LOGO_W, MSU_LOGO_H, MSU_LOGO);
 
       if (dt >= 3000u){
         goto_state(ST_BRAND);     
