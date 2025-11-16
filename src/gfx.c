@@ -273,3 +273,14 @@ void gfx_blit565(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint16_t *pix
   }
 }
 
+void gfx_clear_rect(uint8_t x, uint8_t y,
+                    uint8_t w, uint8_t h,
+                    uint16_t color)
+{
+    ssd1351_set_window(x, y, x + w - 1, y + h - 1);
+
+    uint32_t n = (uint32_t)w * (uint32_t)h;
+    while (n--) {
+        ssd1351_push_pixel(color);
+    }
+}

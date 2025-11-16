@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-/* Basic primitives provided by your gfx/SSD1351 stack */
+/* Basic primitives provided by gfx/SSD1351 stack */
 void gfx_clear(uint16_t color);
 void gfx_bar(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t fill);
 
@@ -24,12 +24,6 @@ void gfx_clear_header_band(uint16_t color);
 
 // for TI logo
 void gfx_blit565(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint16_t *pixels);
-
-/* --------------------------------------------------------------------------
-   Inline helpers to FIX missing definitions the linker complained about.
-   These center text and auto-scale to the 128x128 OLED using gfx_text2.
-   They’re header-only so any TU including this header gets the code.
-   -------------------------------------------------------------------------- */
 
 /* Internal tiny helpers for text layout, matching gfx_text2 spacing */
 static inline uint8_t __gfx_text_width_px(const char* s, uint8_t scale){
@@ -136,5 +130,9 @@ static inline void gfx_center_text_nl_scaled_xy(const char* s, uint16_t color, u
   __gfx_center_line_xy(y0, top, color, sx);
   __gfx_center_line_xy(y1, bot, color, sx);
 }
+
+void gfx_clear_rect(uint8_t x, uint8_t y,
+                    uint8_t w, uint8_t h,
+                    uint16_t color);
 
 #endif /* GFX_H */

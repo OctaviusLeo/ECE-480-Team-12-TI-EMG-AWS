@@ -4,7 +4,7 @@
 // App tunables
 #define SAMPLE_RATE_HZ   1000u
 #define WINDOW_MS        250u
-#define UI_RATE_HZ       4u
+#define UI_RATE_HZ       60u
 #define COUNTDOWN_S      3u
 #define ROUND_S          12u
 #define THRESH_K_SIG     3.0f
