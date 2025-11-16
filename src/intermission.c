@@ -50,7 +50,7 @@ bool intermission_tick(void){
     gfx_header(g_title, COL_WHITE);
 
     // static label "Starting in:"
-    gfx_text2(10, g_digits_y, "Starting in:", COL_YELLOW, 1);
+    gfx_text2(20, g_digits_y, "Starting in:", COL_YELLOW, 1);
 
     // static TI logo
     uint8_t x = (uint8_t)((128 - TI_LOGO_W) / 2);

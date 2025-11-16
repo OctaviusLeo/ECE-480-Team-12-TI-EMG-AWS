@@ -368,7 +368,7 @@ void game_two_tick(void){
       }
 
       if (dt >= 6000u){
-        goto_state(ST_BRAND);
+        goto_state(ST_ENDING_SCENE);
       }
     } break;
 
