@@ -21,7 +21,7 @@
 
 // private storage of latest metrics (read by modes via game_get_metrics)
 static bool     g_inited = false;
-static uint8_t  g_mode   = 1;        // 0 = playground, 1 = PVP, 2 = Story, 3 = Tower, 4 = ending credits
+static uint8_t  g_mode   = 4;        // 0 = playground, 1 = PVP, 2 = Story, 3 = Tower, 4 = ending credits
 static float    g_latest_hz = 0.0f;
 static uint8_t  g_latest_pct = 0;
 static float    g_baseline_disp_hz = 0.0f;
@@ -85,20 +85,39 @@ void game_tick(void){
   if (g_in_menu){
     uint8_t chosen;
     if (menu_tick(&chosen)){
-      g_in_menu = 0;           // leave menu
-      game_set_mode(chosen);   // init selected mode (+starts splash)
+      g_in_menu = 0;          // leave menu
+      game_set_mode(chosen);  // init selected mode (+starts splash)
     }
-    return;                     // while in menu, never tick any mode
+    return;                   // while in menu, never tick any mode
   }
 
   // 3) Dispatch to active mode (tick only)
-  if (g_mode == MODE_PLAYGROUND)      game_single_tick();
-  else if (g_mode == MODE_PVP)        game_two_tick();
-  else if (g_mode == MODE_STORY)      game_story_tick();
-  else if (g_mode == MODE_TOWER)      game_tower_tick();
+  if (g_mode == MODE_PLAYGROUND) {
+    if (game_single_tick()) {
+      g_in_menu = 1;
+      menu_start();
+    }
+  }
+  else if (g_mode == MODE_PVP) {
+    if (game_two_tick()) {
+      g_in_menu = 1;
+      menu_start();
+    }
+  }
+  else if (g_mode == MODE_STORY) {
+    if (game_story_tick()) {
+      g_in_menu = 1;
+      menu_start();
+    }
+  }
+  else if (g_mode == MODE_TOWER) {
+    if (game_tower_tick()) {
+      g_in_menu = 1;
+      menu_start();
+    }
+  }
   else { // MODE_CREDITS
     if (end_credits_tick()){
-      // credits finished → return to menu explicitly
       g_in_menu = 1;
       menu_start();
     }

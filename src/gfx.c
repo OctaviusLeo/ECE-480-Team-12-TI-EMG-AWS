@@ -284,3 +284,29 @@ void gfx_clear_rect(uint8_t x, uint8_t y,
         ssd1351_push_pixel(color);
     }
 }
+
+// Draw a 4-bit (16-color) paletted image.
+// idx: packed indices, 2 pixels per byte (hi nibble = left, lo nibble = right)
+void gfx_blit_pal4(uint8_t x, uint8_t y,
+                   uint8_t w, uint8_t h,
+                   const uint8_t  *idx,
+                   const uint16_t *pal)
+{
+    uint16_t xi, yi;
+    uint32_t p = 0;  // index into idx array
+
+    for (yi = 0; yi < h; ++yi) {
+        for (xi = 0; xi < w; xi += 2) {
+            uint8_t b  = idx[p++];          // two pixels
+            uint8_t i0 = (b >> 4) & 0x0F;   // left pixel index
+            uint8_t i1 =  b       & 0x0F;   // right pixel index
+
+            uint16_t c0 = pal[i0];
+            uint16_t c1 = pal[i1];
+
+            // send c0 to (x+xi,   y+yi)
+            // send c1 to (x+xi+1, y+yi)
+            // (do this using your existing OLED write primitives)
+        }
+    }
+}

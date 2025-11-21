@@ -1,0 +1,11 @@
+#ifndef STORY_OPENING_SCENE_H
+#define STORY_OPENING_SCENE_H
+
+#include <stdint.h>
+
+#define STORY_OPENING_SCENE_W 88
+#define STORY_OPENING_SCENE_H 63
+
+extern const uint16_t STORY_OPENING_SCENE[STORY_OPENING_SCENE_W * STORY_OPENING_SCENE_H];
+
+#endif

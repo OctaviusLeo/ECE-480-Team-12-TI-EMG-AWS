@@ -1,0 +1,7 @@
+#include <stdint.h>
+
+#define TOWER_BLACK_KNIGHT_W 120
+#define TOWER_BLACK_KNIGHT_H 65
+
+extern const uint16_t TOWER_BLACK_KNIGHT[TOWER_BLACK_KNIGHT_W * TOWER_BLACK_KNIGHT_H];
+

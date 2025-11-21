@@ -3,6 +3,6 @@
 #include <stdint.h>
 
 void game_tower_init(void);
-void game_tower_tick(void);
+bool game_tower_tick(void);
 
 #endif

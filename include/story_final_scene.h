@@ -1,0 +1,7 @@
+#include <stdint.h>
+
+#define STORY_FINAL_SCENE_W 120
+#define STORY_FINAL_SCENE_H 74
+
+extern const uint16_t STORY_FINAL_SCENE[STORY_FINAL_SCENE_W * STORY_FINAL_SCENE_H];
+

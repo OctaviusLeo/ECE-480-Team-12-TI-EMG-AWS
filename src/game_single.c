@@ -12,6 +12,7 @@
 #include "rankhist.h"
 #include "team.h"
 #include "MSU_logo.h"
+#include "game_single_logo.h"
 
 /* helpers local to single-player */
 static float clampf(float v, float lo, float hi){
@@ -28,14 +29,15 @@ static inline int rank_index_from_percent(unsigned p){
 }
 
 typedef enum {
-  ST_BRAND = 0,
+  ST_LOGO = 0,
   ST_PMODE,
   ST_COUNTDOWN_LABEL,
   ST_COUNT_3, ST_COUNT_2, ST_COUNT_1,
   ST_FLEX_CUE, ST_FLEXING,
   ST_RESULT, ST_RANKS,
   ST_OVERALL_RANKS,          
-  ST_ENDING_SCENE          
+  ST_ENDING_SCENE,
+  ST_BRAND  
 } sp_state_t;
 
 static sp_state_t g_state;
@@ -100,10 +102,10 @@ static void draw_flex_dynamic(float hz)
 
 void game_single_init(void){
   g_sum_hz = 0.0f; g_cnt_hz = 0;
-  goto_state(ST_BRAND);
+  goto_state(ST_LOGO);
 }
 
-void game_single_tick(void){
+bool game_single_tick(void){
   uint32_t now = millis();
   uint32_t dt  = now - g_t0_ms;
 
@@ -111,18 +113,22 @@ void game_single_tick(void){
   game_get_metrics(&hz, &pct, &base);  
 
   switch(g_state){
-    case ST_BRAND: {
-      if (g_dirty) {
-        g_dirty = false;
-        gfx_clear(COL_BLACK);
-        gfx_header("Texas Instruments", COL_RED);
-        ui_sep_h(18);  
 
-        uint8_t x = (uint8_t)((128 - TI_LOGO_W) / 2);
-        uint8_t y = 30; 
-        gfx_blit565(x, y, TI_LOGO_W, TI_LOGO_H, TI_LOGO);
+    case ST_LOGO: {
+      if (!g_drawn_once){
+        g_drawn_once = true;
+        gfx_clear(COL_BLACK);
+
+        gfx_blit565(
+            (128 - GAME_SINGLE_LOGO_W) / 2,
+            (128 - GAME_SINGLE_LOGO_H) / 2,
+            GAME_SINGLE_LOGO_W,
+            GAME_SINGLE_LOGO_H,
+            GAME_SINGLE_LOGO
+        );
+
       }
-      if (dt >= 3000u) goto_state(ST_PMODE);
+        if (dt >= 3000) goto_state(ST_PMODE);
     } break;
 
     case ST_PMODE:
@@ -285,5 +291,26 @@ void game_single_tick(void){
         goto_state(ST_BRAND);     
       }
     } break;
+
+    case ST_BRAND: {
+      if (g_dirty) {
+        g_dirty = false;
+        gfx_clear(COL_BLACK);
+        gfx_header("Texas Instruments", COL_RED);
+        ui_sep_h(18);
+
+        uint8_t x = (uint8_t)((128 - TI_LOGO_W) / 2);
+        uint8_t y = 30;
+        gfx_blit565(x, y, TI_LOGO_W, TI_LOGO_H, TI_LOGO);
+      }
+
+      // after showing TI logo for 3 seconds, signal "done"
+      if (dt >= 3000u) {
+        return true;   // <- tell game.c that single-player is finished
+      }
+    } break;
   }
+
+  // default: not finished yet
+  return false;
 }

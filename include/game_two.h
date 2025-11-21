@@ -3,6 +3,6 @@
 #include <stdint.h>
 
 void game_two_init(void);
-void game_two_tick(void);
+bool game_two_tick(void);
 
 #endif

@@ -4,8 +4,7 @@
 #include "timer.h"   // millis()
 #include "gfx.h"     // gfx_clear, gfx_header, gfx_text2, gfx_bar
 #include "project.h"
-#include "ti_logo.h"
-
+#include "game_two_logo.h"
 static uint8_t  g_active   = 0;
 static uint32_t g_end_ms   = 0;
 static char     g_title[24];
@@ -49,13 +48,16 @@ bool intermission_tick(void){
     gfx_clear(COL_BLACK);
     gfx_header(g_title, COL_WHITE);
 
-    // static label "Starting in:"
-    gfx_text2(20, g_digits_y, "Starting in:", COL_YELLOW, 1);
+    gfx_text2(20, g_digits_y, "Starting in: ", COL_YELLOW, 1);
 
-    // static TI logo
-    uint8_t x = (uint8_t)((128 - TI_LOGO_W) / 2);
-    uint8_t y = 50;
-    gfx_blit565(x, y, TI_LOGO_W, TI_LOGO_H, TI_LOGO);
+    // PVP logo
+    gfx_blit565(
+        (128 - GAME_TWO_LOGO_W) / 2,
+        50,
+        GAME_TWO_LOGO_W,
+        GAME_TWO_LOGO_H,
+        GAME_TWO_LOGO
+    );
   }
 
   // seconds remaining (ceil to next)

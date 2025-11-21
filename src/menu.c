@@ -4,10 +4,13 @@
 #include "gfx.h"
 #include "project.h"
 #include "timer.h"
-#include "game.h"        // game_get_metrics(), game_mode_t
-#include "choice_input.h"// choice_from_hz(), choice_draw_hint()
+#include "game.h"                 // game_get_metrics(), game_mode_t
+#include "choice_input.h"         // choice_from_hz(), choice_draw_hint()
+#include "game_opening_screen_logo.h" // GAME_OPENING_SCREEN_LOGO_* & bitmap
 
-typedef enum { MS_TITLE = 0, MS_SELECT, MS_ATTRACT } mstate_t;
+// Added MS_LOGO as first state
+typedef enum { MS_LOGO = 0, MS_TITLE, MS_SELECT, MS_ATTRACT } mstate_t;
+
 static mstate_t  g_ms;
 static uint32_t  g_t0;
 static uint8_t   g_cursor;          // 0..4
@@ -29,8 +32,8 @@ static const char* mode_name(uint8_t m)
 /* Helper: change menu state and mark screen dirty */
 static void menu_goto(mstate_t ns)
 {
-    g_ms   = ns;
-    g_t0   = millis();
+    g_ms    = ns;
+    g_t0    = millis();
     g_dirty = true;
 }
 
@@ -38,7 +41,8 @@ void menu_start(void)
 {
     g_cursor        = 0;
     g_last_input_ms = millis();
-    menu_goto(MS_TITLE);
+    // Start with the logo state instead of MS_TITLE
+    menu_goto(MS_LOGO);
 }
 
 bool menu_tick(uint8_t *out_mode)
@@ -51,13 +55,36 @@ bool menu_tick(uint8_t *out_mode)
 
     switch (g_ms) {
 
+    /*  show game_opening_screen_logo for 5 seconds */
+    case MS_LOGO: {
+        if (g_dirty) {
+            g_dirty = false;
+
+            gfx_clear(COL_BLACK);
+
+            gfx_blit565(
+                (128 - GAME_OPENING_SCREEN_LOGO_W) / 2,
+                (128 - GAME_OPENING_SCREEN_LOGO_H) / 2,
+                GAME_OPENING_SCREEN_LOGO_W,
+                GAME_OPENING_SCREEN_LOGO_H,
+                GAME_OPENING_SCREEN_LOGO
+        );
+        }
+
+        // Stay on this screen for 5 seconds, then move on
+        if ((now - g_t0) >= 5000u) {
+            menu_goto(MS_TITLE);
+        }
+    } break;
+
     case MS_TITLE: {
         if (g_dirty) {
             g_dirty = false;
             gfx_clear(COL_BLACK);
             gfx_header("BOOTING", COL_RED);
             gfx_bar(0, 18, 128, 1, COL_DKGRAY);
-            gfx_text2(0, 64, "downloading packages...", COL_WHITE, 1);
+            gfx_text2(0, 64, "downloading", COL_WHITE, 1);
+            gfx_text2(0, 74, "packages...", COL_WHITE, 1);
         }
 
         if (hz > 3.0f || (now - g_t0) >= 2000u) {
@@ -69,7 +96,7 @@ bool menu_tick(uint8_t *out_mode)
         const int base_y = 32;
         const int row_h  = 18;
 
-        /* ---------- INPUT / STATE UPDATE (every tick) ---------- */
+        /* INPUT / STATE UPDATE (every tick)*/
 
         /* Quick flex bursts to move cursor (debounced 250 ms) */
         if ((now - g_last_input_ms) >= 250u) {
@@ -99,8 +126,7 @@ bool menu_tick(uint8_t *out_mode)
             holding = false;
         }
 
-        /*DRAW ONLY WHEN DIRTY*/
-
+        /* DRAW ONLY WHEN DIRTY */
         if (g_dirty) {
             g_dirty = false;
 

@@ -6,11 +6,35 @@
 
 typedef enum {
   ACH_FIRST_WIN=0,
+  ACH_STORY_START,
+  ACH_CH1,
+  ACH_SCARECROW,
+  ACH_CH2,
+  ACH_TRAINING_DUMMY,
+  ACH_CH3,
+  ACH_RAT_KING,
+  ACH_CH4,
+  ACH_BANDITS,
+  ACH_CH5,
+  ACH_KNIGHT,
+  ACH_CH6,
+  ACH_CHAMPION,
+  ACH_CH7,
+  ACH_SORCERER,
+  ACH_CH8,
+  ACH_DRAGON,
+  ACH_CH9,
+  ACH_ARCH_DEMON,
+  ACH_CH10,
+  ACH_DEMON_KING,
   ACH_STORY_CLEAR,
-  ACH_TOWER_25,
-  ACH_100HZ,
-  ACH_150HZ,
-  ACH__COUNT
+  ACH_TOWER_START,
+  ACH_TOWER_5,
+  ACH_TOWER_10,
+  ACH_TOWER_15,
+  ACH_TOWER_20,
+  ACH_TOWER_24,
+  ACH_TOWER_CLEAR
 } cheevo_t;
 
 void cheevos_bind_save(save_t *s);          // pass your loaded save here
