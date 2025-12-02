@@ -7,11 +7,9 @@
 #include "ssd1351.h"
 #include "game.h"         // baseline_begin(), game_get_metrics()
 #include "project.h"
-#include "ti_logo.h"
 #include "result1.h"
 #include "rankhist.h"
 #include "team.h"
-#include "MSU_logo.h"
 #include "game_single_logo.h"
 
 /* helpers local to single-player */
@@ -35,9 +33,7 @@ typedef enum {
   ST_COUNT_3, ST_COUNT_2, ST_COUNT_1,
   ST_FLEX_CUE, ST_FLEXING,
   ST_RESULT, ST_RANKS,
-  ST_OVERALL_RANKS,          
-  ST_ENDING_SCENE,
-  ST_BRAND  
+  ST_OVERALL_RANKS          
 } sp_state_t;
 
 static sp_state_t g_state;
@@ -56,7 +52,7 @@ static void goto_state(sp_state_t s){
   g_t0_ms = millis();
   g_drawn_once = false;
   g_dirty = true;       // mark the new state as needing a redraw
-  if (s == ST_BRAND || s == ST_COUNTDOWN_LABEL) baseline_begin(3000u);
+  if (s == ST_COUNTDOWN_LABEL) baseline_begin(3000u);
 }
 
 // Live flex bar geometry (single-player)
@@ -119,13 +115,13 @@ bool game_single_tick(void){
         g_drawn_once = true;
         gfx_clear(COL_BLACK);
 
-        gfx_blit565(
-            (128 - GAME_SINGLE_LOGO_W) / 2,
-            (128 - GAME_SINGLE_LOGO_H) / 2,
-            GAME_SINGLE_LOGO_W,
-            GAME_SINGLE_LOGO_H,
-            GAME_SINGLE_LOGO
-        );
+        uint8_t x = (uint8_t)((128 - GAME_SINGLE_LOGO_W) / 2);
+        uint8_t y = (uint8_t)((128 - GAME_SINGLE_LOGO_H) / 2);
+
+        gfx_blit_pal4(x, y,
+                      GAME_SINGLE_LOGO_W, GAME_SINGLE_LOGO_H,
+                      GAME_SINGLE_LOGO_IDX,
+                      GAME_SINGLE_LOGO_PAL);
 
       }
         if (dt >= 3000) goto_state(ST_PMODE);
@@ -273,40 +269,7 @@ bool game_single_tick(void){
       }
 
       if (dt >= 6000u){
-        goto_state(ST_ENDING_SCENE);       // NEXT: MSU logo scene
-      }
-    } break;
-
-    case ST_ENDING_SCENE: {
-      if (g_dirty) {
-        g_dirty = false;
-        gfx_clear(COL_BLACK);
-        gfx_header("MSU", COL_WHITE);
-
-        uint8_t x = (uint8_t)((128 - MSU_LOGO_W) / 2);
-        uint8_t y = 24;                
-        gfx_blit565(x, y, MSU_LOGO_W, MSU_LOGO_H, MSU_LOGO);
-      }
-      if (dt >= 3000u){
-        goto_state(ST_BRAND);     
-      }
-    } break;
-
-    case ST_BRAND: {
-      if (g_dirty) {
-        g_dirty = false;
-        gfx_clear(COL_BLACK);
-        gfx_header("Texas Instruments", COL_RED);
-        ui_sep_h(18);
-
-        uint8_t x = (uint8_t)((128 - TI_LOGO_W) / 2);
-        uint8_t y = 30;
-        gfx_blit565(x, y, TI_LOGO_W, TI_LOGO_H, TI_LOGO);
-      }
-
-      // after showing TI logo for 3 seconds, signal "done"
-      if (dt >= 3000u) {
-        return true;   // <- tell game.c that single-player is finished
+        return true;
       }
     } break;
   }

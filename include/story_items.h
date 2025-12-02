@@ -33,4 +33,6 @@ extern const story_item_t STORY_ITEM_B;  // Cursed Ring (+0% you, +20% enemy)
 extern const story_item_t STORY_ITEMS[];
 extern const uint8_t      STORY_ITEMS_COUNT;
 
+void story_items_pick_two(uint8_t *out_i0, uint8_t *out_i1);
+
 #endif /* STORY_ITEMS_H */

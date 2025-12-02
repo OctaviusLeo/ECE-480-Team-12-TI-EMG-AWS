@@ -74,7 +74,6 @@ static float estimate_hz_window_ms(uint32_t window_ms){
   return (secs > 0.0f) ? (rises / secs) : 0.0f;
 }
 
-// twoplayer_main.c — REPLACE the whole main() with this
 int main(void){
   // 80 MHz system clock (PLL, 16 MHz crystal)
   SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);

@@ -75,6 +75,35 @@ BOM: See /docs/bom.md (placeholders provided, fill with final part numbers).
 This will only have the include (.h) & source (.c) files. 
 Any errors, you can exclude that file (and fix later) or fix that specific error in any steps.
 
+Make this change if needed: 
+In startup_ccs.c, find:
+
+#pragma DATA_SECTION(g_pfnVectors, ".intvecs")
+void (* const g_pfnVectors[])(void) =
+{
+    (void (*)(void))((uint32_t)&__STACK_TOP),
+    ResetISR,
+    NmiSR,
+    FaultISR,
+    ...
+};
+
+
+Change it to:
+
+__attribute__((section(".intvecs"), used))
+void (* const g_pfnVectors[])(void) =
+{
+    (void (*)(void))((uint32_t)&__STACK_TOP),
+    ResetISR,      // The reset handler
+    NmiSR,         // The NMI handler
+    FaultISR,      // The hard fault handler
+    ...
+};
+
+
+and delete the #pragma DATA_SECTION line.
+
 1. Download the Software Developement Kit: https://www.ti.com/tool/SW-TM4C?utm_source=google&utm_medium=cpc&utm_campaign=epd-null-null-44700045336317887_prodfolderdynamic-cpc-pf-google-ww_en_int&utm_content=prodfolddynamic&ds_k=DYNAMIC+SEARCH+ADS&DCM=yes&gclsrc=aw.ds&gad_source=1&gad_campaignid=12236057696&gbraid=0AAAAAC068F23ah0bGYvpOZEGrYN7NGfCW&gclid=CjwKCAiAt8bIBhBpEiwAzH1w6TN2LpLLjL4gkm1rOxRtDTfot4sC7BeKlQ9Beu3hVgtyNW1VzUM2lhoCFucQAvD_BwE#downloads
 2. Download CCS (Code Composer Studio).
 4. CCS -> "File" -> "Import Projects" -> ...\driverlib\ccs\Debug\driverlib.lib

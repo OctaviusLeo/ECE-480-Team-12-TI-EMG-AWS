@@ -1,6 +1,13 @@
+#ifndef PVP_TIE_PIC_H
+#define PVP_TIE_PIC_H
+
 #include <stdint.h>
 
-#define PVP_TIE_PIC_W 120
-#define PVP_TIE_PIC_H 84
+#define PVP_TIE_PIC_W 128
+#define PVP_TIE_PIC_H 90
+#define PVP_TIE_PIC_PAL_SIZE 16
 
-extern const uint16_t pvp_tie_pic_bitmap[PVP_TIE_PIC_W * PVP_TIE_PIC_H];
+extern const uint16_t PVP_TIE_PIC_PAL[PVP_TIE_PIC_PAL_SIZE];
+extern const uint8_t  PVP_TIE_PIC_IDX[(PVP_TIE_PIC_W * PVP_TIE_PIC_H) / 2];
+
+#endif // PVP_TIE_PIC_H

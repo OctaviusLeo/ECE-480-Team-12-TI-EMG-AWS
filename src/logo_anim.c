@@ -1,10 +1,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "timer.h"      // millis()
-#include "gfx.h"        // gfx_bar, gfx_blit565
+#include "gfx.h"        // gfx_bar
 #include "project.h"    // COL_BLACK
 #include "ti_logo.h"    // TI_LOGO_W, TI_LOGO_H, TI_LOGO[]
-#include "MSU_logo.h"   // MSU_LOGO_W, MSU_LOGO_H, MSU_LOGO[]
+#include "msu_logo.h"   // MSU_LOGO_W, MSU_LOGO_H, MSU_LOGO[]
 
 static bool     g_active         = false;
 static uint32_t g_t0_ms          = 0;
@@ -50,14 +50,21 @@ bool logo_anim_tick(void)
 
         if (frame == 0u) {
             /* TI logo centered in box */
-            uint8_t x = (uint8_t)(box_x + (box_w - TI_LOGO_W) / 2);
-            uint8_t y = (uint8_t)(box_y + (box_h - TI_LOGO_H) / 2);
-            gfx_blit565(x, y, TI_LOGO_W, TI_LOGO_H, TI_LOGO);
+            uint8_t x = (uint8_t)((128 - TI_LOGO_W) / 2);
+            uint8_t y = (uint8_t)((128 - TI_LOGO_H) / 2);
+
+            gfx_blit_pal4(x, y,
+                        TI_LOGO_W, TI_LOGO_H,
+                        TI_LOGO_IDX,
+                        TI_LOGO_PAL);
         } else {
-            /* MSU logo centered in box */
-            uint8_t x = (uint8_t)(box_x + (box_w - MSU_LOGO_W) / 2);
-            uint8_t y = (uint8_t)(box_y + (box_h - MSU_LOGO_H) / 2);
-            gfx_blit565(x, y, MSU_LOGO_W, MSU_LOGO_H, MSU_LOGO);
+            uint8_t x = (uint8_t)((128 - TI_LOGO_W) / 2);
+            uint8_t y = (uint8_t)((128 - TI_LOGO_H) / 2);
+
+            gfx_blit_pal4(x, y,
+                        TI_LOGO_W, TI_LOGO_H,
+                        TI_LOGO_IDX,
+                        TI_LOGO_PAL);
         }
     }
 

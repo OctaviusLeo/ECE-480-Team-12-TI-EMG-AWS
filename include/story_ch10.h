@@ -1,6 +1,13 @@
+#ifndef STORY_CH10_H
+#define STORY_CH10_H
+
 #include <stdint.h>
 
-#define STORY_CH10_W 120
-#define STORY_CH10_H 58
+#define STORY_CH10_W 128
+#define STORY_CH10_H 62
+#define STORY_CH10_PAL_SIZE 16
 
-extern const uint16_t STORY_CH10[STORY_CH10_W * STORY_CH10_H];
+extern const uint16_t STORY_CH10_PAL[STORY_CH10_PAL_SIZE];
+extern const uint8_t  STORY_CH10_IDX[(STORY_CH10_W * STORY_CH10_H) / 2];
+
+#endif // STORY_CH10_H

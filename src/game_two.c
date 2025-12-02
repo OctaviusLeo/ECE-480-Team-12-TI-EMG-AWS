@@ -7,11 +7,9 @@
 #include "ssd1351.h"
 #include "game.h"   // baseline_begin(), game_get_metrics()
 #include "project.h"
-#include "ti_logo.h"
 #include "intermission.h"
 #include "winner2.h"
 #include "rankhist.h"
-#include "MSU_logo.h"
 #include "game_two_logo.h"
 #include "you_win_p1_pic.h"
 #include "you_win_p2_pic.h"
@@ -68,9 +66,7 @@ typedef enum {
   ST_WINNER,
   ST_DECLARE,
   ST_RANKS2,
-  ST_OVERALL_RANKS2,
-  ST_ENDING_SCENE,
-  ST_BRAND
+  ST_OVERALL_RANKS2
 } tp_state_t;
 
 static tp_state_t g_state;
@@ -91,7 +87,7 @@ static void goto_state(tp_state_t s){
   g_drawn_once = false;
   g_dirty      = true;
 
-  if (s == ST_BRAND || s == ST_COUNTDOWN_LABEL){
+  if (s == ST_COUNTDOWN_LABEL){
     baseline_begin(3000u);
   }
 }
@@ -156,13 +152,13 @@ bool game_two_tick(void){
       if (!g_drawn_once){
         g_drawn_once = true;
         gfx_clear(COL_BLACK);
-        gfx_blit565(
-          (uint8_t)((128 - GAME_TWO_LOGO_W) / 2),
-          (uint8_t)((128 - GAME_TWO_LOGO_H) / 2),
-          GAME_TWO_LOGO_W,
-          GAME_TWO_LOGO_H,
-          GAME_TWO_LOGO
-        );
+        uint8_t x = (uint8_t)((128 - GAME_TWO_LOGO_W) / 2);
+        uint8_t y = (uint8_t)((128 - GAME_TWO_LOGO_H) / 2);
+
+        gfx_blit_pal4(x, y,
+                      GAME_TWO_LOGO_W, GAME_TWO_LOGO_H,
+                      GAME_TWO_LOGO_IDX,
+                      GAME_TWO_LOGO_PAL);
       }
       if (dt >= 3000u){
         goto_state(ST_PMODE);
@@ -319,15 +315,27 @@ bool game_two_tick(void){
         if (g_p1_avg_hz > g_p2_avg_hz){
           uint8_t x = (uint8_t)((128 - YOU_WIN_P1_PIC_W) / 2);
           uint8_t y = (uint8_t)((128 - YOU_WIN_P1_PIC_H) / 2);
-          gfx_blit565(x, y, YOU_WIN_P1_PIC_W, YOU_WIN_P1_PIC_H, YOU_WIN_P1_PIC);
+
+          gfx_blit_pal4(x, y,
+                        YOU_WIN_P1_PIC_W, YOU_WIN_P1_PIC_H,
+                        YOU_WIN_P1_PIC_IDX,
+                        YOU_WIN_P1_PIC_PAL);
         } else if (g_p2_avg_hz > g_p1_avg_hz){
           uint8_t x = (uint8_t)((128 - YOU_WIN_P2_PIC_W) / 2);
           uint8_t y = (uint8_t)((128 - YOU_WIN_P2_PIC_H) / 2);
-          gfx_blit565(x, y, YOU_WIN_P2_PIC_W, YOU_WIN_P2_PIC_H, YOU_WIN_P2_PIC);
+
+          gfx_blit_pal4(x, y,
+                        YOU_WIN_P2_PIC_W, YOU_WIN_P2_PIC_H,
+                        YOU_WIN_P2_PIC_IDX,
+                        YOU_WIN_P2_PIC_PAL);
         } else {
           uint8_t x = (uint8_t)((128 - PVP_TIE_PIC_W) / 2);
           uint8_t y = (uint8_t)((128 - PVP_TIE_PIC_H) / 2);
-          gfx_blit565(x, y, PVP_TIE_PIC_W, PVP_TIE_PIC_H, pvp_tie_pic_bitmap);
+
+          gfx_blit_pal4(x, y,
+                        PVP_TIE_PIC_W, PVP_TIE_PIC_H,
+                        PVP_TIE_PIC_IDX,
+                        PVP_TIE_PIC_PAL);
         }
       }
 
@@ -419,38 +427,7 @@ bool game_two_tick(void){
       }
 
       if (dt >= 6000u){
-        goto_state(ST_ENDING_SCENE);
-      }
-    } break;
-
-    case ST_ENDING_SCENE: {
-      if (g_dirty){
-        g_dirty = false;
-        gfx_clear(COL_BLACK);
-        gfx_header("MSU", COL_WHITE);
-
-        uint8_t x = (uint8_t)((128 - MSU_LOGO_W) / 2);
-        uint8_t y = 24;
-        gfx_blit565(x, y, MSU_LOGO_W, MSU_LOGO_H, MSU_LOGO);
-      }
-      if (dt >= 3000u){
-        goto_state(ST_BRAND);
-      }
-    } break;
-
-    case ST_BRAND: {
-      if (g_dirty){
-        g_dirty = false;
-        gfx_clear(COL_BLACK);
-        gfx_header("Texas Instruments", COL_RED);
-        ui_sep_h(18);
-
-        uint8_t x = (uint8_t)((128 - TI_LOGO_W) / 2);
-        uint8_t y = 30;
-        gfx_blit565(x, y, TI_LOGO_W, TI_LOGO_H, TI_LOGO);
-      }
-      if (dt >= 3000u){
-        return true;   // tell game.c PvP mode is finished
+        return true;
       }
     } break;
   }

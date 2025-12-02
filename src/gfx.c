@@ -261,9 +261,6 @@ void gfx_header(const char* s, uint16_t color){
   gfx_text2(x, 2, s, color, scale);      // draw text at y=2 inside band
 }
 
-// for TI logo
-extern void ssd1351_drawPixel(uint8_t x, uint8_t y, uint16_t c);
-
 void gfx_blit565(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint16_t *pixels){
   for (uint8_t j = 0; j < h; ++j){
     const uint16_t *row = pixels + (uint16_t)j * w;
@@ -304,9 +301,8 @@ void gfx_blit_pal4(uint8_t x, uint8_t y,
             uint16_t c0 = pal[i0];
             uint16_t c1 = pal[i1];
 
-            // send c0 to (x+xi,   y+yi)
-            // send c1 to (x+xi+1, y+yi)
-            // (do this using your existing OLED write primitives)
+            ssd1351_draw_rect((uint8_t)(x + xi),     (uint8_t)(y + yi), 1, 1, c0);
+            ssd1351_draw_rect((uint8_t)(x + xi + 1), (uint8_t)(y + yi), 1, 1, c1);
         }
     }
 }

@@ -1,4 +1,5 @@
 #include "story_items.h"
+#include "timer.h"
 
 /*
  * Core idea:
@@ -8,6 +9,41 @@
  *
  * These items are shared between Story and Tower.
  */
+
+// ---------------------------------------------------------------------------
+// Simple RNG for item selection
+// ---------------------------------------------------------------------------
+
+static uint32_t s_items_rng_state = 0u;
+
+static uint32_t story_items_rand_internal(void)
+{
+    if (s_items_rng_state == 0u) {
+        s_items_rng_state = millis() ^ 0xA5A5A5A5u;
+    }
+    s_items_rng_state = s_items_rng_state * 1664525u + 1013904223u;
+    return s_items_rng_state;
+}
+
+void story_items_pick_two(uint8_t *out_i0, uint8_t *out_i1)
+{
+    if (!out_i0 || !out_i1) return;
+
+    if (STORY_ITEMS_COUNT < 2u) {
+        *out_i0 = 0u;
+        *out_i1 = 0u;
+        return;
+    }
+
+    uint8_t i0 = (uint8_t)(story_items_rand_internal() % STORY_ITEMS_COUNT);
+    uint8_t i1;
+    do {
+        i1 = (uint8_t)(story_items_rand_internal() % STORY_ITEMS_COUNT);
+    } while (i1 == i0);
+
+    *out_i0 = i0;
+    *out_i1 = i1;
+}
 
 /* ------------------------------------------------------------------------- */
 /*  Backwards-compatible A/B items                                           */

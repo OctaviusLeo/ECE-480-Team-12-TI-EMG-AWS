@@ -51,13 +51,13 @@ bool intermission_tick(void){
     gfx_text2(20, g_digits_y, "Starting in: ", COL_YELLOW, 1);
 
     // PVP logo
-    gfx_blit565(
-        (128 - GAME_TWO_LOGO_W) / 2,
-        50,
-        GAME_TWO_LOGO_W,
-        GAME_TWO_LOGO_H,
-        GAME_TWO_LOGO
-    );
+    uint8_t x = (uint8_t)((128 - GAME_TWO_LOGO_W) / 2);
+    uint8_t y = (uint8_t)((128 - GAME_TWO_LOGO_H) / 2);
+
+    gfx_blit_pal4(x, y,
+                  GAME_TWO_LOGO_W, GAME_TWO_LOGO_H,
+                  GAME_TWO_LOGO_IDX,
+                  GAME_TWO_LOGO_PAL);
   }
 
   // seconds remaining (ceil to next)

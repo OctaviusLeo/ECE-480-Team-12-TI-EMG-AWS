@@ -2,7 +2,7 @@
 
 const story_chapter_t g_story[STORY_CHAPTERS] = {
   {"Ch.1: Awakening",        "Scarecrow",     0},
-  {"Ch.2: Training Grounds",     "Training Dummy",15},
+  {"Ch.2: Training Grounds",     "Dummy",15},
   {"Ch.3: Catacombs",        "Rat King",      30},
   {"Ch.4: Ambush Road",      "Bandit",        45},
   {"Ch.5: Tourney Field",    "Knight",        60},

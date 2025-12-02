@@ -1,8 +1,13 @@
+#ifndef STORY_CH5_ENEMY_H
+#define STORY_CH5_ENEMY_H
+
 #include <stdint.h>
 
-#define STORY_CH5_ENEMY_W 120
-#define STORY_CH5_ENEMY_H 98
+#define STORY_CH5_ENEMY_W 128
+#define STORY_CH5_ENEMY_H 105
+#define STORY_CH5_ENEMY_PAL_SIZE 16
 
-extern const uint16_t STORY_CH5_ENEMY[STORY_CH5_ENEMY_W * STORY_CH5_ENEMY_H];
+extern const uint16_t STORY_CH5_ENEMY_PAL[STORY_CH5_ENEMY_PAL_SIZE];
+extern const uint8_t  STORY_CH5_ENEMY_IDX[(STORY_CH5_ENEMY_W * STORY_CH5_ENEMY_H) / 2];
 
-
+#endif // STORY_CH5_ENEMY_H

@@ -6,7 +6,7 @@
 #include "project.h"
 
 #include "team.h"
-#include "MSU_logo.h"
+#include "msu_logo.h"
 #include "ti_logo.h"
 #include "end_credits_logo.h"
 
@@ -48,13 +48,13 @@ bool end_credits_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
-        gfx_blit565(
-          (128 - END_CREDITS_LOGO_W) / 2,
-          (128 - END_CREDITS_LOGO_H) / 2,
-          END_CREDITS_LOGO_W,
-          END_CREDITS_LOGO_H,
-          END_CREDITS_LOGO
-        );
+        uint8_t x = (uint8_t)((128 - END_CREDITS_LOGO_W) / 2);
+        uint8_t y = (uint8_t)((128 - END_CREDITS_LOGO_H) / 2);
+
+        gfx_blit_pal4(x, y,
+                      END_CREDITS_LOGO_W, END_CREDITS_LOGO_H,
+                      END_CREDITS_LOGO_IDX,
+                      END_CREDITS_LOGO_PAL);
       }
       if (dt >= 5000u) s_goto(MEMBER_1);
     } break;
@@ -107,8 +107,12 @@ bool end_credits_tick(void){
         gfx_bar(0, 18, 128, 1, COL_DKGRAY);
 
         uint8_t x = (uint8_t)((128 - TEAM_W) / 2);
-        uint8_t y = 24;
-        gfx_blit565(x, y, TEAM_W, TEAM_H, TEAM);
+        uint8_t y = (uint8_t)((128 - TEAM_H) / 2);
+
+        gfx_blit_pal4(x, y,
+                      TEAM_W, TEAM_H,
+                      TEAM_IDX,
+                      TEAM_PAL);
       }
       if (dt >=5000u) s_goto(SPONSOR);
     } break;
@@ -131,8 +135,12 @@ bool end_credits_tick(void){
         gfx_bar(0, 18, 128, 1, COL_DKGRAY);
 
         uint8_t x = (uint8_t)((128 - TI_LOGO_W) / 2);
-        uint8_t y = 34;
-        gfx_blit565(x, y, TI_LOGO_W, TI_LOGO_H, TI_LOGO);
+        uint8_t y = (uint8_t)((128 - TI_LOGO_H) / 2);
+
+        gfx_blit_pal4(x, y,
+                      TI_LOGO_W, TI_LOGO_H,
+                      TI_LOGO_IDX,
+                      TI_LOGO_PAL);
       }
       if (dt >= 5000u) s_goto(FACILITATOR);
     } break;
@@ -164,17 +172,18 @@ bool end_credits_tick(void){
         gfx_header("THANKS TO:", COL_WHITE);
         gfx_bar(0, 18, 128, 1, COL_DKGRAY);
 
-        gfx_blit565((128 - MSU_LOGO_W) / 2, 28,
-                    MSU_LOGO_W, MSU_LOGO_H, MSU_LOGO);
+        uint8_t x = (uint8_t)((128 - MSU_LOGO_W) / 2);
+        uint8_t y = (uint8_t)((128 - MSU_LOGO_H) / 2);
+
+        gfx_blit_pal4(x, y,
+                      MSU_LOGO_W, MSU_LOGO_H,
+                      MSU_LOGO_IDX,
+                      MSU_LOGO_PAL);
       }
       if (dt >= 5000u){
         return true;    // tell game.c credits are finished
       }
     } break;
-
-    case ECS_DONE:
-    default:
-      break;
   }
 
   return false;

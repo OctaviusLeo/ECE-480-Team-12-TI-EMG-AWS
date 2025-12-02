@@ -6,6 +6,31 @@
 #include "choice_input.h"
 #include "story_data.h"
 #include "story_items.h"
+#include "game_story_logo.h"
+#include "story_opening_scene.h"
+#include "story_final_scene.h"
+#include "story_ch1.h"
+#include "story_ch2.h"
+#include "story_ch3.h"
+#include "story_ch4.h"
+#include "story_ch5.h"
+#include "story_ch6.h"
+#include "story_ch7.h"
+#include "story_ch8.h"
+#include "story_ch9.h"
+#include "story_ch10.h"
+#include "story_ch1_enemy.h"
+#include "story_ch2_enemy.h"
+#include "story_ch3_enemy.h"
+#include "story_ch4_enemy.h"
+#include "story_ch5_enemy.h"
+#include "story_ch6_enemy.h"
+#include "story_ch7_enemy.h"
+#include "story_ch8_enemy.h"
+#include "story_ch9_enemy.h"
+#include "story_ch10_enemy.h"
+#include "you_died.h"
+#include "chest.h"
 
 typedef enum {
   STS_LOGO = 0,
@@ -15,8 +40,12 @@ typedef enum {
   STS_BATTLE,       // 10 s flex window; accumulate avg
   STS_RESULT,       // show pass/fail vs enemy
   STS_REWARD,       // echo chosen item
+  STS_DEATH,          // you died screen (on defeat)
   STS_NEXT,         // advance chapter
-  STS_ENDING        // final scene
+  STS_ENDING,        // final scene
+  STS_LORE_BRAND,     // global story intro lore text
+  STS_LORE_CHAPTER,   // per-chapter lore text
+  STS_LORE_ENDING     // lore text before the final ending scene
 } story_state_t;
 
 static story_state_t g_s;
@@ -26,7 +55,273 @@ static story_item_t  g_equipped;       // last choice (A/B)
 static float         g_sum_hz;
 static uint32_t      g_cnt_hz;
 
+// Current chapter’s A/B item options
+static const story_item_t *g_itemA;
+static const story_item_t *g_itemB;
+
 static bool          g_dirty;          // true = need to (re)draw this state's screen
+
+// Per-chapter enemy sprite descriptor for Story mode
+typedef struct {
+  uint8_t w;
+  uint8_t h;
+  const uint8_t  *idx;
+  const uint16_t *pal;
+} enemy_sprite_t;
+
+// Per-chapter intro sprite descriptor (chapter opening art)
+typedef struct {
+  uint8_t w;
+  uint8_t h;
+  const uint8_t  *idx;
+  const uint16_t *pal;
+} intro_sprite_t;
+
+// One entry per chapter (0..9)
+static const intro_sprite_t g_intro_sprites[STORY_CHAPTERS] = {
+  // chapter 0 -> story_ch1.png
+  { STORY_CH1_W,  STORY_CH1_H,  STORY_CH1_IDX,  STORY_CH1_PAL  },
+  // chapter 1 -> story_ch2.png
+  { STORY_CH2_W,  STORY_CH2_H,  STORY_CH2_IDX,  STORY_CH2_PAL  },
+  // chapter 2 -> story_ch3.png
+  { STORY_CH3_W,  STORY_CH3_H,  STORY_CH3_IDX,  STORY_CH3_PAL  },
+  // chapter 3 -> story_ch4.png
+  { STORY_CH4_W,  STORY_CH4_H,  STORY_CH4_IDX,  STORY_CH4_PAL  },
+  // chapter 4 -> story_ch5.png
+  { STORY_CH5_W,  STORY_CH5_H,  STORY_CH5_IDX,  STORY_CH5_PAL  },
+  // chapter 5 -> story_ch6.png
+  { STORY_CH6_W,  STORY_CH6_H,  STORY_CH6_IDX,  STORY_CH6_PAL  },
+  // chapter 6 -> story_ch7.png
+  { STORY_CH7_W,  STORY_CH7_H,  STORY_CH7_IDX,  STORY_CH7_PAL  },
+  // chapter 7 -> story_ch8.png
+  { STORY_CH8_W,  STORY_CH8_H,  STORY_CH8_IDX,  STORY_CH8_PAL  },
+  // chapter 8 -> story_ch9.png
+  { STORY_CH9_W,  STORY_CH9_H,  STORY_CH9_IDX,  STORY_CH9_PAL  },
+  // chapter 9 -> story_ch10.png
+  { STORY_CH10_W, STORY_CH10_H, STORY_CH10_IDX, STORY_CH10_PAL },
+};
+
+// One entry per chapter (0..9)
+static const enemy_sprite_t g_enemy_sprites[STORY_CHAPTERS] = {
+  // chapter 0 -> story_ch1.png
+  { STORY_CH1_ENEMY_W,  STORY_CH1_ENEMY_H,  STORY_CH1_ENEMY_IDX,  STORY_CH1_ENEMY_PAL  },
+  // chapter 1 -> story_ch2.png
+  { STORY_CH2_ENEMY_W,  STORY_CH2_ENEMY_H,  STORY_CH2_ENEMY_IDX,  STORY_CH2_ENEMY_PAL  },
+  // chapter 2 -> story_ch3.png
+  { STORY_CH3_ENEMY_W,  STORY_CH3_ENEMY_H,  STORY_CH3_ENEMY_IDX,  STORY_CH3_ENEMY_PAL  },
+  // chapter 3 -> story_ch4.png
+  { STORY_CH4_ENEMY_W,  STORY_CH4_ENEMY_H,  STORY_CH4_ENEMY_IDX,  STORY_CH4_ENEMY_PAL  },
+  // chapter 4 -> story_ch5.png
+  { STORY_CH5_ENEMY_W,  STORY_CH5_ENEMY_H,  STORY_CH5_ENEMY_IDX,  STORY_CH5_ENEMY_PAL  },
+  // chapter 5 -> story_ch6.png
+  { STORY_CH6_ENEMY_W,  STORY_CH6_ENEMY_H,  STORY_CH6_ENEMY_IDX,  STORY_CH6_ENEMY_PAL  },
+  // chapter 6 -> story_ch8.png
+  { STORY_CH7_ENEMY_W,  STORY_CH7_ENEMY_H,  STORY_CH7_ENEMY_IDX,  STORY_CH7_ENEMY_PAL  },
+  // chapter 7 -> story_ch9.png
+  { STORY_CH8_ENEMY_W,  STORY_CH8_ENEMY_H,  STORY_CH8_ENEMY_IDX,  STORY_CH8_ENEMY_PAL  },
+  // chapter 8 -> story_ch10.png
+  { STORY_CH9_ENEMY_W,  STORY_CH9_ENEMY_H,  STORY_CH9_ENEMY_IDX,  STORY_CH9_ENEMY_PAL  },
+  // chapter 9 -> story_ch10.png
+  { STORY_CH10_ENEMY_W,  STORY_CH1_ENEMY_H,  STORY_CH10_ENEMY_IDX,  STORY_CH10_ENEMY_PAL  },
+};
+
+// --- Lore text data ---
+
+// Global intro lore lines
+static const char* g_lore_brand_lines[] = {
+  "You wake up from",
+  "a dream. Eyes",
+  "blinkng from the",
+  "dry air. Casting",
+  "your eyes outside,",
+  "you enjoy the sun.",
+  "Finally getting up,",
+  "you start your day."
+};
+static const uint8_t g_lore_brand_count =
+    sizeof(g_lore_brand_lines)/sizeof(g_lore_brand_lines[0]);
+
+// Per-chapter lore: multi-line text per chapter
+
+static const char* g_lore_ch1_lines[] = {
+  "Long ago,",
+  "EMG warriors trained",
+  "to fight evil. Now,",
+  "the realms grow into",
+  "chaos. Peace is now",
+  "gone.",
+  "Hence, a new",
+  "challenger rises..."
+};
+static const uint8_t g_lore_ch1_count =
+    sizeof(g_lore_ch1_lines)/sizeof(g_lore_ch1_lines[0]);
+
+static const char* g_lore_ch2_lines[] = {
+  "After your daily",
+  "morning session, you",
+  "walk towards the tra",
+  "-ining grounds. Here",
+  "you start to get",
+  "serious! An iron dum",
+  "-my catches your eye"
+};
+static const uint8_t g_lore_ch2_count =
+    sizeof(g_lore_ch2_lines)/sizeof(g_lore_ch2_lines[0]);
+
+static const char* g_lore_ch3_lines[] = {
+  "The shadows stir.",
+  "Whispers follow your steps.",
+  "Something watches, weighing",
+  "your strength and resolve."
+};
+static const uint8_t g_lore_ch3_count =
+    sizeof(g_lore_ch3_lines)/sizeof(g_lore_ch3_lines[0]);
+
+static const char* g_lore_ch4_lines[] = {
+  "Echoes of the past.",
+  "These halls remember every",
+  "hero who failed to reach",
+  "the Demon King's gate."
+};
+static const uint8_t g_lore_ch4_count =
+    sizeof(g_lore_ch4_lines)/sizeof(g_lore_ch4_lines[0]);
+
+static const char* g_lore_ch5_lines[] = {
+  "The cursed halls.",
+  "Each step forward pulls you",
+  "further from safety, deeper",
+  "into the cursed chambers."
+};
+static const uint8_t g_lore_ch5_count =
+    sizeof(g_lore_ch5_lines)/sizeof(g_lore_ch5_lines[0]);
+
+static const char* g_lore_ch6_lines[] = {
+  "The broken gate.",
+  "The final seal was shattered,",
+  "but the power behind it",
+  "still tests every flex."
+};
+static const uint8_t g_lore_ch6_count =
+    sizeof(g_lore_ch6_lines)/sizeof(g_lore_ch6_lines[0]);
+
+static const char* g_lore_ch7_lines[] = {
+  "The forgotten temple.",
+  "Old idols stare in silence,",
+  "judging your will and",
+  "the strength in your arm."
+};
+static const uint8_t g_lore_ch7_count =
+    sizeof(g_lore_ch7_lines)/sizeof(g_lore_ch7_lines[0]);
+
+static const char* g_lore_ch8_lines[] = {
+  "The abyss awakens.",
+  "The floor trembles.",
+  "Every flex shapes the",
+  "abyss staring back at you."
+};
+static const uint8_t g_lore_ch8_count =
+    sizeof(g_lore_ch8_lines)/sizeof(g_lore_ch8_lines[0]);
+
+static const char* g_lore_ch9_lines[] = {
+  "Before the throne.",
+  "You stand one room away",
+  "from the Demon King's gaze.",
+  "There is no turning back."
+};
+static const uint8_t g_lore_ch9_count =
+    sizeof(g_lore_ch9_lines)/sizeof(g_lore_ch9_lines[0]);
+
+static const char* g_lore_ch10_lines[] = {
+  "Final reckoning.",
+  "The Demon King waits,",
+  "drawing power from the",
+  "fear of weaker warriors."
+};
+static const uint8_t g_lore_ch10_count =
+    sizeof(g_lore_ch10_lines)/sizeof(g_lore_ch10_lines[0]);
+
+// Table of chapter-lore blocks
+typedef struct {
+  const char* const* lines;
+  uint8_t count;
+} lore_block_t;
+
+static const lore_block_t g_lore_chapters[STORY_CHAPTERS] = {
+  { g_lore_ch1_lines,  g_lore_ch1_count  }, // chapter 0
+  { g_lore_ch2_lines,  g_lore_ch2_count  }, // chapter 1
+  { g_lore_ch3_lines,  g_lore_ch3_count  }, // chapter 2
+  { g_lore_ch4_lines,  g_lore_ch4_count  }, // chapter 3
+  { g_lore_ch5_lines,  g_lore_ch5_count  }, // chapter 4
+  { g_lore_ch6_lines,  g_lore_ch6_count  }, // chapter 5
+  { g_lore_ch7_lines,  g_lore_ch7_count  }, // chapter 6
+  { g_lore_ch8_lines,  g_lore_ch8_count  }, // chapter 7
+  { g_lore_ch9_lines,  g_lore_ch9_count  }, // chapter 8
+  { g_lore_ch10_lines, g_lore_ch10_count }  // chapter 9
+};
+
+// Ending lore lines
+static const char* g_lore_ending_lines[] = {
+  "The Demon King falls.",
+  "But the flex that saved",
+  "this world may be needed",
+  "again in worlds unseen..."
+};
+static const uint8_t g_lore_ending_count =
+    sizeof(g_lore_ending_lines)/sizeof(g_lore_ending_lines[0]);
+
+// Draw a simple lore screen: header + multiple lines of text.
+static void draw_lore_screen(const char* title,
+                             const char* const* lines,
+                             uint8_t count)
+{
+  gfx_clear(COL_BLACK);
+  gfx_header(title, COL_WHITE);
+
+  uint8_t y = 24;  // start below header
+  for (uint8_t i = 0; i < count; ++i) {
+    if (lines[i] && lines[i][0] != '\0') {
+      gfx_text2(4, y, lines[i], COL_WHITE, 1);
+    }
+    y = (uint8_t)(y + 10);
+    if (y > 120u) break;
+  }
+}
+
+// Draw the enemy battle Hz bar at the bottom of the screen.
+// hz        = current player Hz
+// target_hz = enemy's target Hz for this chapter
+static void draw_enemy_hz_bar(float hz, float target_hz)
+{
+  const uint8_t bar_x = 4;
+  const uint8_t bar_y = 112;     // bottom band
+  const uint8_t bar_w = 120;
+  const uint8_t bar_h = 12;
+
+  if (target_hz <= 0.0f) target_hz = 1.0f;
+
+  // Define a max scale so the bar doesn't overflow; tweak factor as you like.
+  float max_hz = target_hz * 1.5f;
+  if (max_hz < target_hz) max_hz = target_hz;   // safety
+
+  if (hz < 0.0f) hz = 0.0f;
+  if (hz > max_hz) hz = max_hz;
+
+  // Clear the band once per frame
+  gfx_bar(bar_x, bar_y, bar_w, bar_h, COL_DKGRAY);
+
+  // Current Hz bar (green-ish)
+  uint8_t cur_w = (uint8_t)((hz / max_hz) * (float)bar_w + 0.5f);
+  if (cur_w > bar_w) cur_w = bar_w;
+  if (cur_w > 0u){
+    gfx_bar(bar_x, bar_y, cur_w, bar_h, COL_GREEN);
+  }
+
+  // Threshold line (enemy required Hz) as a 1-px wide red bar
+  uint8_t th_x = bar_x + (uint8_t)((target_hz / max_hz) * (float)bar_w + 0.5f);
+  if (th_x < bar_x) th_x = bar_x;
+  if (th_x >= (uint8_t)(bar_x + bar_w)) th_x = (uint8_t)(bar_x + bar_w - 1u);
+  gfx_bar(th_x, bar_y, 1, bar_h, COL_RED);
+}
 
 static void s_goto(story_state_t ns){
   g_s    = ns;
@@ -39,6 +334,8 @@ void game_story_init(void){
   g_equipped = STORY_ITEM_A;
   g_sum_hz   = 0.0f;
   g_cnt_hz   = 0u;
+  g_itemA    = &STORY_ITEM_A;
+  g_itemB    = &STORY_ITEM_B;
   s_goto(STS_LOGO);
 }
 
@@ -58,9 +355,29 @@ bool game_story_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
-        // optional: story logo splash here
+        
+        uint8_t x = (uint8_t)((128 - GAME_STORY_LOGO_W) / 2);
+        uint8_t y = (uint8_t)((128 - GAME_STORY_LOGO_H) / 2);
+
+        gfx_blit_pal4(x, y,
+                      GAME_STORY_LOGO_W, GAME_STORY_LOGO_H,
+                      GAME_STORY_LOGO_IDX,
+                      GAME_STORY_LOGO_PAL);
+
+
       }
-      if (dt >= 3000u) {
+      if (dt >= 5000u) {
+        s_goto(STS_LORE_BRAND);
+      }
+    } break;
+
+    case STS_LORE_BRAND: {
+      if (g_dirty){
+        g_dirty = false;
+        draw_lore_screen("Prologue", g_lore_brand_lines, g_lore_brand_count);
+      }
+      // Show lore for 20 seconds, then show the global art
+      if (dt >= 10000u){
         s_goto(STS_BRAND);
       }
     } break;
@@ -69,10 +386,33 @@ bool game_story_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
-        gfx_header("STORY MODE", COL_RED);
-        gfx_text2(6, 40, "Welcome challenger!", COL_WHITE, 1);
+
+        // Draw global story opening scene image, centered
+        uint8_t x = (uint8_t)((128 - STORY_OPENING_SCENE_W) / 2);
+        uint8_t y = (uint8_t)((128 - STORY_OPENING_SCENE_H) / 2);
+
+        gfx_blit_pal4(x, y,
+                      STORY_OPENING_SCENE_W, STORY_OPENING_SCENE_H,
+                      STORY_OPENING_SCENE_IDX,
+                      STORY_OPENING_SCENE_PAL);
       }
-      if (dt >= 2000u){
+      if (dt >= 5000u){
+        s_goto(STS_LORE_CHAPTER);
+      }
+    } break;
+
+    case STS_LORE_CHAPTER: {
+      if (g_dirty){
+        g_dirty = false;
+
+        const story_chapter_t* c = &g_story[g_chapter];
+        const lore_block_t* lb   = &g_lore_chapters[g_chapter];
+
+        // Show chapter name as header + multi-line lore below
+        draw_lore_screen(c->name, lb->lines, lb->count);
+      }
+      // Show lore for 4 seconds (tweak as desired)
+      if (dt >= 10000u){
         s_goto(STS_INTRO);
       }
     } break;
@@ -82,39 +422,75 @@ bool game_story_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
+
+        // Chapter name in header
         gfx_header(c->name, COL_WHITE);
 
+        // Draw chapter-specific intro art for this chapter
+        const intro_sprite_t *is = &g_intro_sprites[g_chapter];
+
+        uint8_t ix = (uint8_t)((128 - is->w) / 2);
+        uint8_t iy = 20;   // leave header band at top
+
+        gfx_blit_pal4(ix, iy,
+                      is->w, is->h,
+                      is->idx,
+                      is->pal);
+
+        // Overlay target info near the bottom over a small band
         char line[40];
-        snprintf(line, sizeof(line), "%s  Target: %u Hz",
+        snprintf(line, sizeof(line), "%s STR: %u Hz",
                  c->enemy, (unsigned)c->enemy_hz);
-        gfx_text2(6, 40, line, COL_YELLOW, 1);
-        gfx_text2(6, 64, "Choose an item (A/B) with Hz", COL_DKGRAY, 1);
-        choice_draw_hint(80);
+        gfx_bar(0, 104, 128, 24, COL_BLACK);
+        gfx_text2(0, 106, line, COL_YELLOW, 1);
+        gfx_text2(0, 118, "Choose an item (A/B) with Hz", COL_DKGRAY, 1);
       }
-      if (dt >= 2000u){
+      if (dt >= 5000u){
         s_goto(STS_CHOOSE);
       }
     } break;
 
     case STS_CHOOSE: {
-      const story_chapter_t* c = &g_story[g_chapter];
-      (void)c;   // header already handled above; kept for future use
 
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
+
+        // Chest in center
+        uint8_t cx = (uint8_t)((128 - CHEST_W) / 2);
+        uint8_t cy = (uint8_t)((128 - CHEST_H) / 2);
+
+        gfx_blit_pal4(cx, cy,
+                      CHEST_W, CHEST_H,
+                      CHEST_IDX,
+                      CHEST_PAL);
+
+        // Randomly pick two distinct items from STORY_ITEMS[]
+        uint8_t i0, i1;
+        story_items_pick_two(&i0, &i1);
+        g_itemA = &STORY_ITEMS[i0];
+        g_itemB = &STORY_ITEMS[i1];
+
         gfx_header("CHOOSE", COL_WHITE);
-        gfx_text2(6, 32, "A) Bandage (+10% you)",   COL_CYAN,   1);
-        gfx_text2(6, 46, "B) Cursed Ring (+20% enemy)", COL_YELLOW, 1);
+
+        char lineA[40];
+        char lineB[40];
+        snprintf(lineA, sizeof(lineA), "A) %s", g_itemA->name);
+        snprintf(lineB, sizeof(lineB), "B) %s", g_itemB->name);
+
+        gfx_text2(0, 110, lineA, COL_CYAN,   1);
+        gfx_text2(0, 120, lineB, COL_YELLOW, 1);
         choice_draw_hint(80);
       }
 
-      // live choice via Hz threshold
+      // Live Hz-based choice: last one wins before timeout
       choice_t ch = choice_from_hz(hz, 50.0f);
-      g_equipped  = (ch == CHOICE_A) ? STORY_ITEM_A : STORY_ITEM_B;
+      const story_item_t *cur = (ch == CHOICE_A) ? g_itemA : g_itemB;
+      if (cur) {
+        g_equipped = *cur;   // copy struct; RESULT/REWARD use g_equipped
+      }
 
-      // simple 1s settle before locking choice and moving on
-      if (dt >= 1000u) {
+      if (dt >= 5000u) {
         g_sum_hz = 0.0f;
         g_cnt_hz = 0u;
         s_goto(STS_BATTLE);
@@ -123,11 +499,23 @@ bool game_story_tick(void){
 
     case STS_BATTLE: {
       const uint32_t FLEX_MS = 10000u;
+      const story_chapter_t* c = &g_story[g_chapter];
 
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
         gfx_header("BATTLE", COL_RED);
+
+        // Draw this chapter's enemy image once
+        const enemy_sprite_t *es = &g_enemy_sprites[g_chapter];
+
+        uint8_t ex = (uint8_t)((128 - es->w) / 2);
+        uint8_t ey = 16;  // top area; leaves bottom for Hz bar + text
+
+        gfx_blit_pal4(ex, ey,
+                      es->w, es->h,
+                      es->idx,
+                      es->pal);
       }
 
       if (dt >= FLEX_MS){
@@ -135,12 +523,14 @@ bool game_story_tick(void){
         break;
       }
 
-      // countdown text
+      // Countdown + bar logic
       uint8_t remain_s = (uint8_t)((FLEX_MS - dt) / 1000u);
       char line[32];
       snprintf(line, sizeof(line), "Flex... %us left", (unsigned)remain_s);
-      gfx_bar(0, 60, 128, 16, COL_BLACK);
-      gfx_text2(6, 64, line, COL_WHITE, 1);
+      gfx_bar(0, 96, 128, 12, COL_BLACK);
+      gfx_text2(8, 96, line, COL_WHITE, 1);
+
+      draw_enemy_hz_bar(hz, (float)c->enemy_hz);
 
       if (hz >= 1.5f){
         g_sum_hz += hz;
@@ -148,33 +538,34 @@ bool game_story_tick(void){
       }
     } break;
 
+
     case STS_RESULT: {
-      if (g_dirty){
-        g_dirty = false;
+      const story_chapter_t* c = &g_story[g_chapter];
+      float avg = (g_cnt_hz ? (g_sum_hz / (float)g_cnt_hz) : 0.0f);
+      float you  = avg * g_equipped.player_mult;
+      float foe  = (float)c->enemy_hz * g_equipped.enemy_mult;
 
-        const story_chapter_t* c = &g_story[g_chapter];
-        float avg = (g_cnt_hz ? (g_sum_hz / (float)g_cnt_hz) : 0.0f);
-        float you = avg * g_equipped.player_mult;
-        float foe = (float)c->enemy_hz * g_equipped.enemy_mult;
-
+      if (g_dirty) {
+        g_dirty = false; 
         gfx_clear(COL_BLACK);
         gfx_header("RESULT", COL_WHITE);
-
-        char l1[40];
-        char l2[40];
-        snprintf(l1, sizeof(l1), "You: %.1f Hz", you);
-        snprintf(l2, sizeof(l2), "Enemy: %.1f Hz", foe);
-        gfx_text2(6, 36, l1, COL_CYAN,   1);
+        char l1[40]; snprintf(l1, sizeof(l1), "You: %.1f Hz", you);
+        char l2[40]; snprintf(l2, sizeof(l2), "Enemy: %.1f Hz", foe);
+        gfx_text2(6, 36, l1, COL_CYAN, 1);
         gfx_text2(6, 50, l2, COL_YELLOW, 1);
-
         gfx_text2(6, 76,
                   (you >= foe) ? "VICTORY" : "DEFEAT",
-                  (you >= foe) ? COL_GREEN : COL_RED,
+                  (you >= foe) ? COL_GREEN  : COL_RED,
                   2);
       }
-
-      if (dt >= 2000u){
-        s_goto(STS_REWARD);
+      if (dt >= 2000u) {
+        if (you >= foe) {
+          // Win → continue normal flow
+          s_goto(STS_REWARD);
+        } else {
+          // Lose → show you died + retry this chapter
+          s_goto(STS_DEATH);
+        }
       }
     } break;
 
@@ -186,18 +577,53 @@ bool game_story_tick(void){
         gfx_text2(6, 40, "Equipped:", COL_DKGRAY, 1);
         gfx_text2(6, 54, g_equipped.name, COL_WHITE, 1);
       }
-      if (dt >= 1500u){
+      if (dt >= 5000u){
         s_goto(STS_NEXT);
+      }
+    } break;
+
+    case STS_DEATH: {
+      if (g_dirty) {
+        g_dirty = false;
+        gfx_clear(COL_BLACK);
+
+        // Center the YOU_DIED image
+        uint8_t x = (uint8_t)((128 - YOU_DIED_W) / 2);
+        uint8_t y = (uint8_t)((128 - YOU_DIED_H) / 2);
+
+        gfx_blit_pal4(x, y,
+                      YOU_DIED_W, YOU_DIED_H,
+                      YOU_DIED_IDX,
+                      YOU_DIED_PAL);
+
+        gfx_text2(30, 110, "Retrying...", COL_RED, 1);
+      }
+
+      if (dt >= 3000u) {
+        // Reset counters and retry the same chapter from intro
+        g_sum_hz = 0.0f;
+        g_cnt_hz = 0u;
+        s_goto(STS_INTRO);
       }
     } break;
 
     case STS_NEXT: {
       uint8_t next = (uint8_t)(g_chapter + 1u);
       if (next >= STORY_CHAPTERS){
-        s_goto(STS_ENDING);
+        s_goto(STS_LORE_ENDING);
       } else {
         g_chapter = next;
-        s_goto(STS_INTRO);
+        s_goto(STS_LORE_CHAPTER);
+      }
+    } break;
+
+    case STS_LORE_ENDING: {
+      if (g_dirty){
+        g_dirty = false;
+        draw_lore_screen("Epilogue", g_lore_ending_lines, g_lore_ending_count);
+      }
+      if (dt >= 5000u){
+        s_goto(STS_ENDING);
       }
     } break;
 
@@ -205,6 +631,16 @@ bool game_story_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
+
+        // Draw final story scene image, centered
+        uint8_t x = (uint8_t)((128 - STORY_FINAL_SCENE_W) / 2);
+        uint8_t y = (uint8_t)((128 - STORY_FINAL_SCENE_H) / 2);
+
+        gfx_blit_pal4(x, y,
+                      STORY_FINAL_SCENE_W, STORY_FINAL_SCENE_H,
+                      STORY_FINAL_SCENE_IDX,
+                      STORY_FINAL_SCENE_PAL);
+
         gfx_header("THE END", COL_WHITE);
         gfx_text2(6, 30, "You cleared Story Mode!",             COL_GREEN, 1);
         gfx_text2(6, 50, "You beat the Demon King and",         COL_WHITE, 1);

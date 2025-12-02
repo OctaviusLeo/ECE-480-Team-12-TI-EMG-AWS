@@ -62,13 +62,13 @@ bool menu_tick(uint8_t *out_mode)
 
             gfx_clear(COL_BLACK);
 
-            gfx_blit565(
-                (128 - GAME_OPENING_SCREEN_LOGO_W) / 2,
-                (128 - GAME_OPENING_SCREEN_LOGO_H) / 2,
-                GAME_OPENING_SCREEN_LOGO_W,
-                GAME_OPENING_SCREEN_LOGO_H,
-                GAME_OPENING_SCREEN_LOGO
-        );
+            uint8_t x = (uint8_t)((128 - GAME_OPENING_SCREEN_LOGO_W) / 2);
+            uint8_t y = (uint8_t)((128 - GAME_OPENING_SCREEN_LOGO_H) / 2);
+
+            gfx_blit_pal4(x, y,
+                        GAME_OPENING_SCREEN_LOGO_W, GAME_OPENING_SCREEN_LOGO_H,
+                        GAME_OPENING_SCREEN_LOGO_IDX,
+                        GAME_OPENING_SCREEN_LOGO_PAL);
         }
 
         // Stay on this screen for 5 seconds, then move on

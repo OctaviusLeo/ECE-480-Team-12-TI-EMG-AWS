@@ -22,8 +22,15 @@ bool gfx_countdown_tick(uint32_t now_ms);
 void gfx_header(const char* s, uint16_t color);
 void gfx_clear_header_band(uint16_t color);
 
-// for TI logo
+// for all logos
 void gfx_blit565(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint16_t *pixels);
+
+// Draw a 4-bit (16-color) paletted image.
+// idx: packed indices, 2 pixels per byte (hi nibble = left, lo nibble = right)
+void gfx_blit_pal4(uint8_t x, uint8_t y,
+                   uint8_t w, uint8_t h,
+                   const uint8_t  *idx,
+                   const uint16_t *pal);
 
 /* Internal tiny helpers for text layout, matching gfx_text2 spacing */
 static inline uint8_t __gfx_text_width_px(const char* s, uint8_t scale){
@@ -130,5 +137,6 @@ static inline void gfx_center_text_nl_scaled_xy(const char* s, uint16_t color, u
   __gfx_center_line_xy(y0, top, color, sx);
   __gfx_center_line_xy(y1, bot, color, sx);
 }
+
 
 #endif /* GFX_H */
