@@ -322,8 +322,8 @@ static const lore_block_t g_lore_chapters[STORY_CHAPTERS] = {
 
 // Ending lore lines
 static const char* g_lore_ending_lines[] = {
-"You slowly opening your",
-"eyes. You don't know.",
+"You slowly open your",
+"eyes. Mind is cloudy.",
 "The dead Demon King",
 "lays at your feet. Yea",
 "... you saved the world",
