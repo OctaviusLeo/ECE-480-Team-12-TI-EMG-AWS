@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define TOWER_ORC_W 64
-#define TOWER_ORC_H 51
+#define TOWER_ORC_W 96
+#define TOWER_ORC_H 76
 #define TOWER_ORC_PAL_SIZE 16
 
 extern const uint16_t TOWER_ORC_PAL[TOWER_ORC_PAL_SIZE];
