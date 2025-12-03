@@ -569,6 +569,9 @@ bool game_tower_tick(void){
         snprintf(line, sizeof(line),
                  "Need: %.1f Hz", TOWER_FLEX_MENU_HZ);
         gfx_text2(4, 92, line, COL_CYAN, 1);
+        if (dt >= 5000u){
+          t_goto(TWS_FLOOR_INTRO);
+        }
       }
 
       // hz is already read at top of game_tower_tick via game_get_metrics(...)

@@ -134,8 +134,7 @@ static const enemy_sprite_t g_enemy_sprites[STORY_CHAPTERS] = {
   { STORY_CH10_ENEMY_W,  STORY_CH1_ENEMY_H,  STORY_CH10_ENEMY_IDX,  STORY_CH10_ENEMY_PAL  },
 };
 
-// --- Lore text data ---
-
+// Lore text data
 // Global intro lore lines
 static const char* g_lore_brand_lines[] = {
   "You wake up from",
@@ -180,73 +179,124 @@ static const uint8_t g_lore_ch2_count =
     sizeof(g_lore_ch2_lines)/sizeof(g_lore_ch2_lines[0]);
 
 static const char* g_lore_ch3_lines[] = {
-  "The shadows stir.",
-  "Whispers follow your steps.",
-  "Something watches, weighing",
-  "your strength and resolve."
+  "A villager interrupts",
+  "your training. He say",
+  "the villager's kids",
+  "explored the",
+  "catacombs and haven't",
+  "returned! Hence, you",
+  "bravely travel to",
+  "the catacombs to",
+  "save the kids."
 };
 static const uint8_t g_lore_ch3_count =
     sizeof(g_lore_ch3_lines)/sizeof(g_lore_ch3_lines[0]);
 
 static const char* g_lore_ch4_lines[] = {
-  "Echoes of the past.",
-  "These halls remember every",
-  "hero who failed to reach",
-  "the Demon King's gate."
+  "The village thanks yo",
+  "-our efforts. Giving",
+  "a good sum of silver.",
+  "With this money gained",
+  "you head off to the",
+  "kingdom to become",
+  "a pulse-knight! However",
+  "along the way you are",
+  "stopped by a group of",
+  "... bandits?!"
 };
 static const uint8_t g_lore_ch4_count =
     sizeof(g_lore_ch4_lines)/sizeof(g_lore_ch4_lines[0]);
 
 static const char* g_lore_ch5_lines[] = {
-  "The cursed halls.",
-  "Each step forward pulls you",
-  "further from safety, deeper",
-  "into the cursed chambers."
+  "After defeating the",
+  "bandits, you continue",
+  "onward. After several",
+  "days you come across a",
+  "knight camp near the",
+  "kingdom. You are eager",
+  "to test your skills.",
+  "A training knight is",
+  "angered by your ego.",
+  "he challenges you!"
 };
 static const uint8_t g_lore_ch5_count =
     sizeof(g_lore_ch5_lines)/sizeof(g_lore_ch5_lines[0]);
 
 static const char* g_lore_ch6_lines[] = {
-  "The broken gate.",
-  "The final seal was shattered,",
-  "but the power behind it",
-  "still tests every flex."
+  "Several days have past",
+  "since your arrival at",
+  "the kingdom. Hearing",
+  "news about a tourna",
+  "-ment, you enter,",
+  "hoping to make a name",
+  "for yourself. After",
+  "many duels, you enter",
+  "the final. The knight",
+  "prepares his weapon."
 };
 static const uint8_t g_lore_ch6_count =
     sizeof(g_lore_ch6_lines)/sizeof(g_lore_ch6_lines[0]);
 
 static const char* g_lore_ch7_lines[] = {
-  "The forgotten temple.",
-  "Old idols stare in silence,",
-  "judging your will and",
-  "the strength in your arm."
+  "Winning the tourney",
+  "gave you the pass",
+  "to Arcane Tower. Hap",
+  "-ppily accepting the",
+  "reward, you head to",
+  "the floating tower in",
+  "the sky. Entering in",
+  "-side, Arcane Tower's",
+  "founder wants your",
+  "help. But you must",
+  "defeat him first."
 };
 static const uint8_t g_lore_ch7_count =
     sizeof(g_lore_ch7_lines)/sizeof(g_lore_ch7_lines[0]);
 
 static const char* g_lore_ch8_lines[] = {
-  "The abyss awakens.",
-  "The floor trembles.",
-  "Every flex shapes the",
-  "abyss staring back at you."
+  "The sorcerer needs",
+  "help. To locate the D",
+  "emon Castle, he needs",
+  "a dragon's heart. So,",
+  "after traveling,",
+  "the dragon's lair is",
+  "infront of you. Step",
+  "by step, you traverse",
+  "inside. Inside you",
+  "the dragon staring.",
+  "It roars and charges!"
 };
 static const uint8_t g_lore_ch8_count =
     sizeof(g_lore_ch8_lines)/sizeof(g_lore_ch8_lines[0]);
 
 static const char* g_lore_ch9_lines[] = {
-  "Before the throne.",
-  "You stand one room away",
-  "from the Demon King's gaze.",
-  "There is no turning back."
+  "You return to Arcane To",
+  "-wer. Givin the Sorc",
+  "-erer the dragon's he",
+  "-art, he gives you",
+  "the location of the",
+  "Demon Castle. Many",
+  "years past in your",
+  "jourey. The hellish",
+  "enviroment homes the",
+  "Demon King. Entering,",
+  "he sits on his throne."
 };
 static const uint8_t g_lore_ch9_count =
     sizeof(g_lore_ch9_lines)/sizeof(g_lore_ch9_lines[0]);
 
 static const char* g_lore_ch10_lines[] = {
-  "Final reckoning.",
-  "The Demon King waits,",
-  "drawing power from the",
-  "fear of weaker warriors."
+"[Wonderful. WONDERFUL!]",
+"A unkown voice enters",
+"your head. [You did it",
+"but, this wasn't supp",
+"-osed to happen... well",
+"i'll just remove you].",
+"Opening your eyes, a",
+"figure smiles at you.",
+"They raise their hand",
+"but you rush in to",
+"stop him!"
 };
 static const uint8_t g_lore_ch10_count =
     sizeof(g_lore_ch10_lines)/sizeof(g_lore_ch10_lines[0]);
@@ -272,10 +322,17 @@ static const lore_block_t g_lore_chapters[STORY_CHAPTERS] = {
 
 // Ending lore lines
 static const char* g_lore_ending_lines[] = {
-  "The Demon King falls.",
-  "But the flex that saved",
-  "this world may be needed",
-  "again in worlds unseen..."
+"You slowly opening your",
+"eyes. You don't know.",
+"The dead Demon King",
+"lays at your feet. Yea",
+"... you saved the world",
+"you raise your hand in",
+"-to the sky. YOU SAVED",
+"the world! You travel",
+"back and spend your ye",
+"-ars as a hero! Chaos",
+"is no more, or is it?"
 };
 static const uint8_t g_lore_ending_count =
     sizeof(g_lore_ending_lines)/sizeof(g_lore_ending_lines[0]);
@@ -826,6 +883,9 @@ bool game_story_tick(void){
         snprintf(line, sizeof(line),
                  "Need: %.1f Hz", STORY_FLEX_MENU_HZ);
         gfx_text2(4, 82, line, COL_CYAN, 1);
+        if (dt >= 5000u){
+          s_goto(STS_INTRO);
+        }
       }
 
       // hz was computed at the top of game_story_tick()
