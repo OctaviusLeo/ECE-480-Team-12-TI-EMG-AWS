@@ -569,19 +569,20 @@ bool game_tower_tick(void){
         snprintf(line, sizeof(line),
                  "Need: %.1f Hz", TOWER_FLEX_MENU_HZ);
         gfx_text2(4, 92, line, COL_CYAN, 1);
-        if (dt >= 5000u){
-          t_goto(TWS_FLOOR_INTRO);
         }
-      }
+        // strong flex -> back to main menu
+        if (hz >= TOWER_FLEX_MENU_HZ) {
+            g_tower_deaths = 0u;   // optional reset
+            return true;           // tell is done -> menu
+        }
 
-      // hz is already read at top of game_tower_tick via game_get_metrics(...)
-      if (hz >= TOWER_FLEX_MENU_HZ) {
-        g_tower_deaths = 0u;   // optional reset for next run
-        return true;           // tell game.c: Tower mode finished -> back to menu
-      }
-      if (dt >= 3000u) {
-        t_goto(TWS_FLEX_RETURN);
-      }
+        // wait 5 seconds -> retry same chapter
+        if (dt >= 5000u) {
+            g_sum_hz = 0.0f;
+            g_cnt_hz = 0u;
+            t_goto(TWS_FLOOR_INTRO);     // restart chapter intro
+        }
+
     } break;
 
     case TWS_NEXT: {

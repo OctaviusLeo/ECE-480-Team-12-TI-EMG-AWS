@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define TOWER_MINOTAUR_W 128
-#define TOWER_MINOTAUR_H 73
+#define TOWER_MINOTAUR_W 64
+#define TOWER_MINOTAUR_H 37
 #define TOWER_MINOTAUR_PAL_SIZE 16
 
 extern const uint16_t TOWER_MINOTAUR_PAL[TOWER_MINOTAUR_PAL_SIZE];

@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define MSU_LOGO_W 128
-#define MSU_LOGO_H 126
+#define MSU_LOGO_W 64
+#define MSU_LOGO_H 63
 #define MSU_LOGO_PAL_SIZE 16
 
 extern const uint16_t MSU_LOGO_PAL[MSU_LOGO_PAL_SIZE];

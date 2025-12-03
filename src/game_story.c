@@ -868,32 +868,36 @@ bool game_story_tick(void){
     } break;
 
     case STS_FLEX_RETURN: {
-      // hz is already read at top of game_story_tick via game_get_metrics
-      if (g_dirty) {
-        g_dirty = false;
-        gfx_clear(COL_BLACK);
-        gfx_header("REST & RESET", COL_WHITE);
-        gfx_bar(0, 18, 128, 1, COL_DKGRAY);
+        // hz already computed at top of game_story_tick
 
-        gfx_text2(4, 36, "You have fallen 3+ times.", COL_RED,   1);
-        gfx_text2(4, 48, "Flex hard to return to",    COL_WHITE, 1);
-        gfx_text2(4, 60, "the main menu.",            COL_WHITE, 1);
+        if (g_dirty) {
+            g_dirty = false;
+            gfx_clear(COL_BLACK);
+            gfx_header("REST & RESET", COL_WHITE);
+            gfx_bar(0, 18, 128, 1, COL_DKGRAY);
 
-        char line[40];
-        snprintf(line, sizeof(line),
-                 "Need: %.1f Hz", STORY_FLEX_MENU_HZ);
-        gfx_text2(4, 82, line, COL_CYAN, 1);
-        if (dt >= 5000u){
-          s_goto(STS_INTRO);
+            gfx_text2(4, 36, "You have fallen 3+ times.", COL_RED,   1);
+            gfx_text2(4, 48, "Flex hard to return to",    COL_WHITE, 1);
+            gfx_text2(4, 60, "the main menu.",            COL_WHITE, 1);
+
+            char line[40];
+            snprintf(line, sizeof(line),
+                    "Need: %.1f Hz", STORY_FLEX_MENU_HZ);
+            gfx_text2(4, 82, line, COL_CYAN, 1);
         }
-      }
 
-      // hz was computed at the top of game_story_tick()
-      if (hz >= STORY_FLEX_MENU_HZ) {
-        // Optionally reset deaths so next Story run starts fresh
-        g_story_deaths = 0u;
-        return true;  // tell game.c: Story mode finished -> go back to menu
-      }
+        // strong flex -> back to main menu
+        if (hz >= STORY_FLEX_MENU_HZ) {
+            g_story_deaths = 0u;   // optional reset
+            return true;           // tell game.c Story is done -> menu
+        }
+
+        // wait 5 seconds -> retry same chapter
+        if (dt >= 5000u) {
+            g_sum_hz = 0.0f;
+            g_cnt_hz = 0u;
+            s_goto(STS_INTRO);     // restart chapter intro
+        }
     } break;
 
     case STS_NEXT: {
@@ -936,13 +940,6 @@ bool game_story_tick(void){
                       STORY_FINAL_SCENE_W, STORY_FINAL_SCENE_H,
                       STORY_FINAL_SCENE_IDX,
                       STORY_FINAL_SCENE_PAL);
-
-        gfx_header("THE END", COL_WHITE);
-        gfx_text2(6, 30, "You cleared Story Mode!",             COL_GREEN, 1);
-        gfx_text2(6, 50, "You beat the Demon King and",         COL_WHITE, 1);
-        gfx_text2(6, 70, "became the strongest in the lands",   COL_WHITE, 1);
-        gfx_text2(6, 90, "and saved the world!",                COL_WHITE, 1);
-        gfx_text2(6,110, "or did you...",                       COL_GREEN, 1);
         cheevos_unlock(ACH_STORY_CLEAR);
       }
       if (dt >= 10000u){
