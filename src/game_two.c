@@ -277,21 +277,21 @@ bool game_two_tick(void){
 
         char l1[32];
         snprintf(l1, sizeof(l1), "P1 Avg Hz: %.1f", g_p1_avg_hz);
-        gfx_text2(6, 28, l1, COL_RED, 1);
+        gfx_text2(6, 28, l1, COL_BLUE, 1);
         const char* r1 = rank_from_percent(g_p1_rank_pct);
         char l1r[32];
         snprintf(l1r, sizeof(l1r), "Rank: %s", r1);
-        gfx_text2(6, 38, l1r, COL_RED, 1);
+        gfx_text2(6, 38, l1r, COL_BLUE, 1);
 
         char l2[32];
         snprintf(l2, sizeof(l2), "P2 Avg Hz: %.1f", g_p2_avg_hz);
-        gfx_text2(6, 70, l2, COL_WHITE, 1);
+        gfx_text2(6, 70, l2, COL_RED, 1);
         const char* r2 = rank_from_percent(g_p2_rank_pct);
         char l2r[32];
         snprintf(l2r, sizeof(l2r), "Rank: %s", r2);
-        gfx_text2(6, 80, l2r, COL_WHITE, 1);
+        gfx_text2(6, 80, l2r, COL_RED, 1);
       }
-      if (dt >= 3000u){
+      if (dt >= 5000u){
         goto_state(ST_WINNER);
       }
     } break;
@@ -352,8 +352,8 @@ bool game_two_tick(void){
         ui_sep_h(18);
 
         static const char* ranks[] = {
-          "Challenger  1%","Grandmaster 3%","Master      5%","Diamond    10%",
-          "Platinum   20%","Gold       35%","Silver     55%","Bronze     75%","Iron      100%"
+          "Challenger 1%","Grandmaster 3%","Master 5%","Diamond 10%",
+          "Platinum 20%","Gold 35%","Silver 55%","Bronze 75%","Iron 100%"
         };
         const int base_y = 24;
         const int row_h  = 10;

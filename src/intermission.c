@@ -32,7 +32,7 @@ void intermission_begin(uint32_t ms, const char* title){
   const char *label = "Starting in: ";
   size_t len = strlen(label);
   g_digits_x = (uint8_t)(10 + 6u * (unsigned)len);
-  g_digits_y = 30;
+  g_digits_y = 115;
 }
 
 bool intermission_active(void){
