@@ -26,6 +26,7 @@ Playground Mode: Clear EMG detected indication (single-user).
 PVP Mode: simultaneous readout + winner decision logic.
 Tower Mode: Challenge every difficulty tear by flexing.
 Story Mode: Actual store with lore, decisions and battles determined by flexing.
+END + TROPHY: Shows credit to all members, university, sponsor, and achievements of user.
 
 
 **Features**
@@ -128,6 +129,8 @@ Repository Structure
 |- include
 
 |- src
+
+|- image_converter
 
 |_ README.md
 
