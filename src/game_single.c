@@ -29,6 +29,7 @@ static inline int rank_index_from_percent(unsigned p){
 typedef enum {
   ST_LOGO = 0,
   ST_PMODE,
+  ST_TUTORIAL,
   ST_COUNTDOWN_LABEL,
   ST_COUNT_3, ST_COUNT_2, ST_COUNT_1,
   ST_FLEX_CUE, ST_FLEXING,
@@ -55,11 +56,77 @@ static void goto_state(sp_state_t s){
   if (s == ST_COUNTDOWN_LABEL) baseline_begin(3000u);
 }
 
+// Typewriter-style lore: slowly reveal text over time.
+// NOTE: does NOT clear the screen or draw header; caller does that once via g_dirty.
+static void playground_draw_lore_typewriter(const char* const* lines,
+                                 uint8_t count,
+                                 uint32_t dt,
+                                 uint16_t ms_per_char)
+{
+  uint32_t chars = dt / ms_per_char;  // total characters across all lines
+  uint8_t  y     = 24;                // first line Y
+
+  for (uint8_t i = 0; i < count; ++i) {
+    const char* s = lines[i];
+    if (!s) {
+      continue;
+    }
+
+    size_t len = strlen(s);
+    if (chars == 0u) {
+      break;  // nothing left to draw
+    }
+
+    uint32_t this_chars = chars;
+    if (this_chars > len) {
+      this_chars = len;
+    }
+
+    // Draw prefix of this line
+    char buf[32];  // adjust if ever have >31-char lines
+    if (this_chars > sizeof(buf) - 1u) {
+      this_chars = sizeof(buf) - 1u;
+    }
+    memcpy(buf, s, this_chars);
+    buf[this_chars] = '\0';
+
+    // Draw only the visible prefix; earlier characters are redrawn in-place
+    gfx_text2(4, y, buf, COL_WHITE, 1);
+
+    y = (uint8_t)(y + 10u);
+    if (y > 120u) {
+      break;  // off-screen
+    }
+
+    // Consume characters for this line (+1 “newline” spacer)
+    if (chars > (uint32_t)len + 1u) {
+      chars -= (uint32_t)len + 1u;
+    } else {
+      chars = 0u;
+    }
+  }
+}
+
 // Live flex bar geometry (single-player)
 #define FLEX_BX  6
 #define FLEX_BY  64
 #define FLEX_BW  116
 #define FLEX_BH  18
+
+static const char* g_playground_intro_lines[] = {
+  "Hello newbie!",
+  "Welcome to the world",
+  "of PULSEBOUND.",
+  "A place of muscle,",
+  "but don't worry!",
+  "I'll help you!",
+  "Remember 2 rules:",
+  "1. Flex.",
+  "2. Win.",
+  "Got it? Goodluck!"
+};
+static const uint8_t g_playground_intro_count =
+    sizeof(g_playground_intro_lines)/sizeof(g_playground_intro_lines[0]);
 
 static void draw_flex_static(float baseline_hz)
 {
@@ -131,7 +198,23 @@ bool game_single_tick(void){
       gfx_header("Mode: PLAYGROUND", COL_WHITE);
         ui_sep_h(18);
 
-      if (dt >= 3000u) goto_state(ST_COUNTDOWN_LABEL);
+      if (dt >= 3000u) goto_state(ST_TUTORIAL);
+      break;
+
+    case ST_TUTORIAL:
+      if (g_dirty){
+        g_dirty = false;
+        gfx_clear(COL_BLACK);
+        gfx_header("TUTORIAL", COL_WHITE);
+        // optional static elements here
+      }
+        
+      playground_draw_lore_typewriter(g_playground_intro_lines,
+                                g_playground_intro_count,
+                                dt,
+                                50u);
+
+      if (dt >= 10000u) goto_state(ST_COUNTDOWN_LABEL);
       break;
 
     case ST_COUNTDOWN_LABEL:
@@ -217,8 +300,8 @@ bool game_single_tick(void){
 
         // TI-style tiers
         static const char* ranks[] = {
-          "Challenger 1%","Grandmaster 3%","Master 5%","Diamond 10%",
-          "Platinum 20%","Gold 35%","Silver 55%","Bronze 75%","Iron 100%"
+          "Challenger  1%","Grandmaster 3%","Master      5%","Diamond    10%",
+          "Platinum   20%","Gold       35%","Silver     55%","Bronze     75%","Iron      100%"
         };
 
         const int base_y = 24, row_h = 10;
@@ -244,8 +327,8 @@ bool game_single_tick(void){
         ui_sep_h(18);
 
         static const char* ranks[] = {
-          "Challenger 1%","Grandmaster 3%","Master 5%","Diamond 10%",
-          "Platinum 20%","Gold 35%","Silver 55%","Bronze 75%","Iron 100%"
+          "Challenger  1%","Grandmaster 3%","Master      5%","Diamond    10%",
+          "Platinum   20%","Gold       35%","Silver     55%","Bronze     75%","Iron      100%"
         };
         uint16_t hc[9]; 
         rankhist_get_single(hc);

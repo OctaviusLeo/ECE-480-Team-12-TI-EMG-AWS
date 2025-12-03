@@ -26,8 +26,8 @@
 #define ADS_CS_HIGH()        GPIOPinWrite(ADS_GPIOB_BASE, ADS_PIN_FSS, ADS_PIN_FSS)
 #define ADS_DRDY_IS_LOW()    ((GPIOPinRead(ADS_GPIOE_BASE, ADS_PIN_DRDY) & ADS_PIN_DRDY) == 0)
 
-// -------- SPI mode/speed --------
-// Many ADS13xx parts use CPOL=0, CPHA=1 (Motorola Mode 1). If your datasheet
+// SPI mode/speed
+// Many ADS13xx parts use CPOL=0, CPHA=1 (Motorola Mode 1). If datasheet
 // says otherwise, change SSI_FRF_MOTO_MODE_1 below.
 #define ADS_SPI_MODE         SSI_FRF_MOTO_MODE_1
 #define ADS_SPI_HZ           1000000U   // 1 MHz to start conservatively
@@ -81,10 +81,10 @@ void ads_init(void){
   SSIConfigSetExpClk(SSI2_BASE, SysCtlClockGet(), ADS_SPI_MODE, SSI_MODE_MASTER, ADS_SPI_HZ, 8);
   SSIEnable(SSI2_BASE);
 
-  // ----- Minimal bring-up (generic; adjust to datasheet if needed) -----
+  // Minimal bring-up (generic adjust to datasheet if needed)
   // Many ADS131 devices require a RESET, then UNLOCK, register writes (WREG),
-  // then START. We leave exact opcodes to your datasheet; the skeleton below
-  // is a placeholder so this file compiles and you can wire pins.
+  // then START. Leave exact opcodes to datasheet; the skeleton below
+  // is a placeholder so this file compiles and can wire pins.
 
   // Example placeholders (NOP frame gap):
   ADS_CS_LOW();
@@ -110,7 +110,7 @@ int16_t ads_read_sample_ch1_blocking(void){
   ADS_CS_HIGH();
 
   // Sign-extend 24-bit to 32, then scale to 16-bit for our processing
-  // (If your part is set to 32-bit words, adjust parsing.)
+  // (If part is set to 32-bit words, adjust parsing.)
   int32_t s1 = (ch1 & 0x800000) ? (int32_t)(ch1 | 0xFF000000) : (int32_t)ch1;
   // Quick downscale: >> 8 (keep MSB significance)
   return (int16_t)(s1 >> 8);

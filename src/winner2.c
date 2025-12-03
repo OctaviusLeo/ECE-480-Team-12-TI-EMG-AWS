@@ -37,7 +37,7 @@ void winner2_start(float p1_avg_hz, float p2_avg_hz)
 
     g_t0_ms = millis();
 
-    /* ---- STATIC FRAME: drawn once ---- */
+    /* STATIC FRAME: drawn once */
     gfx_clear(COL_BLACK);
     gfx_header("RESULTS", COL_RED);
     gfx_bar(0, 18, 128, 1, COL_DKGRAY);   // separator under header

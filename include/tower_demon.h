@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define TOWER_DEMON_W 64
-#define TOWER_DEMON_H 42
+#define TOWER_DEMON_W 80
+#define TOWER_DEMON_H 53
 #define TOWER_DEMON_PAL_SIZE 16
 
 extern const uint16_t TOWER_DEMON_PAL[TOWER_DEMON_PAL_SIZE];

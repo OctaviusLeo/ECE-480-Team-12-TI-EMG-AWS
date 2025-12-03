@@ -352,8 +352,8 @@ bool game_two_tick(void){
         ui_sep_h(18);
 
         static const char* ranks[] = {
-          "Challenger 1%","Grandmaster 3%","Master 5%","Diamond 10%",
-          "Platinum 20%","Gold 35%","Silver 55%","Bronze 75%","Iron 100%"
+          "Challenger  1%","Grandmaster 3%","Master      5%","Diamond    10%",
+          "Platinum   20%","Gold       35%","Silver     55%","Bronze     75%","Iron      100%"
         };
         const int base_y = 24;
         const int row_h  = 10;

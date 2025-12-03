@@ -5,7 +5,7 @@
 #include "gfx.h"
 #include "project.h"
 
-// geometry matches your single-player result bar area
+// geometry matches single-player result bar area
 #define BX   6
 #define BY   110
 #define BW   116
@@ -55,7 +55,7 @@ void result1_start(float avg_hz, float baseline_hz){
         g_baseline_px = 0;
     }
 
-    /* --------- STATIC SCREEN: draw once --------- */
+    /* STATIC SCREEN: draw once */
     gfx_clear(COL_BLACK);
     gfx_header("RESULT", COL_WHITE);
     gfx_bar(0, 18, 128, 1, COL_DKGRAY);  // separator under header
@@ -92,9 +92,9 @@ bool result1_tick(void){
         w = (uint8_t)((dt * g_target_px) / ANIM_MS);
     }
 
-    /* --------- DYNAMIC PART: ONLY BAR REGION REFRESHES --------- */
+    /* DYNAMIC PART: ONLY BAR REGION REFRESHES */
 
-    /* grow the green bar (0..w), background to the right
+    /* grow the green bar (0), background to the right
        stays gray from result1_start() */
     if (w > 0) {
         gfx_bar(BX, BY, w, BH, COL_GREEN);

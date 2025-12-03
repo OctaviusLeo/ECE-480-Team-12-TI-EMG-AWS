@@ -7,7 +7,6 @@
 #include "ssd1351.h"
 #include "game.h"
 
-// new headers for split modes
 #include "game_single.h"
 #include "game_two.h"
 #include "game_story.h"
@@ -21,7 +20,7 @@
 
 // private storage of latest metrics (read by modes via game_get_metrics)
 static bool     g_inited = false;
-static uint8_t  g_mode   = 2;        // 0 = playground, 1 = PVP, 2 = Story, 3 = Tower, 4 = ending credits
+static uint8_t  g_mode   = 0;        // 0 = playground, 1 = PVP, 2 = Story, 3 = Tower, 4 = Credits + Trophy
 static float    g_latest_hz = 0.0f;
 static uint8_t  g_latest_pct = 0;
 static float    g_baseline_disp_hz = 0.0f;
@@ -122,4 +121,6 @@ void game_tick(void){
       menu_start();
     }
   }
+  //overlay any active "Achievement Unlocked!" toast
+  cheevos_draw_toast();
 }

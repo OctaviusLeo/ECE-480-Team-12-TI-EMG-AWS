@@ -28,18 +28,13 @@
 #include "circular_buffer.h"
 #include "test_signal_gen.h"
 
-//============================================================================
 // CONFIGURATION FLAGS
-//============================================================================
-
 #define RUN_HARDWARE_TEST   1  // 1 = Real ADC acquisition, 0 = Skip
 #define ENABLE_TEST_SUITE   0  // 1 = Run software tests first, 0 = Skip
 #define LED_FEEDBACK_ENABLE 1  // 1 = Use LEDs for activation, 0 = No LEDs
 
-//============================================================================
-// GLOBAL STATE
-//============================================================================
 
+// GLOBAL STATE
 // New EMG processors
 EMGProcessor emg_ch1;
 EMGProcessor emg_ch2;
@@ -51,10 +46,7 @@ CircularBuffer buffer_ch1_old;
 CircularBuffer buffer_ch2_old;
 SignalGenerator sig_gen;
 
-//============================================================================
 // LED CONFIGURATION
-//============================================================================
-
 void ConfigureLED(void) {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF)) {}
@@ -75,10 +67,7 @@ void LED_SetActivation(bool ch1_active, bool ch2_active) {
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, led_state);
 }
 
-//============================================================================
 // UART CONFIGURATION
-//============================================================================
-
 void ConfigureUART(void) {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
@@ -89,10 +78,6 @@ void ConfigureUART(void) {
     
     UARTStdioConfig(0, 115200, SysCtlClockGet());
 }
-
-//============================================================================
-// TEST FUNCTIONS (YOUR ORIGINAL CODE)
-//============================================================================
 
 /**
  * Test 1: Filter response to step input
@@ -232,10 +217,7 @@ void Run_TestSuite(void) {
     UARTprintf("╚═══════════════════════════════════════════╝\n");
 }
 
-//============================================================================
 // CALIBRATION PROCEDURE
-//============================================================================
-
 bool PerformCalibration(void) {
     int32_t ch1_raw, ch2_raw, ch3_raw, ch4_raw;
     uint16_t samples_collected = 0;
@@ -333,10 +315,7 @@ bool PerformCalibration(void) {
     return (cal_ch1.success && cal_ch2.success);
 }
 
-//============================================================================
 // HARDWARE EMG ACQUISITION
-//============================================================================
-
 void Run_EMG_Acquisition(void) {
     int32_t ch1_raw, ch2_raw, ch3_raw, ch4_raw;
     uint32_t sample_count = 0;
@@ -429,10 +408,8 @@ void Run_EMG_Acquisition(void) {
     LED_SetActivation(false, false);
 }
 
-//============================================================================
-// MAIN PROGRAM
-//============================================================================
 
+// MAIN PROGRAM
 int main(void) {
     
     // System clock to 80 MHz
@@ -477,10 +454,7 @@ int main(void) {
     UARTgetc();
 #endif
     
-    //------------------------------------------------------------------------
-    // RUN HARDWARE ACQUISITION (if enabled)
-    //------------------------------------------------------------------------
-    
+    // RUN HARDWARE ACQUISITION (if enabled)    
 #if RUN_HARDWARE_TEST
     
     // Initialize ADC
@@ -547,10 +521,7 @@ int main(void) {
     }
 }
 
-//============================================================================
 // DEBUG ERROR HANDLER
-//============================================================================
-
 #ifdef DEBUG
 void __error__(char *pcFilename, uint32_t ui32Line) {
     UARTprintf("Error in %s, line %d\n", pcFilename, ui32Line);

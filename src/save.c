@@ -1,7 +1,7 @@
 #include <string.h>
 #include "save.h"
 
-/* ---- weak flash HAL (override in your board layer) ---- */
+/* weak flash HAL (override in board layer) */
 __attribute__((weak)) bool flash_read(uint32_t addr, void* buf, uint32_t len){
   (void)addr; (void)buf; (void)len; return false; /* no flash by default */
 }
@@ -10,7 +10,7 @@ __attribute__((weak)) bool flash_write(uint32_t addr, const void* buf, uint32_t 
 }
 #define SAVE_ADDR  (0x0007F000u) /* adjust to a reserved 4KB sector */
 
-/* ---- CRC32 (small, standard polynomial) ---- */
+/* CRC32 (small, standard polynomial) */
 static uint32_t crc32(const void* data, uint32_t len){
   const uint8_t* p = (const uint8_t*)data;
   uint32_t c = 0xFFFFFFFFu;
@@ -21,7 +21,7 @@ static uint32_t crc32(const void* data, uint32_t len){
   return ~c;
 }
 
-/* ---- API ---- */
+/* API */
 void save_defaults(save_t *s){
   memset(s, 0, sizeof(*s));
   s->version = 1;

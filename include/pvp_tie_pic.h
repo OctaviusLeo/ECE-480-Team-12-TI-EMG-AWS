@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define PVP_TIE_PIC_W 128
-#define PVP_TIE_PIC_H 90
+#define PVP_TIE_PIC_W 64
+#define PVP_TIE_PIC_H 45
 #define PVP_TIE_PIC_PAL_SIZE 16
 
 extern const uint16_t PVP_TIE_PIC_PAL[PVP_TIE_PIC_PAL_SIZE];

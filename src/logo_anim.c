@@ -31,14 +31,14 @@ bool logo_anim_tick(void)
         return true;  // animation done
     }
 
-    /* Switch frame every 200 ms (so over 2s you get ~10 flips) */
+    /* Switch frame every 200 ms (so over 2s get ~10 flips) */
     uint32_t frame = (elapsed / 200u) & 1u;  // 0 or 1
 
     if (frame != g_last_frame_idx) {
         g_last_frame_idx = frame;
 
         /* Compute a bounding box that fits BOTH logos,
-           so we can clear once and draw either centered inside. */
+           can clear once and draw either centered inside. */
         uint8_t box_w = (TI_LOGO_W  > MSU_LOGO_W)  ? TI_LOGO_W  : MSU_LOGO_W;
         uint8_t box_h = (TI_LOGO_H  > MSU_LOGO_H)  ? TI_LOGO_H  : MSU_LOGO_H;
 

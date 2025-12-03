@@ -7,9 +7,7 @@
 #include <string.h>
 #include <math.h>
 
-//============================================================================
 // FILTER COEFFICIENT CALCULATIONS
-//============================================================================
 
 /**
  * Calculate alpha for high-pass filter
@@ -33,10 +31,8 @@ static float Calculate_LP_Alpha(float cutoff_freq, float sample_rate) {
     return dt / (RC + dt);
 }
 
-//============================================================================
-// INITIALIZATION
-//============================================================================
 
+// INITIALIZATION
 /**
  * Initialize EMG processor
  */
@@ -75,10 +71,7 @@ void EMG_InitFilters(EMGProcessor *emg) {
     memset(&emg->notch_filter, 0, sizeof(NotchFilter));
 }
 
-//============================================================================
 // CALIBRATION
-//============================================================================
-
 /**
  * Start calibration process
  */
@@ -143,10 +136,7 @@ CalibrationResult EMG_GetCalibrationResult(EMGProcessor *emg) {
     return result;
 }
 
-//============================================================================
 // SIGNAL PROCESSING PIPELINE
-//============================================================================
-
 /**
  * Complete signal processing pipeline
  * Returns processed envelope value
@@ -232,10 +222,7 @@ float EMG_LowPassFilter(LowPassFilter *lpf, float input) {
     return output;
 }
 
-//============================================================================
 // BASELINE TRACKING
-//============================================================================
-
 /**
  * Update rolling baseline estimate
  */
@@ -270,10 +257,7 @@ float EMG_SubtractBaseline(BaselineTracker *bt, float sample) {
     return (corrected > 0.0f) ? corrected : 0.0f;
 }
 
-//============================================================================
 // ACTIVATION DETECTION
-//============================================================================
-
 /**
  * Detect muscle activation with hysteresis and debouncing
  */
@@ -329,10 +313,7 @@ void EMG_UpdateThreshold(EMGProcessor *emg) {
                                (ACTIVATION_THRESHOLD_MULTIPLIER * stddev);
 }
 
-//============================================================================
 // UTILITY FUNCTIONS
-//============================================================================
-
 /**
  * Calculate RMS of signal
  */

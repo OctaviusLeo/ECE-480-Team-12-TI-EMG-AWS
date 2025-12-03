@@ -9,6 +9,7 @@
 #include "msu_logo.h"
 #include "ti_logo.h"
 #include "end_credits_logo.h"
+#include "cheevos.h"
 
 typedef enum {
   ST_LOGO = 0,
@@ -22,12 +23,14 @@ typedef enum {
   FACILITATOR,
   PROFRESSOR,
   ECS_THANKS_MSU,
-  ECS_DONE
+  ECS_CHEEVOS
 } ecs_state_t;
 
 static ecs_state_t g_s;
 static uint32_t    g_t0;
 static bool        g_dirty;
+
+static uint8_t g_ecs_cheevo_page = 0xFF;
 
 static void s_goto(ecs_state_t ns){
   g_s     = ns;
@@ -103,7 +106,7 @@ bool end_credits_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
-        gfx_header("TEAM", COL_WHITE);
+        gfx_header("TEAM #12", COL_WHITE);
         gfx_bar(0, 18, 128, 1, COL_DKGRAY);
 
         uint8_t x = (uint8_t)((128 - TEAM_W) / 2);
@@ -181,10 +184,38 @@ bool end_credits_tick(void){
                       MSU_LOGO_PAL);
       }
       if (dt >= 5000u){
-        return true;    // tell game.c credits are finished
+        s_goto(ECS_CHEEVOS);
+      }
+    } break;
+
+    case ECS_CHEEVOS: {
+      if (g_dirty) {
+        g_dirty = false;
+      }
+
+      // Decide which page we *want* to show based on dt
+      uint8_t page;
+      if (dt < 5000u) {
+        page = 0;
+      } else if (dt < 10000u) {
+        page = 1;
+      } else if (dt < 15000u) {
+        page = 2;
+      } else if (dt < 20000u) {
+        page = 3;
+      } else {
+        // After 20s total, reset tracker and finish credits
+        g_ecs_cheevo_page = 0xFF;
+        return true;
+      }
+
+      // Only redraw when we *change* page or on first entry
+      if (page != g_ecs_cheevo_page) {
+        g_ecs_cheevo_page = page;
+        gfx_clear(COL_BLACK);
+        cheevos_draw_panel_page(page);
       }
     } break;
   }
-
   return false;
 }

@@ -37,8 +37,13 @@ typedef enum {
   ACH_TOWER_CLEAR
 } cheevo_t;
 
-void cheevos_bind_save(save_t *s);          // pass your loaded save here
+void cheevos_bind_save(save_t *s);          // pass loaded save here
 bool cheevos_unlock(cheevo_t id);           // returns true if newly unlocked
 void cheevos_draw_panel(void);              // simple list renderer
+void cheevos_draw_panel_page(uint8_t page);
+
+// Draw a small "Achievement Unlocked!" overlay if one is active.
+// Safe to call every frame; does nothing if no recent unlock.
+void cheevos_draw_toast(void);
 
 #endif

@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define GAME_SINGLE_LOGO_W 96
-#define GAME_SINGLE_LOGO_H 64
+#define GAME_SINGLE_LOGO_W 128
+#define GAME_SINGLE_LOGO_H 85
 #define GAME_SINGLE_LOGO_PAL_SIZE 16
 
 extern const uint16_t GAME_SINGLE_LOGO_PAL[GAME_SINGLE_LOGO_PAL_SIZE];

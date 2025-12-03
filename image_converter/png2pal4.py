@@ -11,7 +11,7 @@ def emit_pal4(image_path: Path, symbol: str):
     # Load image
     img = Image.open(image_path).convert("RGBA")
     #img = img.resize((96, 96), Image.LANCZOS)
-    img.thumbnail((64, 64), Image.LANCZOS)
+    img.thumbnail((128, 128), Image.LANCZOS)
     w, h = img.size
 
     # Quantize to 16 colors using adaptive palette

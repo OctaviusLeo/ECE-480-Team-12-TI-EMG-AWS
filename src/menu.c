@@ -24,7 +24,7 @@ static const char* mode_name(uint8_t m)
     case MODE_PVP:        return "PVP";
     case MODE_STORY:      return "Story";
     case MODE_TOWER:      return "Tower";
-    case MODE_CREDITS:    return "End Credits";
+    case MODE_CREDITS:    return "Credits + Trophy";
     default:              return "Unknown";
     }
 }
@@ -83,8 +83,8 @@ bool menu_tick(uint8_t *out_mode)
             gfx_clear(COL_BLACK);
             gfx_header("BOOTING", COL_RED);
             gfx_bar(0, 18, 128, 1, COL_DKGRAY);
-            gfx_text2(0, 64, "downloading", COL_WHITE, 1);
-            gfx_text2(0, 74, "packages...", COL_WHITE, 1);
+            gfx_text2(20, 64, "downloading", COL_WHITE, 1);
+            gfx_text2(20, 74, "packages...", COL_WHITE, 1);
         }
 
         if (hz > 3.0f || (now - g_t0) >= 2000u) {

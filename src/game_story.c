@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "timer.h"
 #include "gfx.h"
 #include "project.h"
@@ -31,6 +32,10 @@
 #include "story_ch10_enemy.h"
 #include "you_died.h"
 #include "chest.h"
+#include "cheevos.h"
+
+#define STORY_FLEX_MENU_HZ 50.0f   // Hz needed to exit to menu after too many deaths
+#define STORY_CHOICE_SPLIT_HZ 50.0f //A/B split threshold in Hz
 
 typedef enum {
   STS_LOGO = 0,
@@ -45,7 +50,8 @@ typedef enum {
   STS_ENDING,        // final scene
   STS_LORE_BRAND,     // global story intro lore text
   STS_LORE_CHAPTER,   // per-chapter lore text
-  STS_LORE_ENDING     // lore text before the final ending scene
+  STS_LORE_ENDING,     // lore text before the final ending scene
+  STS_FLEX_RETURN   // flex after too many deaths to go back to menu
 } story_state_t;
 
 static story_state_t g_s;
@@ -60,6 +66,9 @@ static const story_item_t *g_itemA;
 static const story_item_t *g_itemB;
 
 static bool          g_dirty;          // true = need to (re)draw this state's screen
+
+// 3 deaths needed to exit
+static uint8_t       g_story_deaths = 0u;
 
 // Per-chapter enemy sprite descriptor for Story mode
 typedef struct {
@@ -163,7 +172,9 @@ static const char* g_lore_ch2_lines[] = {
   "-ining grounds. Here",
   "you start to get",
   "serious! An iron dum",
-  "-my catches your eye"
+  "-my catches your eye",
+  ". You stare at it and",
+  "then strike!!!"
 };
 static const uint8_t g_lore_ch2_count =
     sizeof(g_lore_ch2_lines)/sizeof(g_lore_ch2_lines[0]);
@@ -287,6 +298,57 @@ static void draw_lore_screen(const char* title,
   }
 }
 
+// Typewriter-style lore: slowly reveal text over time.
+// NOTE: does NOT clear the screen or draw header; caller does that once via g_dirty.
+static void draw_lore_typewriter(const char* const* lines,
+                                 uint8_t count,
+                                 uint32_t dt,
+                                 uint16_t ms_per_char)
+{
+  uint32_t chars = dt / ms_per_char;  // total characters across all lines
+  uint8_t  y     = 24;                // first line Y
+
+  for (uint8_t i = 0; i < count; ++i) {
+    const char* s = lines[i];
+    if (!s) {
+      continue;
+    }
+
+    size_t len = strlen(s);
+    if (chars == 0u) {
+      break;  // nothing left to draw
+    }
+
+    uint32_t this_chars = chars;
+    if (this_chars > len) {
+      this_chars = len;
+    }
+
+    // Draw prefix of this line
+    char buf[32];  // adjust if you ever have >31-char lines
+    if (this_chars > sizeof(buf) - 1u) {
+      this_chars = sizeof(buf) - 1u;
+    }
+    memcpy(buf, s, this_chars);
+    buf[this_chars] = '\0';
+
+    // Draw only the visible prefix; earlier characters are redrawn in-place
+    gfx_text2(4, y, buf, COL_WHITE, 1);
+
+    y = (uint8_t)(y + 10u);
+    if (y > 120u) {
+      break;  // off-screen
+    }
+
+    // Consume characters for this line (+1 “newline” spacer)
+    if (chars > (uint32_t)len + 1u) {
+      chars -= (uint32_t)len + 1u;
+    } else {
+      chars = 0u;
+    }
+  }
+}
+
 // Draw the enemy battle Hz bar at the bottom of the screen.
 // hz        = current player Hz
 // target_hz = enemy's target Hz for this chapter
@@ -323,6 +385,111 @@ static void draw_enemy_hz_bar(float hz, float target_hz)
   gfx_bar(th_x, bar_y, 1, bar_h, COL_RED);
 }
 
+// Chest choice Hz bar (Story):
+// A on the left, B on the right, bar sits over the chest image.
+static void story_choice_bar_static(void)
+{
+  const uint8_t bar_x = 4;
+  const uint8_t bar_y = 60;    // roughly across the chest
+  const uint8_t bar_w = 120;
+  const uint8_t bar_h = 8;
+
+  // baseline band
+  gfx_bar(bar_x, bar_y, bar_w, bar_h, COL_DKGRAY);
+
+  // A / B labels just above the bar
+  gfx_text2(bar_x,           bar_y - 10, "A", COL_CYAN,   1);
+  gfx_text2(bar_x + bar_w - 6, bar_y - 10, "B", COL_YELLOW, 1);
+
+  // draw static threshold marker once (we'll redraw it in the dynamic pass anyway)
+  float max_hz = 80.0f;
+  float th_hz  = STORY_CHOICE_SPLIT_HZ;
+  if (th_hz < 0.0f)     th_hz = 0.0f;
+  if (th_hz > max_hz)   th_hz = max_hz;
+  uint8_t th_x = bar_x + (uint8_t)((th_hz / max_hz) * (float)bar_w + 0.5f);
+  if (th_x >= (uint8_t)(bar_x + bar_w)) th_x = (uint8_t)(bar_x + bar_w - 1u);
+  gfx_bar(th_x, bar_y, 1, bar_h, COL_RED);
+}
+
+// Dynamic fill for choice bar (Story)
+// Call every tick with current hz.
+static void story_choice_bar_update(float hz)
+{
+  const uint8_t bar_x = 4;
+  const uint8_t bar_y = 60;
+  const uint8_t bar_w = 120;
+  const uint8_t bar_h = 8;
+
+  float max_hz = 80.0f;
+  if (hz < 0.0f)     hz = 0.0f;
+  if (hz > max_hz)   hz = max_hz;
+
+  // Clear band back to baseline
+  gfx_bar(bar_x, bar_y, bar_w, bar_h, COL_DKGRAY);
+
+  // Fill according to current Hz
+  uint8_t cur_w = (uint8_t)((hz / max_hz) * (float)bar_w + 0.5f);
+  if (cur_w > bar_w) cur_w = bar_w;
+  if (cur_w > 0u){
+    gfx_bar(bar_x, bar_y, cur_w, bar_h, COL_GREEN);
+  }
+
+  // Re-draw threshold marker on top
+  float th_hz = STORY_CHOICE_SPLIT_HZ;
+  if (th_hz < 0.0f)     th_hz = 0.0f;
+  if (th_hz > max_hz)   th_hz = max_hz;
+  uint8_t th_x = bar_x + (uint8_t)((th_hz / max_hz) * (float)bar_w + 0.5f);
+  if (th_x >= (uint8_t)(bar_x + bar_w)) th_x = (uint8_t)(bar_x + bar_w - 1u);
+  gfx_bar(th_x, bar_y, 1, bar_h, COL_RED);
+}
+
+static void story_unlock_for_chapter(uint8_t ch){
+  switch(ch){
+    case 0:  // Chapter 1 – Scarecrow
+      cheevos_unlock(ACH_CH1);
+      cheevos_unlock(ACH_SCARECROW);
+      break;
+    case 1:  // Chapter 2 – Training Dummy
+      cheevos_unlock(ACH_CH2);
+      cheevos_unlock(ACH_TRAINING_DUMMY);
+      break;
+    case 2:  // Chapter 3 – Rat King
+      cheevos_unlock(ACH_CH3);
+      cheevos_unlock(ACH_RAT_KING);
+      break;
+    case 3:  // Chapter 4 – Bandits
+      cheevos_unlock(ACH_CH4);
+      cheevos_unlock(ACH_BANDITS);
+      break;
+    case 4:  // Chapter 5 – Knight
+      cheevos_unlock(ACH_CH5);
+      cheevos_unlock(ACH_KNIGHT);
+      break;
+    case 5:  // Chapter 6 – Champion
+      cheevos_unlock(ACH_CH6);
+      cheevos_unlock(ACH_CHAMPION);
+      break;
+    case 6:  // Chapter 7 – Sorcerer
+      cheevos_unlock(ACH_CH7);
+      cheevos_unlock(ACH_SORCERER);
+      break;
+    case 7:  // Chapter 8 – Dragon
+      cheevos_unlock(ACH_CH8);
+      cheevos_unlock(ACH_DRAGON);
+      break;
+    case 8:  // Chapter 9 – Arch Demon
+      cheevos_unlock(ACH_CH9);
+      cheevos_unlock(ACH_ARCH_DEMON);
+      break;
+    case 9:  // Chapter 10 – Demon King
+      cheevos_unlock(ACH_CH10);
+      cheevos_unlock(ACH_DEMON_KING);
+      break;
+    default:
+      break;
+  }
+}
+
 static void s_goto(story_state_t ns){
   g_s    = ns;
   g_t0   = millis();
@@ -336,6 +503,8 @@ void game_story_init(void){
   g_cnt_hz   = 0u;
   g_itemA    = &STORY_ITEM_A;
   g_itemB    = &STORY_ITEM_B;
+  g_story_deaths = 0u;
+  cheevos_unlock(ACH_STORY_START);
   s_goto(STS_LOGO);
 }
 
@@ -374,9 +543,17 @@ bool game_story_tick(void){
     case STS_LORE_BRAND: {
       if (g_dirty){
         g_dirty = false;
-        draw_lore_screen("Prologue", g_lore_brand_lines, g_lore_brand_count);
+        gfx_clear(COL_BLACK);
+        gfx_header("Prologue", COL_WHITE);
+        // any static art/lines go here ONCE
       }
-      // Show lore for 20 seconds, then show the global art
+
+      // Only text updates each tick; no clears
+      draw_lore_typewriter(g_lore_brand_lines,
+                          g_lore_brand_count,
+                          dt,
+                          50u);   // ms per char
+
       if (dt >= 10000u){
         s_goto(STS_BRAND);
       }
@@ -402,16 +579,21 @@ bool game_story_tick(void){
     } break;
 
     case STS_LORE_CHAPTER: {
+      const story_chapter_t* c = &g_story[g_chapter];
+      const lore_block_t*    lb = &g_lore_chapters[g_chapter];
+
       if (g_dirty){
         g_dirty = false;
-
-        const story_chapter_t* c = &g_story[g_chapter];
-        const lore_block_t* lb   = &g_lore_chapters[g_chapter];
-
-        // Show chapter name as header + multi-line lore below
-        draw_lore_screen(c->name, lb->lines, lb->count);
+        gfx_clear(COL_BLACK);
+        gfx_header(c->name, COL_WHITE);
+        // any static decorations per chapter go here once
       }
-      // Show lore for 4 seconds (tweak as desired)
+
+      draw_lore_typewriter(lb->lines,
+                          lb->count,
+                          dt,
+                          50u);
+
       if (dt >= 10000u){
         s_goto(STS_INTRO);
       }
@@ -451,7 +633,6 @@ bool game_story_tick(void){
     } break;
 
     case STS_CHOOSE: {
-
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
@@ -481,10 +662,16 @@ bool game_story_tick(void){
         gfx_text2(0, 110, lineA, COL_CYAN,   1);
         gfx_text2(0, 120, lineB, COL_YELLOW, 1);
         choice_draw_hint(80);
+
+        // draw static A/B bar over the chest
+        story_choice_bar_static();
       }
 
+      // live bar update using current Hz
+      story_choice_bar_update(hz);
+
       // Live Hz-based choice: last one wins before timeout
-      choice_t ch = choice_from_hz(hz, 50.0f);
+      choice_t ch = choice_from_hz(hz, STORY_CHOICE_SPLIT_HZ);
       const story_item_t *cur = (ch == CHOICE_A) ? g_itemA : g_itemB;
       if (cur) {
         g_equipped = *cur;   // copy struct; RESULT/REWARD use g_equipped
@@ -561,6 +748,8 @@ bool game_story_tick(void){
       if (dt >= 2000u) {
         if (you >= foe) {
           // Win → continue normal flow
+          cheevos_unlock(ACH_FIRST_WIN);
+          story_unlock_for_chapter(g_chapter);
           s_goto(STS_REWARD);
         } else {
           // Lose → show you died + retry this chapter
@@ -596,14 +785,54 @@ bool game_story_tick(void){
                       YOU_DIED_IDX,
                       YOU_DIED_PAL);
 
-        gfx_text2(30, 110, "Retrying...", COL_RED, 1);
+        if (g_story_deaths + 1u < 3u) {
+          gfx_text2(30, 110, "Retrying...", COL_RED, 1);
+        } else {
+          gfx_text2(4, 110, "Too many deaths...", COL_RED, 1);
+        }
       }
 
       if (dt >= 3000u) {
-        // Reset counters and retry the same chapter from intro
+        // Count this death
+        g_story_deaths++;
+
+        // Reset counters regardless
         g_sum_hz = 0.0f;
         g_cnt_hz = 0u;
-        s_goto(STS_INTRO);
+
+        if (g_story_deaths >= 3u) {
+          // go to flex-to-menu screen instead of retry
+          s_goto(STS_FLEX_RETURN);
+        } else {
+          // retry same chapter from intro
+          s_goto(STS_INTRO);
+        }
+      }
+    } break;
+
+    case STS_FLEX_RETURN: {
+      // hz is already read at top of game_story_tick via game_get_metrics
+      if (g_dirty) {
+        g_dirty = false;
+        gfx_clear(COL_BLACK);
+        gfx_header("REST & RESET", COL_WHITE);
+        gfx_bar(0, 18, 128, 1, COL_DKGRAY);
+
+        gfx_text2(4, 36, "You have fallen 3+ times.", COL_RED,   1);
+        gfx_text2(4, 48, "Flex hard to return to",    COL_WHITE, 1);
+        gfx_text2(4, 60, "the main menu.",            COL_WHITE, 1);
+
+        char line[40];
+        snprintf(line, sizeof(line),
+                 "Need: %.1f Hz", STORY_FLEX_MENU_HZ);
+        gfx_text2(4, 82, line, COL_CYAN, 1);
+      }
+
+      // hz was computed at the top of game_story_tick()
+      if (hz >= STORY_FLEX_MENU_HZ) {
+        // Optionally reset deaths so next Story run starts fresh
+        g_story_deaths = 0u;
+        return true;  // tell game.c: Story mode finished -> go back to menu
       }
     } break;
 
@@ -620,8 +849,15 @@ bool game_story_tick(void){
     case STS_LORE_ENDING: {
       if (g_dirty){
         g_dirty = false;
-        draw_lore_screen("Epilogue", g_lore_ending_lines, g_lore_ending_count);
+        gfx_clear(COL_BLACK);
+        gfx_header("Epilogue", COL_WHITE);
       }
+
+      draw_lore_typewriter(g_lore_ending_lines,
+                          g_lore_ending_count,
+                          dt,
+                          50u);
+
       if (dt >= 5000u){
         s_goto(STS_ENDING);
       }
@@ -647,6 +883,7 @@ bool game_story_tick(void){
         gfx_text2(6, 70, "became the strongest in the lands",   COL_WHITE, 1);
         gfx_text2(6, 90, "and saved the world!",                COL_WHITE, 1);
         gfx_text2(6,110, "or did you...",                       COL_GREEN, 1);
+        cheevos_unlock(ACH_STORY_CLEAR);
       }
       if (dt >= 10000u){
         return true;    // tell game.c that Story mode is finished

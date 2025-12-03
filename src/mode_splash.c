@@ -20,7 +20,7 @@ static const char* mode_name(uint8_t m){
     case MODE_PVP:        return "PVP";
     case MODE_STORY:      return "Story";
     case MODE_TOWER:      return "Tower";
-    case MODE_CREDITS:    return "End Credits";
+    case MODE_CREDITS:    return "Credits + Trophy";
     default:              return "Unknown";
   }
 }

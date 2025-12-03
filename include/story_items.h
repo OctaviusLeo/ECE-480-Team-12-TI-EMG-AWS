@@ -11,7 +11,6 @@ typedef struct {
 
 /*
  * Backwards-compatible A/B items.
- * You can still use these directly if any older code expects them.
  */
 extern const story_item_t STORY_ITEM_A;  // Bandage (+10% you)
 extern const story_item_t STORY_ITEM_B;  // Cursed Ring (+0% you, +20% enemy)

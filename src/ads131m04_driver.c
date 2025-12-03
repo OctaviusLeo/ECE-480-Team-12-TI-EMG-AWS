@@ -1,6 +1,5 @@
 /**
- * ads131m04_driver.c
- * Implementation of ADS131M04 driver - FINAL CORRECTED VERSION
+ * Implementation of ADS131M04 driver
  */
 
 #include "ads131m04_driver.h"
@@ -14,10 +13,6 @@
 #include "driverlib/ssi.h"
 #include "driverlib/sysctl.h"
 
-//============================================================================
-// FSR LOOKUP TABLE (✅ ADDED)
-//============================================================================
-
 const float ADS_FSR_TABLE[8] = {
     1.2f,      // GAIN_1   = ±1.2V
     0.6f,      // GAIN_2   = ±600mV
@@ -29,9 +24,7 @@ const float ADS_FSR_TABLE[8] = {
     0.009375f  // GAIN_128 = ±9.375mV
 };
 
-//============================================================================
 // TIMING MACROS
-//============================================================================
 
 #define DELAY_US(x) SysCtlDelay((SysCtlClockGet() / 3000000) * (x))
 #define DELAY_MS(x) SysCtlDelay((SysCtlClockGet() / 3000) * (x))
@@ -40,9 +33,7 @@ const float ADS_FSR_TABLE[8] = {
 #define CS_LOW()    GPIOPinWrite(ADS_GPIO_PORT, ADS_CS_PIN, 0)
 #define CS_HIGH()   GPIOPinWrite(ADS_GPIO_PORT, ADS_CS_PIN, ADS_CS_PIN)
 
-//============================================================================
 // INITIALIZATION
-//============================================================================
 
 /**
  * Initialize ADS131M04 interface
@@ -161,9 +152,8 @@ void ADS_HardwareReset(void) {
     DELAY_MS(5);
 }
 
-//============================================================================
+
 // LOW-LEVEL SPI
-//============================================================================
 
 /**
  * Transfer one 16-bit word via SPI
@@ -195,9 +185,8 @@ void ADS_SendCommand(uint16_t command) {
     CS_HIGH();
 }
 
-//============================================================================
+
 // REGISTER ACCESS
-//============================================================================
 
 /**
  * Read register from ADS131M04
@@ -239,9 +228,8 @@ void ADS_WriteRegister(uint8_t reg_addr, uint16_t value) {
     DELAY_US(10);  // Allow register write to complete
 }
 
-//============================================================================
+
 // PGA CONFIGURATION
-//============================================================================
 
 /**
  * Set PGA gain for specific channel
@@ -274,10 +262,8 @@ void ADS_SetAllChannelsGain(ADS_PGA_Gain gain) {
     }
 }
 
-//============================================================================
-// DATA ACQUISITION
-//============================================================================
 
+// DATA ACQUISITION
 /**
  * Check if new data is ready
  */
@@ -328,10 +314,7 @@ void ADS_ReadAllChannels(int32_t *ch1, int32_t *ch2, int32_t *ch3, int32_t *ch4)
     if(ch4) *ch4 = channel_data[3];
 }
 
-//============================================================================
 // UTILITY
-//============================================================================
-
 /**
  * Convert ADC value to voltage
  * 

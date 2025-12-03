@@ -1,4 +1,3 @@
-// tower_data.h  (NEW)
 #ifndef TOWER_DATA_H
 #define TOWER_DATA_H
 #include <stdint.h>
