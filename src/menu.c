@@ -83,8 +83,8 @@ bool menu_tick(uint8_t *out_mode)
             gfx_clear(COL_BLACK);
             gfx_header("BOOTING", COL_RED);
             gfx_bar(0, 18, 128, 1, COL_DKGRAY);
-            gfx_text2(20, 64, "downloading", COL_WHITE, 1);
-            gfx_text2(20, 74, "packages...", COL_WHITE, 1);
+            gfx_text2(25, 64, "downloading", COL_WHITE, 1);
+            gfx_text2(25, 74, "packages...", COL_WHITE, 1);
         }
 
         if (hz > 3.0f || (now - g_t0) >= 2000u) {
@@ -110,7 +110,7 @@ bool menu_tick(uint8_t *out_mode)
         /* Hold > 1.0 s above threshold to confirm selection */
         static uint32_t hold_t0  = 0;
         static bool     holding  = false;
-        const float     CONFIRM_THRESH = 0.0f;
+        const float     CONFIRM_THRESH = 40.0f;
 
         if (hz >= CONFIRM_THRESH) {
             if (!holding) {
