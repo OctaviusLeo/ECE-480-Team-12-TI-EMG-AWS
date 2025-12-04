@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define TOWER_DRAGON_W 64
-#define TOWER_DRAGON_H 36
+#define TOWER_DRAGON_W 110
+#define TOWER_DRAGON_H 61
 #define TOWER_DRAGON_PAL_SIZE 16
 
 extern const uint16_t TOWER_DRAGON_PAL[TOWER_DRAGON_PAL_SIZE];

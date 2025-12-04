@@ -36,6 +36,8 @@
 
 #define STORY_FLEX_MENU_HZ 50.0f   // Hz needed to exit to menu after too many deaths
 #define STORY_CHOICE_SPLIT_HZ 50.0f //A/B split threshold in Hz
+#define STORY_BAR_MAX_HZ 200.0f   // max scale for story battle bar tweak if...
+#define CHOICE_BAR_MAX_HZ 50.0f   // adjust based on what player Hz looks like
 
 typedef enum {
   STS_LOGO = 0,
@@ -418,13 +420,13 @@ static void draw_enemy_hz_bar(float hz, float target_hz)
 
   if (target_hz <= 0.0f) target_hz = 1.0f;
 
-  // Define a max scale so the bar doesn't overflow; tweak factor as you like.
-  float max_hz = target_hz * 1.5f;
-  if (max_hz < target_hz) max_hz = target_hz;   // safety
+  float max_hz = STORY_BAR_MAX_HZ;
+  if (max_hz < 1.0f) max_hz = 1.0f;
+
+  // Clamp target to the bar’s max so the red line stays on-screen
+  if (target_hz > max_hz) target_hz = max_hz;
 
   if (hz < 0.0f) hz = 0.0f;
-  if (hz > max_hz) hz = max_hz;
-
   // Clear the band once per frame
   gfx_bar(bar_x, bar_y, bar_w, bar_h, COL_DKGRAY);
 
@@ -466,6 +468,43 @@ static void story_choice_bar_static(void)
   uint8_t th_x = bar_x + (uint8_t)((th_hz / max_hz) * (float)bar_w + 0.5f);
   if (th_x >= (uint8_t)(bar_x + bar_w)) th_x = (uint8_t)(bar_x + bar_w - 1u);
   gfx_bar(th_x, bar_y, 1, bar_h, COL_RED);
+}
+
+static void draw_choice_bar(float hz, float need_hz)
+{
+  const uint8_t bar_x = 4;
+  const uint8_t bar_y = 60;
+  const uint8_t bar_w = 120;
+  const uint8_t bar_h = 10;
+
+  if (need_hz <= 0.0f) need_hz = 1.0f;
+  float max_hz = CHOICE_BAR_MAX_HZ;
+  if (max_hz < 1.0f) max_hz = 1.0f;
+
+  if (hz < 0.0f) hz = 0.0f;
+  if (hz > max_hz) hz = max_hz;
+
+  if (need_hz > max_hz) need_hz = max_hz;
+
+  // Background
+  gfx_bar(bar_x, bar_y, bar_w, bar_h, COL_DKGRAY);
+
+  // Current Hz (green)
+  uint8_t cur_w = (uint8_t)((hz / max_hz) * (float)bar_w + 0.5f);
+  if (cur_w > bar_w) cur_w = bar_w;
+  if (cur_w > 0u){
+    gfx_bar(bar_x, bar_y, cur_w, bar_h, COL_GREEN);
+  }
+
+  // Threshold red line at need_hz
+  uint8_t th_x = bar_x + (uint8_t)((need_hz / max_hz) * (float)bar_w + 0.5f);
+  if (th_x < bar_x) th_x = bar_x;
+  if (th_x >= (uint8_t)(bar_x + bar_w)) th_x = (uint8_t)(bar_x + bar_w - 1u);
+  gfx_bar(th_x, bar_y, 1, bar_h, COL_RED);
+
+  // Labels A / B (if this bar is for item choice)
+  gfx_text2(bar_x + 2,           bar_y - 8, "A", COL_WHITE, 1);
+  gfx_text2(bar_x + bar_w - 8u,  bar_y - 8, "B", COL_WHITE, 1);
 }
 
 // Dynamic fill for choice bar (Story)
@@ -611,7 +650,7 @@ bool game_story_tick(void){
                           dt,
                           50u);   // ms per char
 
-      if (dt >= 10000u){
+      if (dt >= 13000u){
         s_goto(STS_BRAND);
       }
     } break;
@@ -651,7 +690,7 @@ bool game_story_tick(void){
                           dt,
                           50u);
 
-      if (dt >= 10000u){
+      if (dt >= 13000u){
         s_goto(STS_INTRO);
       }
     } break;
@@ -721,7 +760,8 @@ bool game_story_tick(void){
         choice_draw_hint(80);
 
         // draw static A/B bar over the chest
-        story_choice_bar_static();
+        //story_choice_bar_static();
+        draw_choice_bar(hz, STORY_CHOICE_SPLIT_HZ);
       }
 
       // live bar update using current Hz
@@ -772,9 +812,12 @@ bool game_story_tick(void){
       char line[32];
       snprintf(line, sizeof(line), "Flex... %us left", (unsigned)remain_s);
       gfx_bar(0, 96, 128, 12, COL_BLACK);
-      gfx_text2(8, 96, line, COL_WHITE, 1);
+      gfx_text2(6, 96, line, COL_WHITE, 1);
 
-      draw_enemy_hz_bar(hz, (float)c->enemy_hz);
+      // Use the *effective* enemy Hz based on items
+      float foe_target = (float)c->enemy_hz * g_equipped.enemy_mult;
+      draw_enemy_hz_bar(hz, foe_target);
+
 
       if (hz >= 1.5f){
         g_sum_hz += hz;
@@ -800,7 +843,7 @@ bool game_story_tick(void){
         gfx_text2(6, 76,
                   (you >= foe) ? "VICTORY" : "DEFEAT",
                   (you >= foe) ? COL_GREEN  : COL_RED,
-                  2);
+                  3);
       }
       if (dt >= 2000u) {
         if (you >= foe) {
@@ -921,7 +964,7 @@ bool game_story_tick(void){
                           dt,
                           50u);
 
-      if (dt >= 5000u){
+      if (dt >= 13000u){
         s_goto(STS_ENDING);
       }
     } break;
@@ -941,7 +984,7 @@ bool game_story_tick(void){
                       STORY_FINAL_SCENE_PAL);
         cheevos_unlock(ACH_STORY_CLEAR);
       }
-      if (dt >= 10000u){
+      if (dt >= 5000u){
         return true;    // tell game.c that Story mode is finished
       }
     } break;

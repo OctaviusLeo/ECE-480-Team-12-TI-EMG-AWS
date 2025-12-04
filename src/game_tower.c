@@ -20,6 +20,8 @@
 
 #define TOWER_FLEX_MENU_HZ 50.0f   // Hz needed to exit to menu after too many deaths
 #define TOWER_CHOICE_SPLIT_HZ 50.0f   // NEW: A/B split threshold in Hz
+#define TOWER_BAR_MAX_HZ 200.0f   // or 220/250 if highest floors are huge
+#define CHOICE_BAR_MAX_HZ 50.0f   // adjust based on what “normal” player Hz looks like
 
 typedef enum {
   TWS_LOGO = 0,
@@ -148,11 +150,10 @@ static void tower_draw_hz_bar(float hz, float target_hz)
 
   if (target_hz <= 0.0f) target_hz = 1.0f;
 
-  float max_hz = target_hz * 1.5f;
-  if (max_hz < target_hz) max_hz = target_hz;   // safety
+  float max_hz = TOWER_BAR_MAX_HZ;
+  if (max_hz < 1.0f) max_hz = 1.0f;
 
-  if (hz < 0.0f) hz = 0.0f;
-  if (hz > max_hz) hz = max_hz;
+  if (target_hz > max_hz) target_hz = max_hz;
 
   // Clear band
   gfx_bar(bar_x, bar_y, bar_w, bar_h, COL_DKGRAY);
@@ -191,6 +192,43 @@ static void tower_choice_bar_static(void)
   uint8_t th_x = bar_x + (uint8_t)((th_hz / max_hz) * (float)bar_w + 0.5f);
   if (th_x >= (uint8_t)(bar_x + bar_w)) th_x = (uint8_t)(bar_x + bar_w - 1u);
   gfx_bar(th_x, bar_y, 1, bar_h, COL_RED);
+}
+
+static void draw_choice_bar(float hz, float need_hz)
+{
+  const uint8_t bar_x = 4;
+  const uint8_t bar_y = 60;
+  const uint8_t bar_w = 120;
+  const uint8_t bar_h = 10;
+
+  if (need_hz <= 0.0f) need_hz = 1.0f;
+  float max_hz = CHOICE_BAR_MAX_HZ;
+  if (max_hz < 1.0f) max_hz = 1.0f;
+
+  if (hz < 0.0f) hz = 0.0f;
+  if (hz > max_hz) hz = max_hz;
+
+  if (need_hz > max_hz) need_hz = max_hz;
+
+  // Background
+  gfx_bar(bar_x, bar_y, bar_w, bar_h, COL_DKGRAY);
+
+  // Current Hz (green)
+  uint8_t cur_w = (uint8_t)((hz / max_hz) * (float)bar_w + 0.5f);
+  if (cur_w > bar_w) cur_w = bar_w;
+  if (cur_w > 0u){
+    gfx_bar(bar_x, bar_y, cur_w, bar_h, COL_GREEN);
+  }
+
+  // Threshold red line at need_hz
+  uint8_t th_x = bar_x + (uint8_t)((need_hz / max_hz) * (float)bar_w + 0.5f);
+  if (th_x < bar_x) th_x = bar_x;
+  if (th_x >= (uint8_t)(bar_x + bar_w)) th_x = (uint8_t)(bar_x + bar_w - 1u);
+  gfx_bar(th_x, bar_y, 1, bar_h, COL_RED);
+
+  // Labels A / B (if this bar is for item choice)
+  gfx_text2(bar_x + 2,           bar_y - 8, "A", COL_WHITE, 1);
+  gfx_text2(bar_x + bar_w - 8u,  bar_y - 8, "B", COL_WHITE, 1);
 }
 
 static void tower_choice_bar_update(float hz)
@@ -309,7 +347,7 @@ bool game_tower_tick(void){
                                 dt,
                                 50u);
 
-      if (dt >= 10000u){
+      if (dt >= 13000u){
         t_goto(TWS_FLOOR_INTRO);
       }
     } break;
@@ -386,7 +424,8 @@ bool game_tower_tick(void){
         g_enemy_mult_floor = 1.0f;   // reset per floor
 
         // static A/B bar over chest
-        tower_choice_bar_static();
+        //tower_choice_bar_static();
+        draw_choice_bar(hz, TOWER_CHOICE_SPLIT_HZ);
       }
 
       // live update of Hz bar
@@ -496,8 +535,8 @@ bool game_tower_tick(void){
 
       // Live Hz bar overlaid at the very bottom
       {
-        uint16_t foe = g_tower_enemy_hz[g_floor];
-        tower_draw_hz_bar(hz, (float)foe);
+        float foe_target = (float)g_tower_enemy_hz[g_floor] * g_enemy_mult_floor;
+        tower_draw_hz_bar(hz, foe_target);
       }
 
       if (hz >= 1.5f){
@@ -522,9 +561,9 @@ bool game_tower_tick(void){
         gfx_text2(6, 36, l1, COL_CYAN,   1);
         gfx_text2(6, 50, l2, COL_YELLOW, 1);
         gfx_text2(6, 76,
-                  (g_last_you >= g_last_enemy) ? "CLEAR" : "FAILED",
+                  (g_last_you >= g_last_enemy) ? "VICTORY" : "DEFEAT",
                   (g_last_you >= g_last_enemy) ? COL_GREEN : COL_RED,
-                  2);
+                  3);
       }
 
       if (dt >= 5000u) {

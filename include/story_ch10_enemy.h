@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define STORY_CH10_ENEMY_W 128
-#define STORY_CH10_ENEMY_H 128
+#define STORY_CH10_ENEMY_W 100
+#define STORY_CH10_ENEMY_H 100
 #define STORY_CH10_ENEMY_PAL_SIZE 16
 
 extern const uint16_t STORY_CH10_ENEMY_PAL[STORY_CH10_ENEMY_PAL_SIZE];
