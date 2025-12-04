@@ -35,7 +35,7 @@ typedef enum {
   TWS_FLEX_RETURN
 } tower_state_t;
 
-// --- Tower lore text blocks ---
+// Tower lore text blocks
 
 static const char* g_tower_intro_lines[] = {
   "You gaze at the sky-",
@@ -43,7 +43,7 @@ static const char* g_tower_intro_lines[] = {
   "-cipation. Some say",
   "it's filled with mys",
   "-teries and unknown.",
-  "Some say it's unbea",
+  "Other say it's unbea",
   "-table. However, you",
   "beg to differ. Takin",
   "-g steps, you enter."

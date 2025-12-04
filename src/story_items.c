@@ -54,7 +54,7 @@ const story_item_t STORY_ITEM_A = {
 
 /* Pure risk: makes the enemy significantly stronger */
 const story_item_t STORY_ITEM_B = {
-    "Lia's Ring (+20% enemy)",
+    "Ring (+20% en)",
     1.00f,   // player unchanged
     1.20f    // +20% enemy
 };
@@ -78,7 +78,7 @@ const story_item_t STORY_ITEMS[] = {
 
     /* 1: Defensive charm, weakens the enemy */
     {
-        "Bloody (-15% enemy)",
+        "Bloody (-15% en)",
         1.00f,  // player unchanged
         0.85f   // -15% enemy threshold
     },
@@ -99,28 +99,28 @@ const story_item_t STORY_ITEMS[] = {
 
     /* 4: Cursed Ring pure risk, enemy much stronger */
     {
-        "Cursed (+20% enemy)",
+        "Cursed (+20% en)",
         1.00f,  // player unchanged
         1.20f   // +20% enemy
     },
 
     /* 5: Rally Banner good offensive buff, slight enemy debuff */
     {
-        "??? (Kills Enemy)",
+        "??? (Kill en)",
         1.00f,  //
         0.00f   // kills
     },
 
     /* 6: Training Weights both sides get a bit stronger */
     {
-        "Beserker (+100% you)",
+        "Rage (+100% you)",
         2.00f,  // +5% player
         1.00f   // +5% enemy
     },
 
     /* 7: Mirror Talisman slight player nerf, big enemy nerf */
     {
-        "Taunt (+100% enemy)",
+        "Taunt (+100% en)",
         1.00f,  // % player
         2.00f   // -100% enemy
     }
