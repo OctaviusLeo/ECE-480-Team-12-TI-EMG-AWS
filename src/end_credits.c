@@ -76,7 +76,7 @@ bool end_credits_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
-        gfx_header("ERVIN ALIAJ", COL_RED);
+        gfx_header("ERVIN ALIAJ", COL_BLUE);
         gfx_text2(6, 40, "as: PCB Designer", COL_WHITE, 1);
       }
       if (dt >= 5000u) s_goto(MEMBER_3);
@@ -86,7 +86,7 @@ bool end_credits_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
-        gfx_header("ANDREW PEREZ", COL_RED);
+        gfx_header("ANDREW PEREZ", COL_GREEN);
         gfx_text2(6, 40, "as: Power Designer", COL_WHITE, 1);
       }
       if (dt >= 5000u) s_goto(MEMBER_4);
@@ -96,7 +96,7 @@ bool end_credits_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
-        gfx_header("PRATIJIT PODDER", COL_RED);
+        gfx_header("PRATIJIT PODDER", COL_PURPLE);
         gfx_text2(6, 40, "as: Analog Filterings", COL_WHITE, 1);
       }
       if (dt >= 5000u) s_goto(ECS_TEAM);
@@ -117,6 +117,10 @@ bool end_credits_tick(void){
                       TEAM_IDX,
                       TEAM_PAL);
       }
+      gfx_text2(6, 20, "Leo", COL_RED, 1);
+      gfx_text2(35, 120, "Ervin", COL_BLUE, 1);
+      gfx_text2(55, 20, "Pratijit", COL_GREEN, 1);
+      gfx_text2(85, 120, "Andrew", COL_PURPLE, 1);
       if (dt >=5000u) s_goto(SPONSOR);
     } break;
 

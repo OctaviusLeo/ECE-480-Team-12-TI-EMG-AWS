@@ -60,6 +60,7 @@ static story_state_t g_s;
 static uint32_t      g_t0;
 static uint8_t       g_chapter;        // 0..9
 static story_item_t  g_equipped;       // last choice (A/B)
+static story_item_t  g_prev_equipped;  // previous item
 static float         g_sum_hz;
 static uint32_t      g_cnt_hz;
 
@@ -595,6 +596,7 @@ static void s_goto(story_state_t ns){
 void game_story_init(void){
   g_chapter  = 0;
   g_equipped = STORY_ITEM_A;
+  g_prev_equipped = STORY_ITEM_A;   // start with same
   g_sum_hz   = 0.0f;
   g_cnt_hz   = 0u;
   g_itemA    = &STORY_ITEM_A;
@@ -721,7 +723,7 @@ bool game_story_tick(void){
                  c->enemy, (unsigned)c->enemy_hz);
         gfx_bar(0, 104, 128, 24, COL_BLACK);
         gfx_text2(0, 106, line, COL_YELLOW, 1);
-        gfx_text2(0, 118, "Choose an item (A/B) with Hz", COL_DKGRAY, 1);
+        gfx_text2(0, 118, "Choose an item (A/B) with Hz", COL_WHITE, 1);
       }
       if (dt >= 5000u){
         s_goto(STS_CHOOSE);
@@ -771,7 +773,8 @@ bool game_story_tick(void){
       choice_t ch = choice_from_hz(hz, STORY_CHOICE_SPLIT_HZ);
       const story_item_t *cur = (ch == CHOICE_A) ? g_itemA : g_itemB;
       if (cur) {
-        g_equipped = *cur;   // copy struct RESULT/REWARD use g_equipped
+        g_prev_equipped = g_equipped;  // remember old item
+        g_equipped      = *cur;        // new item becomes current
       }
 
       if (dt >= 5000u) {
@@ -862,8 +865,12 @@ bool game_story_tick(void){
         g_dirty = false;
         gfx_clear(COL_BLACK);
         gfx_header("LOOT", COL_WHITE);
-        gfx_text2(6, 40, "Equipped:", COL_DKGRAY, 1);
-        gfx_text2(6, 54, g_equipped.name, COL_WHITE, 1);
+
+        gfx_text2(6, 32, "Prev:", COL_WHITE, 1);
+        gfx_text2(6, 44, g_prev_equipped.name, COL_RED, 1);
+
+        gfx_text2(6, 64, "Now:",  COL_WHITE, 1);
+        gfx_text2(6, 76, g_equipped.name,     COL_GREEN, 1);
       }
       if (dt >= 5000u){
         s_goto(STS_NEXT);

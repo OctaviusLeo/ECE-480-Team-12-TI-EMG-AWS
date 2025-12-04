@@ -88,9 +88,9 @@ bool menu_tick(uint8_t *out_mode)
             gfx_header("BOOTING", COL_RED);
             gfx_bar(0, 18, 128, 1, COL_DKGRAY);
             gfx_text2(0, 30, "downloading:", COL_WHITE, 1);
-            gfx_text2(25, 40, "packages...", COL_WHITE, 1);
-            gfx_text2(25, 50, "patching...", COL_WHITE, 1);
-            gfx_text2(25, 60, "finalizing...", COL_WHITE, 1);
+            gfx_text2(50, 40, "packages...", COL_WHITE, 1);
+            gfx_text2(50, 50, "patching...", COL_WHITE, 1);
+            gfx_text2(50, 60, "finalizing...", COL_WHITE, 1);
         }
 
         // Progress computation (0–100%)

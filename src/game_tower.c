@@ -130,6 +130,7 @@ static float         g_last_enemy;
 
 // Per-floor item state (shared item definitions)
 static story_item_t        g_tower_equipped;
+static story_item_t        g_tower_prev_equipped; // previous item
 static const story_item_t *g_tower_itemA;
 static const story_item_t *g_tower_itemB;
 static float               g_enemy_mult_floor;
@@ -300,6 +301,7 @@ void game_tower_init(void){
   g_tower_itemA   = &STORY_ITEMS[0];
   g_tower_itemB   = &STORY_ITEMS[(STORY_ITEMS_COUNT > 1u) ? 1u : 0u];
   g_tower_equipped = STORY_ITEMS[0];
+  g_tower_prev_equipped = STORY_ITEMS[0];
   g_tower_deaths  = 0u;
   cheevos_unlock(ACH_TOWER_START);
   t_goto(TWS_LOGO);
@@ -379,9 +381,13 @@ bool game_tower_tick(void){
         snprintf(line, sizeof(line), "Need: %u Hz", (unsigned)foe);
         gfx_text2(4, 52, line, COL_WHITE, 1);
 
-        // Currently equipped item name
-        snprintf(line, sizeof(line), "Item: %s", g_tower_equipped.name);
-        gfx_text2(4, 64, line, COL_CYAN, 1);
+        // Previously equipped item
+        snprintf(line, sizeof(line), "Prev: %s", g_tower_prev_equipped.name);
+        gfx_text2(4, 84, line, COL_RED, 1);
+
+        // Currently equipped item
+        snprintf(line, sizeof(line), "Now:  %s", g_tower_equipped.name);
+        gfx_text2(4, 96, line, COL_GREEN, 1);
       }
 
       // After a short delay, move on to the chest (item choice) screen
@@ -436,9 +442,10 @@ bool game_tower_tick(void){
 
       if (dt >= 5000u){
         if (cur) {
-          g_tower_equipped    = *cur;
-          g_player_mult      *= g_tower_equipped.player_mult;  // stacks across floors
-          g_enemy_mult_floor *= g_tower_equipped.enemy_mult;   // only this floor
+          g_tower_prev_equipped = g_tower_equipped;            // remember old
+          g_tower_equipped      = *cur;                        // set new
+          g_player_mult        *= g_tower_equipped.player_mult;  // stacks across floors
+          g_enemy_mult_floor   *= g_tower_equipped.enemy_mult;   // only this floor
         }
         g_sum_hz = 0.0f;
         g_cnt_hz = 0u;
@@ -580,8 +587,12 @@ bool game_tower_tick(void){
         g_dirty = false;
         gfx_clear(COL_BLACK);
         gfx_header("REWARD", COL_WHITE);
-        gfx_text2(6, 40, "Equipped:", COL_DKGRAY, 1);
-        gfx_text2(6, 54, g_tower_equipped.name, COL_WHITE, 1);
+
+        gfx_text2(6, 32, "Prev:", COL_WHITE, 1);
+        gfx_text2(6, 44, g_tower_prev_equipped.name, COL_RED, 1);
+
+        gfx_text2(6, 64, "Now:",  COL_WHITE, 1);
+        gfx_text2(6, 76, g_tower_equipped.name,     COL_GREEN, 1);
       }
       if (dt >= 5000u){
         t_goto(TWS_NEXT);
