@@ -292,7 +292,7 @@ bool game_tower_tick(void){
                       GAME_TOWER_LOGO_IDX,
                       GAME_TOWER_LOGO_PAL);
       }
-      if (dt >= 10000u){
+      if (dt >= 5000u){
         t_goto(TWS_INTRO);
       }
     } break;

@@ -844,7 +844,7 @@ bool game_story_tick(void){
         if (g_story_deaths + 1u < 3u) {
           gfx_text2(30, 110, "Retrying...", COL_RED, 1);
         } else {
-          gfx_text2(4, 110, "Too many deaths...", COL_RED, 1);
+          gfx_text2(10, 110, "Too many deaths...", COL_RED, 1);
         }
       }
 
@@ -877,7 +877,7 @@ bool game_story_tick(void){
 
             gfx_text2(4, 36, "You have fallen...", COL_RED,   1);
             gfx_text2(4, 48, "Flex to go back",    COL_WHITE, 1);
-            gfx_text2(4, 60, "home. Mistake...",            COL_WHITE, 1);
+            gfx_text2(4, 60, "home. Failure...",            COL_WHITE, 1);
 
             char line[40];
             snprintf(line, sizeof(line),
