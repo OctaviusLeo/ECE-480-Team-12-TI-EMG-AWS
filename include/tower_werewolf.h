@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define TOWER_WEREWOLF_W 64
-#define TOWER_WEREWOLF_H 43
+#define TOWER_WEREWOLF_W 96
+#define TOWER_WEREWOLF_H 64
 #define TOWER_WEREWOLF_PAL_SIZE 16
 
 extern const uint16_t TOWER_WEREWOLF_PAL[TOWER_WEREWOLF_PAL_SIZE];

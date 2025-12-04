@@ -321,15 +321,32 @@ bool game_tower_tick(void){
 
         gfx_clear(COL_BLACK);
         gfx_header("FLOOR", COL_WHITE);
+
+        // Decide enemy type string based on floor range
+        const char *enemy = "Unknown";
+        if      (g_floor <= 4u)  enemy = "Minotaur";
+        else if (g_floor <= 9u)  enemy = "Werewolf";
+        else if (g_floor <= 14u) enemy = "Orc";
+        else if (g_floor <= 19u) enemy = "Black Knight";
+        else if (g_floor <= 23u) enemy = "Demon";
+        else                     enemy = "Dragon";
+
         char line[40];
-        snprintf(line, sizeof(line),
-                 "Floor %u  Target: %u Hz",
-                 (unsigned)(g_floor + 1u),
-                 (unsigned)foe);
-        gfx_text2(6, 40, line, COL_YELLOW, 1);
-        gfx_text2(0, 64, "CHOOSE:", COL_DKGRAY, 1);
-        choice_draw_hint(80);
+
+        // Enemy type
+        snprintf(line, sizeof(line), "Enemy: %s", enemy);
+        gfx_text2(4, 40, line, COL_YELLOW, 1);
+
+        // Hz needed to defeat (per-floor target)
+        snprintf(line, sizeof(line), "Need: %u Hz", (unsigned)foe);
+        gfx_text2(4, 52, line, COL_WHITE, 1);
+
+        // Currently equipped item name
+        snprintf(line, sizeof(line), "Item: %s", g_tower_equipped.name);
+        gfx_text2(4, 64, line, COL_CYAN, 1);
       }
+
+      // After a short delay, move on to the chest (item choice) screen
       if (dt >= 5000u){
         t_goto(TWS_CHOOSE);
       }
@@ -405,36 +422,53 @@ bool game_tower_tick(void){
         const uint8_t  *eidx = NULL;
         const uint16_t *epal = NULL;
 
-        if      (g_floor <= 4u) {
-          ew   = TOWER_MINOTAUR_W;
-          eh   = TOWER_MINOTAUR_H;
-          eidx = TOWER_MINOTAUR_IDX;
-          epal = TOWER_MINOTAUR_PAL;
-        } else if (g_floor <= 9u) {
-          ew   = TOWER_WEREWOLF_W;
-          eh   = TOWER_WEREWOLF_H;
-          eidx = TOWER_WEREWOLF_IDX;
-          epal = TOWER_WEREWOLF_PAL;
-        } else if (g_floor <= 14u) {
-          ew   = TOWER_ORC_W;
-          eh   = TOWER_ORC_H;
-          eidx = TOWER_ORC_IDX;
-          epal = TOWER_ORC_PAL;
-        } else if (g_floor <= 19u) {
-          ew   = TOWER_BLACK_KNIGHT_W;
-          eh   = TOWER_BLACK_KNIGHT_H;
-          eidx = TOWER_BLACK_KNIGHT_IDX;
-          epal = TOWER_BLACK_KNIGHT_PAL;
-        } else if (g_floor <= 24u) {
-          ew   = TOWER_DEMON_W;
-          eh   = TOWER_DEMON_H;
-          eidx = TOWER_DEMON_IDX;
-          epal = TOWER_DEMON_PAL;
-        } else { // floor 25 and any above safety
+        // Final floor: always Dragon
+        // (Assumes last floor index is TOWER_FLOORS-1)
+        bool final_floor = ((uint8_t)(g_floor + 1u) >= TOWER_FLOORS);
+
+        if (final_floor) {
           ew   = TOWER_DRAGON_W;
           eh   = TOWER_DRAGON_H;
           eidx = TOWER_DRAGON_IDX;
           epal = TOWER_DRAGON_PAL;
+        } else {
+          // Non-final floors: random among 5 enemies
+          uint32_t r = millis();
+          r ^= (uint32_t)g_floor * 17u;     // cheap decorrelation
+          uint8_t pick = (uint8_t)(r % 5u); // 0..4
+
+          switch (pick) {
+            case 0: // Minotaur
+              ew   = TOWER_MINOTAUR_W;
+              eh   = TOWER_MINOTAUR_H;
+              eidx = TOWER_MINOTAUR_IDX;
+              epal = TOWER_MINOTAUR_PAL;
+              break;
+            case 1: // Werewolf
+              ew   = TOWER_WEREWOLF_W;
+              eh   = TOWER_WEREWOLF_H;
+              eidx = TOWER_WEREWOLF_IDX;
+              epal = TOWER_WEREWOLF_PAL;
+              break;
+            case 2: // Orc
+              ew   = TOWER_ORC_W;
+              eh   = TOWER_ORC_H;
+              eidx = TOWER_ORC_IDX;
+              epal = TOWER_ORC_PAL;
+              break;
+            case 3: // Black Knight
+              ew   = TOWER_BLACK_KNIGHT_W;
+              eh   = TOWER_BLACK_KNIGHT_H;
+              eidx = TOWER_BLACK_KNIGHT_IDX;
+              epal = TOWER_BLACK_KNIGHT_PAL;
+              break;
+            default: // 4: Demon
+              ew   = TOWER_DEMON_W;
+              eh   = TOWER_DEMON_H;
+              eidx = TOWER_DEMON_IDX;
+              epal = TOWER_DEMON_PAL;
+              break;
+          }
         }
 
         // Draw enemy centered, leaving bottom band for Hz bar & text

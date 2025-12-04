@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #define END_CREDITS_LOGO_W 128
-#define END_CREDITS_LOGO_H 109
+#define END_CREDITS_LOGO_H 73
 #define END_CREDITS_LOGO_PAL_SIZE 16
 
 extern const uint16_t END_CREDITS_LOGO_PAL[END_CREDITS_LOGO_PAL_SIZE];

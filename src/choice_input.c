@@ -7,5 +7,5 @@ choice_t choice_from_hz(float hz, float threshold_hz){
 }
 
 void choice_draw_hint(uint8_t y){
-  gfx_text2(6, y, "A: 0–50   |   B: 51–max", COL_DKGRAY, 1);
+  gfx_text2(6, y, "A:0–50|B: 51–max", COL_RED, 1);
 }
