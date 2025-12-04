@@ -39,13 +39,14 @@ typedef enum {
 
 static const char* g_tower_intro_lines[] = {
   "You gaze at the sky-",
-  "high tower with",
-  "anticipation. Some say",
-  "it's filled with",
-  "mysteries and unknown.",
-  "Some say it's unbeatable.",
-  "However, you beg to differ.",
-  "Your steps echo as you enter."
+  "high tower with anti",
+  "-cipation. Some say",
+  "it's filled with mys",
+  "-teries and unknown.",
+  "Some say it's unbea",
+  "-table. However, you",
+  "beg to differ. Takin",
+  "-g a step, you enter"
 };
 static const uint8_t g_tower_intro_count =
     sizeof(g_tower_intro_lines)/sizeof(g_tower_intro_lines[0]);
@@ -291,7 +292,7 @@ bool game_tower_tick(void){
                       GAME_TOWER_LOGO_IDX,
                       GAME_TOWER_LOGO_PAL);
       }
-      if (dt >= 3000u){
+      if (dt >= 10000u){
         t_goto(TWS_INTRO);
       }
     } break;
@@ -301,7 +302,6 @@ bool game_tower_tick(void){
         g_dirty = false;
         gfx_clear(COL_BLACK);
         gfx_header("TOWER MODE", COL_WHITE);
-        // optional static elements here
       }
 
       tower_draw_lore_typewriter(g_tower_intro_lines,
@@ -560,10 +560,10 @@ bool game_tower_tick(void){
         gfx_header("GO BACK", COL_WHITE);
         gfx_bar(0, 18, 128, 1, COL_DKGRAY);
 
-        gfx_text2(4, 36, "You have fallen 3+ times", COL_RED,   1);
+        gfx_text2(4, 36, "You have fallen 3+", COL_RED,   1);
         gfx_text2(4, 48, "in the Tower.",            COL_RED,   1);
-        gfx_text2(4, 60, "Flex hard to return to",   COL_WHITE, 1);
-        gfx_text2(4, 72, "the main menu.",           COL_WHITE, 1);
+        gfx_text2(4, 60, "Flex to return...",   COL_WHITE, 1);
+        gfx_text2(4, 72, "you're weak.",           COL_WHITE, 1);
 
         char line[40];
         snprintf(line, sizeof(line),

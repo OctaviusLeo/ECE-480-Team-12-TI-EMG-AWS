@@ -534,13 +534,13 @@ static void story_unlock_for_chapter(uint8_t ch){
       cheevos_unlock(ACH_CH8);
       cheevos_unlock(ACH_DRAGON);
       break;
-    case 8:  // Chapter 9 – Arch Demon
+    case 8:  // Chapter 9 – Demon King
       cheevos_unlock(ACH_CH9);
-      cheevos_unlock(ACH_ARCH_DEMON);
-      break;
-    case 9:  // Chapter 10 – Demon King
-      cheevos_unlock(ACH_CH10);
       cheevos_unlock(ACH_DEMON_KING);
+      break;
+    case 9:  // Chapter 10 – Game Admin
+      cheevos_unlock(ACH_CH10);
+      cheevos_unlock(ACH_GAME_ADMIN);
       break;
     default:
       break;
@@ -805,7 +805,6 @@ bool game_story_tick(void){
       if (dt >= 2000u) {
         if (you >= foe) {
           // Win → continue normal flow
-          cheevos_unlock(ACH_FIRST_WIN);
           story_unlock_for_chapter(g_chapter);
           s_goto(STS_REWARD);
         } else {
@@ -876,9 +875,9 @@ bool game_story_tick(void){
             gfx_header("REST & RESET", COL_WHITE);
             gfx_bar(0, 18, 128, 1, COL_DKGRAY);
 
-            gfx_text2(4, 36, "You have fallen 3+ times.", COL_RED,   1);
-            gfx_text2(4, 48, "Flex hard to return to",    COL_WHITE, 1);
-            gfx_text2(4, 60, "the main menu.",            COL_WHITE, 1);
+            gfx_text2(4, 36, "You have fallen...", COL_RED,   1);
+            gfx_text2(4, 48, "Flex to go back",    COL_WHITE, 1);
+            gfx_text2(4, 60, "home. Mistake...",            COL_WHITE, 1);
 
             char line[40];
             snprintf(line, sizeof(line),

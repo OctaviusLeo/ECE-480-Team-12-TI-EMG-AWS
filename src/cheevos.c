@@ -7,12 +7,13 @@
 
 static save_t *g_save = 0;
 
-/* enum in cheevos.h runs from ACH_FIRST_WIN (=0) to ACH_TOWER_CLEAR (=29),
+/* enum in cheevos.h runs from ACH_FIRST_WIN_PVP (=0) to ACH_TOWER_CLEAR (=29),
  * so total count is last-id + 1. */
 enum { CHEEVO_COUNT = ACH_TOWER_CLEAR + 1 };
 
 static const char *NAMES[CHEEVO_COUNT] = {
-    "First Win",        // ACH_FIRST_WIN
+    "NOT a newbie",     //ACH_TUTORIAL
+    "You're Better",    // ACH_FIRST_WIN_PVP
     "Story Start",      // ACH_STORY_START
     "Chapter 1",        // ACH_CH1
     "Scarecrow",        // ACH_SCARECROW
@@ -31,10 +32,10 @@ static const char *NAMES[CHEEVO_COUNT] = {
     "Chapter 8",        // ACH_CH8
     "Dragon",           // ACH_DRAGON
     "Chapter 9",        // ACH_CH9
-    "Arch Demon",       // ACH_ARCH_DEMON
-    "Chapter 10",       // ACH_CH10
     "Demon King",       // ACH_DEMON_KING
-    "Story Clear",      // ACH_STORY_CLEAR
+    "Chapter 10",       // ACH_CH10
+    "Game Admin",       // ACH_GAME_ADMIN
+    "Story Cleared?",   // ACH_STORY_CLEAR
     "Tower Start",      // ACH_TOWER_START
     "Tower 5",          // ACH_TOWER_5
     "Tower 10",         // ACH_TOWER_10

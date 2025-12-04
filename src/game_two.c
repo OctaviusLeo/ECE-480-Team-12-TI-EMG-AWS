@@ -14,6 +14,7 @@
 #include "you_win_p1_pic.h"
 #include "you_win_p2_pic.h"
 #include "pvp_tie_pic.h"
+#include "cheevos.h"
 
 static float clampf(float v, float lo, float hi){
   if (v < lo) return lo;
@@ -338,7 +339,9 @@ bool game_two_tick(void){
                         PVP_TIE_PIC_PAL);
         }
       }
-
+      // Pseudocode inside PVP result state
+      (void)cheevos_unlock(ACH_FIRST_WIN_PVP);
+      
       if (dt >= 5000u){
         goto_state(ST_RANKS2);
       }

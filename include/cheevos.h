@@ -5,36 +5,37 @@
 #include "save.h"
 
 typedef enum {
-  ACH_FIRST_WIN=0,
-  ACH_STORY_START,
-  ACH_CH1,
-  ACH_SCARECROW,
-  ACH_CH2,
-  ACH_TRAINING_DUMMY,
-  ACH_CH3,
-  ACH_RAT_KING,
-  ACH_CH4,
-  ACH_BANDITS,
-  ACH_CH5,
-  ACH_KNIGHT,
-  ACH_CH6,
-  ACH_CHAMPION,
-  ACH_CH7,
-  ACH_SORCERER,
-  ACH_CH8,
-  ACH_DRAGON,
-  ACH_CH9,
-  ACH_ARCH_DEMON,
-  ACH_CH10,
-  ACH_DEMON_KING,
-  ACH_STORY_CLEAR,
-  ACH_TOWER_START,
-  ACH_TOWER_5,
-  ACH_TOWER_10,
-  ACH_TOWER_15,
-  ACH_TOWER_20,
-  ACH_TOWER_24,
-  ACH_TOWER_CLEAR
+    ACH_TUTORIAL = 0,
+    ACH_FIRST_WIN_PVP,  // "You're Better"
+    ACH_STORY_START,        // "Story Start"
+    ACH_CH1,                // "Chapter 1"
+    ACH_SCARECROW,          // "Scarecrow"
+    ACH_CH2,                // "Chapter 2"
+    ACH_TRAINING_DUMMY,     // "Training Dummy"
+    ACH_CH3,                // "Chapter 3"
+    ACH_RAT_KING,           // "Rat King"
+    ACH_CH4,                // "Chapter 4"
+    ACH_BANDITS,            // "Bandits"
+    ACH_CH5,                // "Chapter 5"
+    ACH_KNIGHT,             // "Knight"
+    ACH_CH6,                // "Chapter 6"
+    ACH_CHAMPION,           // "Champion"
+    ACH_CH7,                // "Chapter 7"
+    ACH_SORCERER,           // "Sorcerer"
+    ACH_CH8,                // "Chapter 8"
+    ACH_DRAGON,             // "Dragon"
+    ACH_CH9,                // "Chapter 9"
+    ACH_DEMON_KING,         // "Demon King"
+    ACH_CH10,               // "Chapter 10"
+    ACH_GAME_ADMIN,         // "Game Admin"
+    ACH_STORY_CLEAR,        // "Story Cleared?"
+    ACH_TOWER_START,        // "Tower Start"
+    ACH_TOWER_5,            // "Tower 5"
+    ACH_TOWER_10,           // "Tower 10"
+    ACH_TOWER_15,           // "Tower 15"
+    ACH_TOWER_20,           // "Tower 20"
+    ACH_TOWER_24,           // "Tower 24"
+    ACH_TOWER_CLEAR         // "Tower Clear"
 } cheevo_t;
 
 void cheevos_bind_save(save_t *s);          // pass loaded save here

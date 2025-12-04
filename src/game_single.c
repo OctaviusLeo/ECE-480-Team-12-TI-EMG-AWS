@@ -11,6 +11,7 @@
 #include "rankhist.h"
 #include "team.h"
 #include "game_single_logo.h"
+#include "cheevos.h"
 
 /* helpers local to single-player */
 static float clampf(float v, float lo, float hi){
@@ -53,6 +54,8 @@ static void goto_state(sp_state_t s){
   g_t0_ms = millis();
   g_drawn_once = false;
   g_dirty = true;       // mark the new state as needing a redraw
+  // e.g., when you successfully enter an admin menu
+  cheevos_unlock(ACH_TUTORIAL);
   if (s == ST_COUNTDOWN_LABEL) baseline_begin(3000u);
 }
 
