@@ -15,33 +15,33 @@ static const char *NAMES[CHEEVO_COUNT] = {
     "NOT a newbie",     //ACH_TUTORIAL
     "You're Better",    // ACH_FIRST_WIN_PVP
     "PULSEBOUND",      // ACH_STORY_START
-    "Chapter 1",        // ACH_CH1
+    "Chapter 1 - The Awakening",        // ACH_CH1
     "Scarecrow",        // ACH_SCARECROW
-    "Chapter 2",        // ACH_CH2
+    "Chapter 2 - Training Grounds",        // ACH_CH2
     "Training Dummy",   // ACH_TRAINING_DUMMY
-    "Chapter 3",        // ACH_CH3
+    "Chapter 3 - Catacombs",        // ACH_CH3
     "Rat King",         // ACH_RAT_KING
-    "Chapter 4",        // ACH_CH4
+    "Chapter 4 - Ambush Road",        // ACH_CH4
     "Bandits",          // ACH_BANDITS
-    "Chapter 5",        // ACH_CH5
+    "Chapter 5 - Tourney Field",        // ACH_CH5
     "Knight",           // ACH_KNIGHT
-    "Chapter 6",        // ACH_CH6
+    "Chapter 6 - Grand Arena",        // ACH_CH6
     "Champion",         // ACH_CHAMPION
-    "Chapter 7",        // ACH_CH7
+    "Chapter 7 - Arcane Tower",        // ACH_CH7
     "Sorcerer",         // ACH_SORCERER
-    "Chapter 8",        // ACH_CH8
+    "Chapter 8 - Dragon's Lair",        // ACH_CH8
     "Dragon",           // ACH_DRAGON
-    "Chapter 9",        // ACH_CH9
+    "Chapter 9 - Demon Castle",        // ACH_CH9
     "Demon King",       // ACH_DEMON_KING
-    "Chapter 10",       // ACH_CH10
+    "Chapter 10 - ERROR",       // ACH_CH10
     "Game Admin",       // ACH_GAME_ADMIN
     "Story Cleared?",   // ACH_STORY_CLEAR
     "The Forgotten Tower",      // ACH_TOWER_START
-    "Tower 5",          // ACH_TOWER_5
-    "Tower 10",         // ACH_TOWER_10
-    "Tower 15",         // ACH_TOWER_15
-    "Tower 20",         // ACH_TOWER_20
-    "Tower 24",         // ACH_TOWER_24
+    "Tower 5 - Skeletal Field",          // ACH_TOWER_5
+    "Tower 10 - Fire's Hell",         // ACH_TOWER_10
+    "Tower 15 - Magical Crystals",         // ACH_TOWER_15
+    "Tower 20 - The Void",         // ACH_TOWER_20
+    "Tower 24 - Tower's Secret",         // ACH_TOWER_24
     "Tower Clear"       // ACH_TOWER_CLEAR
 };
 

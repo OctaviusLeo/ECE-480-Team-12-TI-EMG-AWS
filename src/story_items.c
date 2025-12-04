@@ -123,7 +123,36 @@ const story_item_t STORY_ITEMS[] = {
         "Taunt (+100% en)",
         1.00f,  // % player
         2.00f   // -100% enemy
+    },
+
+    /* Mutual destruction item*/
+    {
+        "XD (-100% ALL)",
+        0.00f, // kills both
+        0.00f
+    },
+
+    /* seppuku option b/c why not*/
+    {
+        "B-Pill (-100% you)",
+        0.00f, // just kills player
+        1.00f
+    },
+
+    /* halfs enemy's strength*/
+    {
+        "Stare (-50% en)",
+        1.00f, 
+        0.50f
+    },
+
+    /* be a scaredy cat*/
+    {
+        "Cower (-50% you)",
+        0.50f,
+        1.00f
     }
+
 };
 
 /* Number of entries in STORY_ITEMS[] */
