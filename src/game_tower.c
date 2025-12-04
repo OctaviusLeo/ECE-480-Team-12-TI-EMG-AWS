@@ -46,7 +46,7 @@ static const char* g_tower_intro_lines[] = {
   "Some say it's unbea",
   "-table. However, you",
   "beg to differ. Takin",
-  "-g a step, you enter"
+  "-g steps, you enter."
 };
 static const uint8_t g_tower_intro_count =
     sizeof(g_tower_intro_lines)/sizeof(g_tower_intro_lines[0]);
@@ -58,8 +58,8 @@ static const char* g_tower_end_lines[] = {
   "However you weren't",
   "unscathed. Dragging",
   "your feet, you reach",
-  "the edge and look down.",
-  "Closing your eyes,",
+  "the edge and look do",
+  "-wn. Closing your eye",
   "you let yourself go."
 };
 static const uint8_t g_tower_end_count =

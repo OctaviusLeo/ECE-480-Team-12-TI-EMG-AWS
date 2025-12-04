@@ -14,7 +14,7 @@ enum { CHEEVO_COUNT = ACH_TOWER_CLEAR + 1 };
 static const char *NAMES[CHEEVO_COUNT] = {
     "NOT a newbie",     //ACH_TUTORIAL
     "You're Better",    // ACH_FIRST_WIN_PVP
-    "Story Start",      // ACH_STORY_START
+    "PULSEBOUND",      // ACH_STORY_START
     "Chapter 1",        // ACH_CH1
     "Scarecrow",        // ACH_SCARECROW
     "Chapter 2",        // ACH_CH2
@@ -36,7 +36,7 @@ static const char *NAMES[CHEEVO_COUNT] = {
     "Chapter 10",       // ACH_CH10
     "Game Admin",       // ACH_GAME_ADMIN
     "Story Cleared?",   // ACH_STORY_CLEAR
-    "Tower Start",      // ACH_TOWER_START
+    "The Forgotten Tower",      // ACH_TOWER_START
     "Tower 5",          // ACH_TOWER_5
     "Tower 10",         // ACH_TOWER_10
     "Tower 15",         // ACH_TOWER_15

@@ -54,7 +54,7 @@ const story_item_t STORY_ITEM_A = {
 
 /* Pure risk: makes the enemy significantly stronger */
 const story_item_t STORY_ITEM_B = {
-    "Cursed Ring (+0% you, +20% enemy)",
+    "Lia's Ring (+20% enemy)",
     1.00f,   // player unchanged
     1.20f    // +20% enemy
 };
@@ -71,58 +71,58 @@ const story_item_t STORY_ITEM_B = {
 const story_item_t STORY_ITEMS[] = {
     /* 0: Safe offensive buff */
     {
-        "Bandage (+10% you)",
+        "Sword (+10% you)",
         1.10f,  // player
         1.00f   // enemy
     },
 
     /* 1: Defensive charm, weakens the enemy */
     {
-        "Shield Charm (-15% enemy)",
+        "Bloody (-15% enemy)",
         1.00f,  // player unchanged
         0.85f   // -15% enemy threshold
     },
 
     /* 2: Glass Cannon strong player buff, small enemy buff */
     {
-        "Glass Cannon (+25% you, +10% enemy)",
+        "Shard (+25% you)",
         1.25f,  // big player boost
-        1.10f   // enemy a bit tougher
+        1.00f   // nothing
     },
 
     /* 3: Stamina Tonic modest buff, slight enemy debuff */
     {
-        "Stamina Tonic (+8% you, -5% enemy)",
-        1.08f,  // +8% player
+        "Orb (-25% enemy)",
+        1.00f,  // nothing
         0.95f   // -5% enemy
     },
 
     /* 4: Cursed Ring pure risk, enemy much stronger */
     {
-        "Cursed Ring (+0% you, +20% enemy)",
+        "Cursed (+20% enemy)",
         1.00f,  // player unchanged
         1.20f   // +20% enemy
     },
 
     /* 5: Rally Banner good offensive buff, slight enemy debuff */
     {
-        "Rally Banner (+15% you, -5% enemy)",
-        1.15f,  // +15% player
-        0.95f   // -5% enemy
+        "??? (Kills Enemy)",
+        1.00f,  //
+        0.00f   // kills
     },
 
     /* 6: Training Weights both sides get a bit stronger */
     {
-        "Training Weights (+5% you, +5% enemy)",
-        1.05f,  // +5% player
-        1.05f   // +5% enemy
+        "Beserker (+100% you)",
+        2.00f,  // +5% player
+        1.00f   // +5% enemy
     },
 
     /* 7: Mirror Talisman slight player nerf, big enemy nerf */
     {
-        "Mirror Talisman (-5% you, -15% enemy)",
-        0.95f,  // -5% player
-        0.85f   // -15% enemy
+        "Taunt (+100% enemy)",
+        1.00f,  // % player
+        2.00f   // -100% enemy
     }
 };
 

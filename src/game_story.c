@@ -731,7 +731,7 @@ bool game_story_tick(void){
       choice_t ch = choice_from_hz(hz, STORY_CHOICE_SPLIT_HZ);
       const story_item_t *cur = (ch == CHOICE_A) ? g_itemA : g_itemB;
       if (cur) {
-        g_equipped = *cur;   // copy struct; RESULT/REWARD use g_equipped
+        g_equipped = *cur;   // copy struct RESULT/REWARD use g_equipped
       }
 
       if (dt >= 5000u) {
