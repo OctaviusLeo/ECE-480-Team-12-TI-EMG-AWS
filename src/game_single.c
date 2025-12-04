@@ -119,7 +119,7 @@ static void playground_draw_lore_typewriter(const char* const* lines,
 static const char* g_playground_intro_lines[] = {
   "Hello newbie!",
   "Welcome to the world",
-  "of PULSEBOUND.",
+  "of PULSEBOUND!",
   "A place of muscle,",
   "but don't worry!",
   "I'll help you!",

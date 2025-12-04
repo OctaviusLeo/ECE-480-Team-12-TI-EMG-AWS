@@ -198,7 +198,7 @@ static void tower_choice_bar_static(void)
 static void draw_choice_bar(float hz, float need_hz)
 {
   const uint8_t bar_x = 4;
-  const uint8_t bar_y = 60;
+  const uint8_t bar_y = 55;
   const uint8_t bar_w = 120;
   const uint8_t bar_h = 10;
 
@@ -235,9 +235,9 @@ static void draw_choice_bar(float hz, float need_hz)
 static void tower_choice_bar_update(float hz)
 {
   const uint8_t bar_x = 4;
-  const uint8_t bar_y = 60;
+  const uint8_t bar_y = 55;
   const uint8_t bar_w = 120;
-  const uint8_t bar_h = 8;
+  const uint8_t bar_h = 10;
 
   float max_hz = 80.0f;
   if (hz < 0.0f)     hz = 0.0f;
@@ -381,17 +381,17 @@ bool game_tower_tick(void){
         snprintf(line, sizeof(line), "Need: %u Hz", (unsigned)foe);
         gfx_text2(4, 52, line, COL_WHITE, 1);
 
-        // Previously equipped item
-        snprintf(line, sizeof(line), "Prev: %s", g_tower_prev_equipped.name);
-        gfx_text2(4, 84, line, COL_RED, 1);
+        gfx_text2(30, 70, "Equipment:", COL_WHITE, 1);
 
-        // Currently equipped item
-        snprintf(line, sizeof(line), "Now:  %s", g_tower_equipped.name);
-        gfx_text2(4, 96, line, COL_GREEN, 1);
+        gfx_text2(6, 84, "Prev:", COL_WHITE, 1);
+        gfx_text2(6, 94, g_tower_prev_equipped.name, COL_RED, 1);
+
+        gfx_text2(6, 104, "Now:",  COL_WHITE, 1);
+        gfx_text2(6, 114, g_tower_equipped.name,     COL_GREEN, 1);
       }
 
       // After a short delay, move on to the chest (item choice) screen
-      if (dt >= 5000u){
+      if (dt >= 7000u){
         t_goto(TWS_CHOOSE);
       }
     } break;
@@ -588,11 +588,13 @@ bool game_tower_tick(void){
         gfx_clear(COL_BLACK);
         gfx_header("REWARD", COL_WHITE);
 
-        gfx_text2(6, 32, "Prev:", COL_WHITE, 1);
-        gfx_text2(6, 44, g_tower_prev_equipped.name, COL_RED, 1);
+        gfx_text2(20, 50, "Equipped:", COL_WHITE, 1);
 
-        gfx_text2(6, 64, "Now:",  COL_WHITE, 1);
-        gfx_text2(6, 76, g_tower_equipped.name,     COL_GREEN, 1);
+        gfx_text2(6, 62, "Prev:", COL_WHITE, 1);
+        gfx_text2(6, 474, g_tower_prev_equipped.name, COL_RED, 1);
+
+        gfx_text2(6, 94, "Now:",  COL_WHITE, 1);
+        gfx_text2(6, 106, g_tower_equipped.name,     COL_GREEN, 1);
       }
       if (dt >= 5000u){
         t_goto(TWS_NEXT);

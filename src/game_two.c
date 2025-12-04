@@ -244,7 +244,7 @@ bool game_two_tick(void){
           g_p1_rank_pct = rank_pct;
           g_player      = 2u;
           g_drawn_once  = false;
-          intermission_begin(13000u, "GET READY P2");
+          intermission_begin(15000u, "GET READY P2");
           return false;
         } else {
           g_p2_avg_hz   = avg;

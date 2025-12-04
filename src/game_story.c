@@ -474,7 +474,7 @@ static void story_choice_bar_static(void)
 static void draw_choice_bar(float hz, float need_hz)
 {
   const uint8_t bar_x = 4;
-  const uint8_t bar_y = 60;
+  const uint8_t bar_y = 55;
   const uint8_t bar_w = 120;
   const uint8_t bar_h = 10;
 
@@ -513,9 +513,9 @@ static void draw_choice_bar(float hz, float need_hz)
 static void story_choice_bar_update(float hz)
 {
   const uint8_t bar_x = 4;
-  const uint8_t bar_y = 60;
+  const uint8_t bar_y = 55;
   const uint8_t bar_w = 120;
-  const uint8_t bar_h = 8;
+  const uint8_t bar_h = 10;
 
   float max_hz = 80.0f;
   if (hz < 0.0f)     hz = 0.0f;
@@ -725,7 +725,7 @@ bool game_story_tick(void){
         gfx_text2(0, 106, line, COL_YELLOW, 1);
         gfx_text2(0, 118, "Choose an item (A/B) with Hz", COL_WHITE, 1);
       }
-      if (dt >= 5000u){
+      if (dt >= 7000u){
         s_goto(STS_CHOOSE);
       }
     } break;
@@ -866,11 +866,13 @@ bool game_story_tick(void){
         gfx_clear(COL_BLACK);
         gfx_header("LOOT", COL_WHITE);
 
-        gfx_text2(6, 32, "Prev:", COL_WHITE, 1);
-        gfx_text2(6, 44, g_prev_equipped.name, COL_RED, 1);
+        gfx_text2(30, 20, "Equipment:", COL_WHITE, 1);
 
-        gfx_text2(6, 64, "Now:",  COL_WHITE, 1);
-        gfx_text2(6, 76, g_equipped.name,     COL_GREEN, 1);
+        gfx_text2(6, 42, "Prev:", COL_WHITE, 1);
+        gfx_text2(6, 54, g_prev_equipped.name, COL_RED, 1);
+
+        gfx_text2(6, 74, "Now:",  COL_WHITE, 1);
+        gfx_text2(6, 86, g_equipped.name,     COL_GREEN, 1);
       }
       if (dt >= 5000u){
         s_goto(STS_NEXT);
