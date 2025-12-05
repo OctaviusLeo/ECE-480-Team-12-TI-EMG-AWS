@@ -180,7 +180,7 @@ bool end_credits_tick(void){
         gfx_bar(0, 18, 128, 1, COL_DKGRAY);
 
         uint8_t x = (uint8_t)((128 - MSU_LOGO_W) / 2);
-        uint8_t y = (uint8_t)((128 - MSU_LOGO_H) / 2);
+        uint8_t y = (uint8_t)(((128 - MSU_LOGO_H) / 2) + 10);
 
         gfx_blit_pal4(x, y,
                       MSU_LOGO_W, MSU_LOGO_H,

@@ -208,6 +208,9 @@ bool game_single_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
+
+        gfx_triangle(127, 122,  122, 127,  122, 117, COL_WHITE);      
+
         gfx_header("TUTORIAL", COL_WHITE);
         // optional static elements here
       }

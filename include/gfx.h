@@ -138,5 +138,12 @@ static inline void gfx_center_text_nl_scaled_xy(const char* s, uint16_t color, u
   __gfx_center_line_xy(y1, bot, color, sx);
 }
 
+void gfx_pixel(uint8_t x, uint8_t y, uint16_t color);
+void gfx_rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color);
+void gfx_xshape(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color);
+void gfx_triangle(uint8_t x0, uint8_t y0,
+                  uint8_t x1, uint8_t y1,
+                  uint8_t x2, uint8_t y2,
+                  uint16_t color);
 
 #endif /* GFX_H */

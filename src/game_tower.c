@@ -342,12 +342,13 @@ bool game_tower_tick(void){
         g_dirty = false;
         gfx_clear(COL_BLACK);
         gfx_header("TOWER MODE", COL_WHITE);
+        gfx_triangle(127, 122,  122, 127,  122, 117, COL_WHITE);
       }
 
       tower_draw_lore_typewriter(g_tower_intro_lines,
                                 g_tower_intro_count,
                                 dt,
-                                50u);
+                                40u);
 
       if (dt >= 13000u){
         t_goto(TWS_FLOOR_INTRO);
@@ -360,6 +361,12 @@ bool game_tower_tick(void){
         uint16_t foe = g_tower_enemy_hz[g_floor];
 
         gfx_clear(COL_BLACK);
+
+        // Draw background for equipment and items, also green rectangle of current equiped item.
+        gfx_bar(0, 64, 128, 20, COL_DKGRAY);
+        gfx_bar(0, 82, 128, 64, COL_GRAY);
+        gfx_rect(1, 112, 127, 12, COL_GREEN);
+
         gfx_header("FLOOR", COL_WHITE);
 
         // Decide enemy type string based on floor range
@@ -555,6 +562,10 @@ bool game_tower_tick(void){
     case TWS_RESULT: {
       if (g_dirty) {
         g_dirty = false;
+        gfx_clear(COL_BLACK); 
+
+        // seperator for VICTOR and defeat
+        gfx_rect(0, 67, 187, 1, COL_GRAY);
 
         uint16_t foe0 = g_tower_enemy_hz[g_floor];
         g_last_enemy  = (float)foe0 * g_enemy_mult_floor;
@@ -562,7 +573,7 @@ bool game_tower_tick(void){
         float avg     = (g_cnt_hz ? (g_sum_hz / (float)g_cnt_hz) : 0.0f);
         g_last_you    = avg * g_player_mult;
 
-        gfx_clear(COL_BLACK); gfx_header("RESULT", COL_WHITE);
+        gfx_header("RESULT", COL_WHITE);
         char l1[40]; snprintf(l1, sizeof(l1), "You: %.1f Hz", g_last_you);
         char l2[40]; snprintf(l2, sizeof(l2), "Enemy: %.1f Hz", g_last_enemy);
         gfx_text2(6, 36, l1, COL_CYAN,   1);
@@ -586,9 +597,15 @@ bool game_tower_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
+
+        // Draw background for equipment and items, also green rectangle of current equiped item.
+        gfx_bar(0, 58, 128, 32, COL_DKGRAY);
+        gfx_bar(0, 90, 128, 64, COL_GRAY);
+        gfx_rect(1, 104, 127, 12, COL_GREEN);
+        
         gfx_header("REWARD", COL_WHITE);
 
-        gfx_text2(20, 50, "Equipped:", COL_WHITE, 1);
+        gfx_text2(35, 40, "Equipped:", COL_WHITE, 1);
 
         gfx_text2(6, 62, "Prev:", COL_WHITE, 1);
         gfx_text2(6, 474, g_tower_prev_equipped.name, COL_RED, 1);
@@ -615,7 +632,7 @@ bool game_tower_tick(void){
                       YOU_DIED_IDX,
                       YOU_DIED_PAL);
 
-        if (g_tower_deaths + 1u < 3u) {
+        if (g_tower_deaths + 1u < 2u) {
           gfx_text2(30, 110, "Retrying...", COL_RED, 1);
         } else {
           gfx_text2(4, 110, "Too many deaths...", COL_RED, 1);
@@ -646,10 +663,14 @@ bool game_tower_tick(void){
         gfx_header("GO BACK", COL_WHITE);
         gfx_bar(0, 18, 128, 1, COL_DKGRAY);
 
-        gfx_text2(4, 36, "You have fallen 3+", COL_RED,   1);
+        gfx_text2(4, 36, "You have fallen...", COL_RED,   1);
         gfx_text2(4, 48, "in the Tower.",            COL_RED,   1);
         gfx_text2(4, 60, "Flex to return...",   COL_WHITE, 1);
         gfx_text2(4, 72, "you're weak.",           COL_WHITE, 1);
+
+        // X UI
+        gfx_xshape(110, 1, 15, 15, COL_RED);           // danger indicator
+        gfx_rect(109, 0, 17, 17, COL_RED);
 
         char line[40];
         snprintf(line, sizeof(line),
@@ -686,6 +707,9 @@ bool game_tower_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
+
+        gfx_triangle(127, 122,  122, 127,  122, 117, COL_WHITE);        
+
         gfx_header("TOWER CLEARED!", COL_WHITE);
       }
 
@@ -694,7 +718,7 @@ bool game_tower_tick(void){
                                 dt,
                                 50u);
 
-      if (dt >= 10000u){
+      if (dt >= 13000u){
         return true;
       }
     } break;

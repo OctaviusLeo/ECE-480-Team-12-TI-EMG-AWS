@@ -3,6 +3,8 @@
 #include <string.h>     
 #include "ssd1351.h"
 #include "project.h"
+#include "ssd1351.h"
+#include "gfx.h"
 
 // 5x7 font
 // Each byte: bit0=row0 (top), bit6=row6 (bottom).
@@ -305,4 +307,66 @@ void gfx_blit_pal4(uint8_t x, uint8_t y,
             ssd1351_draw_rect((uint8_t)(x + xi + 1), (uint8_t)(y + yi), 1, 1, c1);
         }
     }
+}
+
+void gfx_pixel(uint8_t x, uint8_t y, uint16_t color){
+    // 1x1 rect = 1 pixel
+    ssd1351_draw_rect(x, y, 1, 1, color);
+}
+
+static void gfx_line(int x0, int y0, int x1, int y1, uint16_t color){
+    int dx = (x1 > x0) ? (x1 - x0) : (x0 - x1);
+    int sx = (x0 < x1) ? 1 : -1;
+    int dy = (y1 > y0) ? (y0 - y1) : (y1 - y0);  // note: y inverted
+    int sy = (y0 < y1) ? 1 : -1;
+    int err = dx + dy;
+
+    while (1) {
+        if (x0 >= 0 && x0 < 128 && y0 >= 0 && y0 < 128) {
+            gfx_pixel((uint8_t)x0, (uint8_t)y0, color);
+        }
+        if (x0 == x1 && y0 == y1) break;
+        int e2 = 2 * err;
+        if (e2 >= dy) { err += dy; x0 += sx; }
+        if (e2 <= dx) { err += dx; y0 += sy; }
+    }
+}
+
+void gfx_rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color){
+    if (w == 0u || h == 0u) return;
+
+    int x0 = x;
+    int y0 = y;
+    int x1 = x + (int)w - 1;
+    int y1 = y + (int)h - 1;
+
+    // Top, bottom, left, right
+    gfx_line(x0, y0, x1, y0, color); // top
+    gfx_line(x0, y1, x1, y1, color); // bottom
+    gfx_line(x0, y0, x0, y1, color); // left
+    gfx_line(x1, y0, x1, y1, color); // right
+}
+
+void gfx_xshape(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color){
+    if (w == 0u || h == 0u) return;
+
+    int x0 = x;
+    int y0 = y;
+    int x1 = x + (int)w - 1;
+    int y1 = y + (int)h - 1;
+
+    // Diagonal: top-left to bottom-right
+    gfx_line(x0, y0, x1, y1, color);
+    // Diagonal: top-right to bottom-left
+    gfx_line(x1, y0, x0, y1, color);
+}
+
+void gfx_triangle(uint8_t x0, uint8_t y0,
+                  uint8_t x1, uint8_t y1,
+                  uint8_t x2, uint8_t y2,
+                  uint16_t color)
+{
+    gfx_line(x0, y0, x1, y1, color);
+    gfx_line(x1, y1, x2, y2, color);
+    gfx_line(x2, y2, x0, y0, color);
 }

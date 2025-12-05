@@ -1,0 +1,13 @@
+#ifndef EQUIPMENT_ICON_H
+#define EQUIPMENT_ICON_H
+
+#include <stdint.h>
+
+#define EQUIPMENT_ICON_W 35
+#define EQUIPMENT_ICON_H 35
+#define EQUIPMENT_ICON_PAL_SIZE 16
+
+extern const uint16_t EQUIPMENT_ICON_PAL[EQUIPMENT_ICON_PAL_SIZE];
+extern const uint8_t  EQUIPMENT_ICON_IDX[(EQUIPMENT_ICON_W * EQUIPMENT_ICON_H) / 2];
+
+#endif // EQUIPMENT_ICON_H

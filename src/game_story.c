@@ -32,6 +32,7 @@
 #include "story_ch10_enemy.h"
 #include "you_died.h"
 #include "chest.h"
+#include "equipment_icon.h"
 #include "cheevos.h"
 
 #define STORY_FLEX_MENU_HZ 50.0f   // Hz needed to exit to menu after too many deaths
@@ -631,7 +632,7 @@ bool game_story_tick(void){
 
 
       }
-      if (dt >= 5000u) {
+      if (dt >= 0u) { //5000
         s_goto(STS_LORE_BRAND);
       }
     } break;
@@ -642,6 +643,8 @@ bool game_story_tick(void){
         gfx_clear(COL_BLACK);
         gfx_header("Prologue", COL_WHITE);
         // any static art/lines go here ONCE
+        gfx_triangle(127, 122,  122, 127,  122, 117, COL_WHITE);
+
       }
 
       // Only text updates each tick; no clears
@@ -650,7 +653,7 @@ bool game_story_tick(void){
                           dt,
                           50u);   // ms per char
 
-      if (dt >= 13000u){
+      if (dt >= 0u){ //13000
         s_goto(STS_BRAND);
       }
     } break;
@@ -669,7 +672,7 @@ bool game_story_tick(void){
                       STORY_OPENING_SCENE_IDX,
                       STORY_OPENING_SCENE_PAL);
       }
-      if (dt >= 5000u){
+      if (dt >= 0u){ //5000
         s_goto(STS_LORE_CHAPTER);
       }
     } break;
@@ -681,6 +684,9 @@ bool game_story_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
+        
+        gfx_triangle(127, 122,  122, 127,  122, 117, COL_WHITE);
+
         gfx_header(c->name, COL_WHITE);
         // any static decorations per chapter go here once
       }
@@ -690,7 +696,7 @@ bool game_story_tick(void){
                           dt,
                           50u);
 
-      if (dt >= 13000u){
+      if (dt >= 0u){ //13000
         s_goto(STS_INTRO);
       }
     } break;
@@ -709,21 +715,21 @@ bool game_story_tick(void){
 
         uint8_t ix = (uint8_t)((128 - is->w) / 2);
         uint8_t iy = 20;   // leave header band at top
-
+        
         gfx_blit_pal4(ix, iy,
                       is->w, is->h,
                       is->idx,
                       is->pal);
 
         // Overlay target info near the bottom over a small band
+        gfx_bar(0, 104, 128, 24, COL_DKGRAY);
         char line[40];
         snprintf(line, sizeof(line), "%s STR: %u Hz",
                  c->enemy, (unsigned)c->enemy_hz);
-        gfx_bar(0, 104, 128, 24, COL_BLACK);
-        gfx_text2(0, 106, line, COL_YELLOW, 1);
-        gfx_text2(0, 118, "Choose an item (A/B) with Hz", COL_WHITE, 1);
+        gfx_text2(1, 106, line, COL_YELLOW, 1);
+        gfx_text2(1, 118, "Choose an item (A/B) with Hz", COL_WHITE, 1);
       }
-      if (dt >= 7000u){
+      if (dt >= 0u){ //7000
         s_goto(STS_CHOOSE);
       }
     } break;
@@ -775,7 +781,7 @@ bool game_story_tick(void){
         g_equipped      = *cur;        // new item becomes current
       }
 
-      if (dt >= 5000u) {
+      if (dt >= 0u) { //
         g_sum_hz = 0.0f;
         g_cnt_hz = 0u;
         s_goto(STS_BATTLE);
@@ -836,6 +842,10 @@ bool game_story_tick(void){
       if (g_dirty) {
         g_dirty = false; 
         gfx_clear(COL_BLACK);
+
+        // seperator for VICTOR and defeat
+        gfx_rect(0, 67, 187, 1, COL_GRAY);
+
         gfx_header("RESULT", COL_WHITE);
         char l1[40]; snprintf(l1, sizeof(l1), "You: %.1f Hz", you);
         char l2[40]; snprintf(l2, sizeof(l2), "Enemy: %.1f Hz", foe);
@@ -862,6 +872,20 @@ bool game_story_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
+
+//        uint8_t x = (uint8_t)(98);
+//        uint8_t y = (uint8_t)(0);
+
+//        gfx_blit_pal4(x, y,
+//                      EQUIPMENT_ICON_W, EQUIPMENT_ICON_H,
+//                      EQUIPMENT_ICON_IDX,
+//                      EQUIPMENT_ICON_PAL);
+
+        // Draw background for equipment and items, also green rectangle of current equiped item.
+        gfx_bar(0, 38, 128, 32, COL_DKGRAY);
+        gfx_bar(0, 70, 128, 64, COL_GRAY);
+        gfx_rect(1, 84, 127, 12, COL_GREEN);
+
         gfx_header("LOOT", COL_WHITE);
 
         gfx_text2(30, 30, "Equipment:", COL_WHITE, 1);
@@ -871,6 +895,7 @@ bool game_story_tick(void){
 
         gfx_text2(6, 74, "Now:",  COL_WHITE, 1);
         gfx_text2(6, 86, g_equipped.name,     COL_GREEN, 1);
+
       }
       if (dt >= 5000u){
         s_goto(STS_NEXT);
@@ -891,7 +916,7 @@ bool game_story_tick(void){
                       YOU_DIED_IDX,
                       YOU_DIED_PAL);
 
-        if (g_story_deaths + 1u < 3u) {
+        if (g_story_deaths + 1u < 2u) {
           gfx_text2(30, 110, "Retrying...", COL_RED, 1);
         } else {
           gfx_text2(10, 110, "Too many deaths...", COL_RED, 1);
@@ -922,6 +947,11 @@ bool game_story_tick(void){
         if (g_dirty) {
             g_dirty = false;
             gfx_clear(COL_BLACK);
+
+            // X UI
+            gfx_xshape(110, 1, 15, 15, COL_RED);           // danger indicator
+            gfx_rect(109, 0, 17, 17, COL_RED);
+
             gfx_header("REST & RESET", COL_WHITE);
             gfx_bar(0, 18, 128, 1, COL_DKGRAY);
 
@@ -980,6 +1010,8 @@ bool game_story_tick(void){
       if (g_dirty){
         g_dirty = false;
         gfx_clear(COL_BLACK);
+
+        gfx_triangle(127, 122,  122, 127,  122, 117, COL_WHITE);
 
         // Draw final story scene image, centered
         uint8_t x = (uint8_t)((128 - STORY_FINAL_SCENE_W) / 2);

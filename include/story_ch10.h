@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define STORY_CH10_W 128
-#define STORY_CH10_H 128
+#define STORY_CH10_W 120
+#define STORY_CH10_H 120
 #define STORY_CH10_PAL_SIZE 16
 
 extern const uint16_t STORY_CH10_PAL[STORY_CH10_PAL_SIZE];
