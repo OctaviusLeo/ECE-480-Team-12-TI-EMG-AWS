@@ -175,66 +175,66 @@ static const char* g_lore_ch2_lines[] = {
   "you start to get",
   "serious! An iron dum",
   "-my catches your eye",
-  ". You stare at it and",
-  "then strike!!!"
+  ". You stare at it",
+  "and then strike!!!"
 };
 static const uint8_t g_lore_ch2_count =
     sizeof(g_lore_ch2_lines)/sizeof(g_lore_ch2_lines[0]);
 
 static const char* g_lore_ch3_lines[] = {
-  "A villager interrupts",
-  "your training. He say",
-  "the villager's kids",
-  "explored the",
-  "catacombs and haven't",
-  "returned! Hence, you",
-  "bravely travel to",
-  "the catacombs to",
-  "save the kids."
+  "HEY! Says a villager",
+  "You stop training. H",
+  "-e says the villager",
+  "kids explored the",
+  "catacombs and haven'",
+  "-t returned! Hence,",
+  "you bravely travel",
+  "to the catacombs",
+  "to save the kids."
 };
 static const uint8_t g_lore_ch3_count =
     sizeof(g_lore_ch3_lines)/sizeof(g_lore_ch3_lines[0]);
 
 static const char* g_lore_ch4_lines[] = {
-  "The village thanks yo",
+  "The village thanks y",
   "-our efforts. Giving",
-  "a good sum of silver.",
-  "With this money gained",
+  "a sum of silver. Wit",
+  "-h this money obtain",
   "you head off to the",
-  "kingdom to become",
-  "a pulse-knight! However",
-  "along the way you are",
-  "stopped by a group of",
-  "... bandits?!"
+  "kingdom to become a",
+  "pulse-knight! Howeve",
+  "-r along the way you",
+  "are stopped by a gro",
+  "-up of... bandits?!"
 };
 static const uint8_t g_lore_ch4_count =
     sizeof(g_lore_ch4_lines)/sizeof(g_lore_ch4_lines[0]);
 
 static const char* g_lore_ch5_lines[] = {
   "After defeating the",
-  "bandits, you continue",
-  "onward. After several",
-  "days you come across a",
-  "knight camp near the",
-  "kingdom. You are eager",
+  "bandits you continue",
+  "onward. Soon several",
+  "days you come across",
+  "a knight camp near t",
+  "-he kingdom. You see",
   "to test your skills.",
   "A training knight is",
   "angered by your ego.",
-  "he challenges you!"
+  "He challenges you!"
 };
 static const uint8_t g_lore_ch5_count =
     sizeof(g_lore_ch5_lines)/sizeof(g_lore_ch5_lines[0]);
 
 static const char* g_lore_ch6_lines[] = {
-  "Several days have past",
-  "since your arrival at",
-  "the kingdom. Hearing",
+  "Several days gone by",
+  "since your arrival.",
+  "You soon hear some",
   "news about a tourna",
-  "-ment, you enter,",
-  "hoping to make a name",
+  "-ment, you enter, ho",
+  "-ping to make a name",
   "for yourself. After",
-  "many duels, you enter",
-  "the final. The knight",
+  "many duels you enter",
+  "the final. A knight",
   "prepares his weapon."
 };
 static const uint8_t g_lore_ch6_count =
@@ -246,10 +246,10 @@ static const char* g_lore_ch7_lines[] = {
   "to Arcane Tower. Hap",
   "-ppily accepting the",
   "reward, you head to",
-  "the floating tower in",
+  "a floating tower in",
   "the sky. Entering in",
-  "-side, Arcane Tower's",
-  "founder wants your",
+  "-side Arcane Tower,",
+  "an gramps wants your",
   "help. But you must",
   "defeat him first."
 };
@@ -257,49 +257,48 @@ static const uint8_t g_lore_ch7_count =
     sizeof(g_lore_ch7_lines)/sizeof(g_lore_ch7_lines[0]);
 
 static const char* g_lore_ch8_lines[] = {
-  "The sorcerer needs",
-  "help. To locate the D",
-  "emon Castle, he needs",
-  "a dragon's heart. So,",
+  "The sorcerer needs h",
+  "-elp to locate the D",
+  "emon Castle. He need",
+  "a dragon's heart. So",
   "after traveling,",
   "the dragon's lair is",
   "infront of you. Step",
-  "by step, you traverse",
-  "inside. Inside you",
+  "by step you traverse",
+  "inside. Soon you see",
   "the dragon staring.",
-  "It roars and charges!"
+  "It roars & charges!"
 };
 static const uint8_t g_lore_ch8_count =
     sizeof(g_lore_ch8_lines)/sizeof(g_lore_ch8_lines[0]);
 
 static const char* g_lore_ch9_lines[] = {
-  "You return to Arcane To",
-  "-wer. Givin the Sorc",
-  "-erer the dragon's he",
+  "Returning to Arcane",
+  "Tower givin the Sorc",
+  "-erer the dragon he",
   "-art, he gives you",
   "the location of the",
   "Demon Castle. Many",
   "years past in your",
   "jourey. The hellish",
   "enviroment homes the",
-  "Demon King. Entering,",
-  "he sits on his throne."
+  "Demon King. Entering",
+  "he sits on throne."
 };
 static const uint8_t g_lore_ch9_count =
     sizeof(g_lore_ch9_lines)/sizeof(g_lore_ch9_lines[0]);
 
 static const char* g_lore_ch10_lines[] = {
-"[Wonderful. WONDERFUL!]",
-"A unkown voice enters",
-"your head. [You did it",
-"but, this wasn't supp",
-"-osed to happen... well",
-"i'll just remove you].",
+"[wow. WONDERFUL!!!]",
+"A unkown voice enter",
+"your head. [You did",
+"it, this wasn't supp",
+"-osed to happen...",
+"i'll remove you :)].",
 "Opening your eyes, a",
-"figure smiles at you.",
-"They raise their hand",
-"but you rush in to",
-"stop him!"
+"figure smile at you.",
+"They raise their arm",
+"but you rush in!!!"
 };
 static const uint8_t g_lore_ch10_count =
     sizeof(g_lore_ch10_lines)/sizeof(g_lore_ch10_lines[0]);
@@ -326,16 +325,15 @@ static const lore_block_t g_lore_chapters[STORY_CHAPTERS] = {
 // Ending lore lines
 static const char* g_lore_ending_lines[] = {
 "You slowly open your",
-"eyes. Mind is cloudy.",
+"eyes. Mind is cloudy",
 "The dead Demon King",
-"lays at your feet. Yea",
-"... you saved the world",
-"you raise your hand in",
-"-to the sky. YOU SAVED",
-"the world! You travel",
-"back and spend your ye",
-"-ars as a hero! Chaos",
-"is no more, or is it?"
+"lays at your feet.",
+"... you saved the wo",
+"ld. you raise a hand",
+"to the sky:YOU SAVED",
+"the world! You went",
+"back and spent your",
+"life a hero! @&($#)"
 };
 static const uint8_t g_lore_ending_count =
     sizeof(g_lore_ending_lines)/sizeof(g_lore_ending_lines[0]);
@@ -866,7 +864,7 @@ bool game_story_tick(void){
         gfx_clear(COL_BLACK);
         gfx_header("LOOT", COL_WHITE);
 
-        gfx_text2(30, 20, "Equipment:", COL_WHITE, 1);
+        gfx_text2(30, 30, "Equipment:", COL_WHITE, 1);
 
         gfx_text2(6, 42, "Prev:", COL_WHITE, 1);
         gfx_text2(6, 54, g_prev_equipped.name, COL_RED, 1);

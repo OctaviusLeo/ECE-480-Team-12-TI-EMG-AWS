@@ -61,7 +61,7 @@ static const char* g_tower_end_lines[] = {
   "unscathed. Dragging",
   "your feet, you reach",
   "the edge and look do",
-  "-wn. Closing your eye",
+  "-wn. With eyes close",
   "you let yourself go."
 };
 static const uint8_t g_tower_end_count =

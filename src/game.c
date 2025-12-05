@@ -20,7 +20,7 @@
 
 // private storage of latest metrics (read by modes via game_get_metrics)
 static bool     g_inited = false;
-static uint8_t  g_mode   = 2;        // 0 = playground, 1 = PVP, 2 = Story, 3 = Tower, 4 = Credits + Trophy
+static uint8_t  g_mode   = 4;        // 0 = playground, 1 = PVP, 2 = Story, 3 = Tower, 4 = Credits + Trophy
 static float    g_latest_hz = 0.0f;
 static uint8_t  g_latest_pct = 0;
 static float    g_baseline_disp_hz = 0.0f;
