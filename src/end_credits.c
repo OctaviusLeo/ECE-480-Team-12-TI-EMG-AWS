@@ -69,7 +69,7 @@ bool end_credits_tick(void){
         gfx_header("SYMAEDCHIT LEO", COL_RED);
         gfx_text2(6, 40, "as: Lead Programmer", COL_WHITE, 1);
       }
-      if (dt >= 5000u) s_goto(MEMBER_2);
+      if (dt >= 2000u) s_goto(MEMBER_2);
     } break;
 
     case MEMBER_2: {
@@ -79,7 +79,7 @@ bool end_credits_tick(void){
         gfx_header("ERVIN ALIAJ", COL_BLUE);
         gfx_text2(6, 40, "as: PCB Designer", COL_WHITE, 1);
       }
-      if (dt >= 5000u) s_goto(MEMBER_3);
+      if (dt >= 2000u) s_goto(MEMBER_3);
     } break;
 
     case MEMBER_3: {
@@ -89,7 +89,7 @@ bool end_credits_tick(void){
         gfx_header("ANDREW PEREZ", COL_GREEN);
         gfx_text2(6, 40, "as: Power Designer", COL_WHITE, 1);
       }
-      if (dt >= 5000u) s_goto(MEMBER_4);
+      if (dt >= 2000u) s_goto(MEMBER_4);
     } break;
 
     case MEMBER_4: {
@@ -99,7 +99,7 @@ bool end_credits_tick(void){
         gfx_header("PRATIJIT PODDER", COL_PURPLE);
         gfx_text2(6, 40, "as: Analog Filterings", COL_WHITE, 1);
       }
-      if (dt >= 5000u) s_goto(ECS_TEAM);
+      if (dt >= 2000u) s_goto(ECS_TEAM);
     } break;
 
     case ECS_TEAM: {
@@ -121,7 +121,7 @@ bool end_credits_tick(void){
       gfx_text2(35, 120, "Ervin", COL_BLUE, 1);
       gfx_text2(55, 20, "Pratijit", COL_GREEN, 1);
       gfx_text2(85, 120, "Andrew", COL_PURPLE, 1);
-      if (dt >=5000u) s_goto(SPONSOR);
+      if (dt >=3000u) s_goto(SPONSOR);
     } break;
 
     case SPONSOR: {
@@ -131,7 +131,7 @@ bool end_credits_tick(void){
         gfx_header("GERASIMOS MADALVANOS", COL_RED);
         gfx_text2(6, 40, "as: TI Sponsor", COL_WHITE, 1);
       }
-      if (dt >= 5000u) s_goto(ECS_THANKS_TI);
+      if (dt >= 3000u) s_goto(ECS_THANKS_TI);
     } break;
 
     case ECS_THANKS_TI: {
@@ -149,7 +149,7 @@ bool end_credits_tick(void){
                       TI_LOGO_IDX,
                       TI_LOGO_PAL);
       }
-      if (dt >= 5000u) s_goto(FACILITATOR);
+      if (dt >= 3000u) s_goto(FACILITATOR);
     } break;
 
     case FACILITATOR: {
@@ -159,7 +159,7 @@ bool end_credits_tick(void){
         gfx_header("JOYDEEP MITRA", COL_RED);
         gfx_text2(6, 40, "as: the Facilitator", COL_WHITE, 1);
       }
-      if (dt >= 5000u) s_goto(PROFRESSOR);
+      if (dt >= 3000u) s_goto(PROFRESSOR);
     } break;
 
     case PROFRESSOR: {
@@ -169,7 +169,7 @@ bool end_credits_tick(void){
         gfx_header("SUBIR BISWAS", COL_RED);
         gfx_text2(6, 40, "as: the Profressor", COL_WHITE, 1);
       }
-      if (dt >= 5000u) s_goto(ECS_THANKS_MSU);
+      if (dt >= 3000u) s_goto(ECS_THANKS_MSU);
     } break;
 
     case ECS_THANKS_MSU: {
@@ -187,7 +187,7 @@ bool end_credits_tick(void){
                       MSU_LOGO_IDX,
                       MSU_LOGO_PAL);
       }
-      if (dt >= 5000u){
+      if (dt >= 3000u){
         s_goto(ECS_CHEEVOS);
       }
     } break;
@@ -199,13 +199,13 @@ bool end_credits_tick(void){
 
       // Decide which page we *want* to show based on dt
       uint8_t page;
-      if (dt < 5000u) {
+      if (dt < 3000u) {
         page = 0;
-      } else if (dt < 10000u) {
+      } else if (dt < 6000u) {
         page = 1;
-      } else if (dt < 15000u) {
+      } else if (dt < 9000u) {
         page = 2;
-      } else if (dt < 20000u) {
+      } else if (dt < 12000u) {
         page = 3;
       } else {
         // After 20s total, reset tracker and finish credits

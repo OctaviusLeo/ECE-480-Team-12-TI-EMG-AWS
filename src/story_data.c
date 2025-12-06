@@ -10,5 +10,5 @@ const story_chapter_t g_story[STORY_CHAPTERS] = {
   {"Ch.7: Arcane Tower",     "Sorcerer",      90}, //90
   {"Ch.8: Dragon’s Lair",    "Dragon",       100}, //110
   {"Ch.9: Demon Castle",       "Demon King",    130}, //130
-  {"Ch.10: G?ME? AD??N",     "H?: 9999999999",   1} //1
+  {"Ch.10: G?ME? AD??N",     "H?: 99999999999999999999999999",   1} //1
 };

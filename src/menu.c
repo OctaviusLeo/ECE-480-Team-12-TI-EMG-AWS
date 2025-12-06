@@ -8,7 +8,7 @@
 #include "choice_input.h"         // choice_from_hz(), choice_draw_hint()
 #include "game_opening_screen_logo.h" // GAME_OPENING_SCREEN_LOGO_* & bitmap
 
-#define TITLE_LOAD_MS 5000u   // total time for 0–100% bar (5s); tweak if needed
+#define TITLE_LOAD_MS 2000u   // total time for 0–100% bar (5s)
 
 // Added MS_LOGO as first state
 typedef enum { MS_LOGO = 0, MS_TITLE, MS_SELECT, MS_ATTRACT } mstate_t;
@@ -16,6 +16,7 @@ typedef enum { MS_LOGO = 0, MS_TITLE, MS_SELECT, MS_ATTRACT } mstate_t;
 static mstate_t  g_ms;
 static uint32_t  g_t0;
 static uint8_t   g_cursor;          // 0..4
+// Used as last scroll time while in MS_SELECT
 static uint32_t  g_last_input_ms;
 static bool      g_dirty;           // true = need to (re)draw current state
 
@@ -31,7 +32,7 @@ static const char* mode_name(uint8_t m)
     }
 }
 
-/* Helper: change menu state and mark screen dirty */
+/* change menu state and mark screen dirty */
 static void menu_goto(mstate_t ns)
 {
     g_ms    = ns;
@@ -42,7 +43,7 @@ static void menu_goto(mstate_t ns)
 void menu_start(void)
 {
     g_cursor        = 0;
-    g_last_input_ms = millis();
+    g_last_input_ms = millis();   // also seed scroll timer
     // Start with the logo state instead of MS_TITLE
     menu_goto(MS_LOGO);
 }
@@ -53,6 +54,7 @@ bool menu_tick(uint8_t *out_mode)
     float   base = 0.0f;
     uint8_t pct  = 0;
     game_get_metrics(&hz, &pct, &base);
+    
     uint32_t now = millis();
 
     switch (g_ms) {
@@ -74,7 +76,7 @@ bool menu_tick(uint8_t *out_mode)
         }
 
         // Stay on this screen for 5 seconds, then move on
-        if ((now - g_t0) >= 5000u) {
+        if ((now - g_t0) >= 3000u) {
             menu_goto(MS_TITLE);
         }
     } break;
@@ -131,6 +133,8 @@ bool menu_tick(uint8_t *out_mode)
         // Either user flexes to skip, or bar hits 100%
         if (hz > 3.0f || load_pct >= 100u) {
             menu_goto(MS_SELECT);
+            // reset scroll timer when entering select
+            g_last_input_ms = now;
         }
     } break;
 
@@ -138,11 +142,13 @@ bool menu_tick(uint8_t *out_mode)
         const int base_y = 32;
         const int row_h  = 18;
 
-        /* INPUT / STATE UPDATE (every tick)*/
+        /* AUTO-SCROLL THROUGH MODES */
+        const uint32_t SCROLL_PERIOD_MS = 2000u;   // 1s per mode
+        const float    CONFIRM_THRESH   = 80.0f;
 
-        /* Quick flex bursts to move cursor (debounced 250 ms) */
-        if ((now - g_last_input_ms) >= 250u) {
-            if (choice_from_hz(hz, 50.0f) == CHOICE_A && hz > 3.0f) {
+        // Only auto-scroll when user is NOT strongly flexing
+        if (hz < (CONFIRM_THRESH * 0.5f)) {
+            if ((now - g_last_input_ms) >= SCROLL_PERIOD_MS) {
                 g_cursor = (uint8_t)((g_cursor + 1u) % 5u);
                 g_last_input_ms = now;
                 g_dirty = true;   // highlight changed -> redraw needed
@@ -152,13 +158,12 @@ bool menu_tick(uint8_t *out_mode)
         /* Hold > 1.0 s above threshold to confirm selection */
         static uint32_t hold_t0  = 0;
         static bool     holding  = false;
-        const float     CONFIRM_THRESH = 40.0f;
 
         if (hz >= CONFIRM_THRESH) {
             if (!holding) {
                 holding  = true;
                 hold_t0  = now;
-            } else if ((now - hold_t0) >= 1000u) {
+            } else if ((now - hold_t0) >= 500u) {
                 if (out_mode) {
                     *out_mode = g_cursor;   // MODE_*
                 }
@@ -191,7 +196,6 @@ bool menu_tick(uint8_t *out_mode)
     } break;
 
     case MS_ATTRACT:
-        /* Optional attract mode; can follow same g_dirty pattern if used */
         break;
     }
 

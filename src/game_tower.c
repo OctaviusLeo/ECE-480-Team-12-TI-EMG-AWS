@@ -17,11 +17,13 @@
 #include "chest.h"
 #include "story_items.h"
 #include "cheevos.h"
+#include "enemy_icon.h"
+#include "equipment_icon.h"
 
-#define TOWER_FLEX_MENU_HZ 50.0f   // Hz needed to exit to menu after too many deaths
-#define TOWER_CHOICE_SPLIT_HZ 50.0f   // NEW: A/B split threshold in Hz
+#define TOWER_FLEX_MENU_HZ 20.0f   // Hz needed to exit to menu after too many deaths
+#define TOWER_CHOICE_SPLIT_HZ 20.0f   // NEW: A/B split threshold in Hz
 #define TOWER_BAR_MAX_HZ 200.0f   // or 220/250 if highest floors are huge
-#define CHOICE_BAR_MAX_HZ 50.0f   // adjust based on what “normal” player Hz looks like
+#define CHOICE_BAR_MAX_HZ 20.0f   // adjust based on what “normal” player Hz looks like
 
 typedef enum {
   TWS_LOGO = 0,
@@ -348,9 +350,9 @@ bool game_tower_tick(void){
       tower_draw_lore_typewriter(g_tower_intro_lines,
                                 g_tower_intro_count,
                                 dt,
-                                40u);
+                                80u);
 
-      if (dt >= 13000u){
+      if (dt >= 8000u){
         t_goto(TWS_FLOOR_INTRO);
       }
     } break;
@@ -361,6 +363,14 @@ bool game_tower_tick(void){
         uint16_t foe = g_tower_enemy_hz[g_floor];
 
         gfx_clear(COL_BLACK);
+
+//        uint8_t x = (uint8_t)(98);
+//        uint8_t y = (uint8_t)(0);
+
+//        gfx_blit_pal4(x, y,
+//                      ENEMY_ICON_W, ENEMY_ICON_H,
+//                      ENEMY_ICON_IDX,
+//                      ENEMY_ICON_PAL);
 
         // Draw background for equipment and items, also green rectangle of current equiped item.
         gfx_bar(0, 64, 128, 20, COL_DKGRAY);
@@ -461,7 +471,7 @@ bool game_tower_tick(void){
     } break;
 
     case TWS_BATTLE: {
-      const uint32_t FLEX_MS = 10000u;
+      const uint32_t FLEX_MS = 5000u;
 
       if (g_dirty){
         g_dirty = false;
@@ -598,6 +608,14 @@ bool game_tower_tick(void){
         g_dirty = false;
         gfx_clear(COL_BLACK);
 
+//        uint8_t x = (uint8_t)(98);
+//        uint8_t y = (uint8_t)(0);
+
+//        gfx_blit_pal4(x, y,
+//                      EQUIPMENT_ICON_W, EQUIPMENT_ICON_H,
+//                      EQUIPMENT_ICON_IDX,
+//                      EQUIPMENT_ICON_PAL);
+
         // Draw background for equipment and items, also green rectangle of current equiped item.
         gfx_bar(0, 58, 128, 32, COL_DKGRAY);
         gfx_bar(0, 90, 128, 64, COL_GRAY);
@@ -632,7 +650,7 @@ bool game_tower_tick(void){
                       YOU_DIED_IDX,
                       YOU_DIED_PAL);
 
-        if (g_tower_deaths + 1u < 2u) {
+        if (g_tower_deaths + 1u < 1u) {
           gfx_text2(30, 110, "Retrying...", COL_RED, 1);
         } else {
           gfx_text2(4, 110, "Too many deaths...", COL_RED, 1);
@@ -716,9 +734,9 @@ bool game_tower_tick(void){
       tower_draw_lore_typewriter(g_tower_end_lines,
                                 g_tower_end_count,
                                 dt,
-                                50u);
+                                80u);
 
-      if (dt >= 13000u){
+      if (dt >= 8000u){
         return true;
       }
     } break;

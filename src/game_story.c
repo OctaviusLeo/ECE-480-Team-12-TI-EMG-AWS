@@ -34,11 +34,12 @@
 #include "chest.h"
 #include "equipment_icon.h"
 #include "cheevos.h"
+#include "enemy_icon.h"
 
-#define STORY_FLEX_MENU_HZ 50.0f   // Hz needed to exit to menu after too many deaths
-#define STORY_CHOICE_SPLIT_HZ 50.0f //A/B split threshold in Hz
+#define STORY_FLEX_MENU_HZ 20.0f   // Hz needed to exit to menu after too many deaths
+#define STORY_CHOICE_SPLIT_HZ 20.0f //A/B split threshold in Hz
 #define STORY_BAR_MAX_HZ 200.0f   // max scale for story battle bar tweak if...
-#define CHOICE_BAR_MAX_HZ 50.0f   // adjust based on what player Hz looks like
+#define CHOICE_BAR_MAX_HZ 20.0f   // adjust based on what player Hz looks like
 
 typedef enum {
   STS_LOGO = 0,
@@ -632,7 +633,7 @@ bool game_story_tick(void){
 
 
       }
-      if (dt >= 0u) { //5000
+      if (dt >= 5000u) { //5000
         s_goto(STS_LORE_BRAND);
       }
     } break;
@@ -651,9 +652,9 @@ bool game_story_tick(void){
       draw_lore_typewriter(g_lore_brand_lines,
                           g_lore_brand_count,
                           dt,
-                          50u);   // ms per char
+                          40u);   // ms per char
 
-      if (dt >= 0u){ //13000
+      if (dt >= 8000u){ //13000
         s_goto(STS_BRAND);
       }
     } break;
@@ -672,7 +673,7 @@ bool game_story_tick(void){
                       STORY_OPENING_SCENE_IDX,
                       STORY_OPENING_SCENE_PAL);
       }
-      if (dt >= 0u){ //5000
+      if (dt >= 5000u){ //5000
         s_goto(STS_LORE_CHAPTER);
       }
     } break;
@@ -696,7 +697,7 @@ bool game_story_tick(void){
                           dt,
                           50u);
 
-      if (dt >= 0u){ //13000
+      if (dt >= 13000u){ //13000
         s_goto(STS_INTRO);
       }
     } break;
@@ -729,7 +730,7 @@ bool game_story_tick(void){
         gfx_text2(1, 106, line, COL_YELLOW, 1);
         gfx_text2(1, 118, "Choose an item (A/B) with Hz", COL_WHITE, 1);
       }
-      if (dt >= 0u){ //7000
+      if (dt >= 7000u){ //7000
         s_goto(STS_CHOOSE);
       }
     } break;
@@ -781,7 +782,7 @@ bool game_story_tick(void){
         g_equipped      = *cur;        // new item becomes current
       }
 
-      if (dt >= 0u) { //
+      if (dt >= 5000u) { //5000
         g_sum_hz = 0.0f;
         g_cnt_hz = 0u;
         s_goto(STS_BATTLE);
@@ -789,7 +790,7 @@ bool game_story_tick(void){
     } break;
 
     case STS_BATTLE: {
-      const uint32_t FLEX_MS = 10000u;
+      const uint32_t FLEX_MS = 5000u;
       const story_chapter_t* c = &g_story[g_chapter];
 
       if (g_dirty){
@@ -842,6 +843,14 @@ bool game_story_tick(void){
       if (g_dirty) {
         g_dirty = false; 
         gfx_clear(COL_BLACK);
+
+//        uint8_t x = (uint8_t)(98);
+//        uint8_t y = (uint8_t)(0);
+
+//        gfx_blit_pal4(x, y,
+//                      ENEMY_ICON_W, ENEMY_ICON_H,
+//                      ENEMY_ICON_IDX,
+//                      ENEMY_ICON_PAL);
 
         // seperator for VICTOR and defeat
         gfx_rect(0, 67, 187, 1, COL_GRAY);
@@ -916,7 +925,7 @@ bool game_story_tick(void){
                       YOU_DIED_IDX,
                       YOU_DIED_PAL);
 
-        if (g_story_deaths + 1u < 2u) {
+        if (g_story_deaths + 1u <1u) {
           gfx_text2(30, 110, "Retrying...", COL_RED, 1);
         } else {
           gfx_text2(10, 110, "Too many deaths...", COL_RED, 1);
@@ -999,9 +1008,9 @@ bool game_story_tick(void){
       draw_lore_typewriter(g_lore_ending_lines,
                           g_lore_ending_count,
                           dt,
-                          50u);
+                          80u);
 
-      if (dt >= 13000u){
+      if (dt >= 8000u){
         s_goto(STS_ENDING);
       }
     } break;

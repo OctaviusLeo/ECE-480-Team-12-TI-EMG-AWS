@@ -220,7 +220,7 @@ bool game_single_tick(void){
                                 dt,
                                 50u);
 
-      if (dt >= 10000u) goto_state(ST_COUNTDOWN_LABEL);
+      if (dt >= 5000u) goto_state(ST_COUNTDOWN_LABEL);
       break;
 
     case ST_COUNTDOWN_LABEL:
@@ -245,7 +245,7 @@ bool game_single_tick(void){
       break;
 
     case ST_FLEXING: {
-      const uint32_t FLEX_MS = 10000u;
+      const uint32_t FLEX_MS = 10000u; //10000
       uint32_t elapsed = dt;
 
       if (!g_drawn_once){
@@ -321,7 +321,7 @@ bool game_single_tick(void){
         g_drawn_once = true;   // everything for this state done once
       }
 
-      if (dt >= 6000u){
+      if (dt >= 3000u){
         goto_state(ST_OVERALL_RANKS);      // NEXT: totals screen
       }
     } break;
@@ -357,7 +357,7 @@ bool game_single_tick(void){
         g_drawn_once = true;
       }
 
-      if (dt >= 6000u){
+      if (dt >= 3000u){
         return true;
       }
     } break;

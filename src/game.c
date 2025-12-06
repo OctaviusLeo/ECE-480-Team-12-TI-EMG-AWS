@@ -20,13 +20,14 @@
 
 // private storage of latest metrics (read by modes via game_get_metrics)
 static bool     g_inited = false;
-static uint8_t  g_mode   = 2;        // 0 = playground, 1 = PVP, 2 = Story, 3 = Tower, 4 = Credits + Trophy
+// Current active mode (set by menu selection)
+static uint8_t  g_mode   = 3;   // 0 = playground, 1 = PVP, 2 = Story, 3 = Tower, 4 = Credits + Trophy
 static float    g_latest_hz = 0.0f;
 static uint8_t  g_latest_pct = 0;
 static float    g_baseline_disp_hz = 0.0f;
 
-static save_t G_SAVE;
-static uint8_t g_in_menu = 1;   // 1 = menu active, 0 = running a mode
+static save_t   G_SAVE;
+static uint8_t  g_in_menu = 1;   // 1 = menu active, 0 = running a mode
 
 void app_boot(void){
   if (!save_load(&G_SAVE)) save_defaults(&G_SAVE);
@@ -52,15 +53,18 @@ void game_init(void){
   }
 }
 
-
 void game_set_mode(uint8_t mode){
+  // Use the mode that was selected by the menu
+  g_mode = mode;
 
+  // Initialize the chosen mode
   if (g_mode == MODE_PLAYGROUND)      game_single_init();
   else if (g_mode == MODE_PVP)        game_two_init();
   else if (g_mode == MODE_STORY)      game_story_init();
   else if (g_mode == MODE_TOWER)      game_tower_init();
   else /* MODE_CREDITS */             end_credits_start();
 
+  // Start splash for the same selected mode
   mode_splash_begin(g_mode); // brief overlay; next frames will tick it, not the menu
 }
 
@@ -121,6 +125,7 @@ void game_tick(void){
       menu_start();
     }
   }
-  //overlay any active "Achievement Unlocked!" toast
+
+  // overlay any active "Achievement Unlocked!" toast
   cheevos_draw_toast();
 }

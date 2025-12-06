@@ -10,6 +10,8 @@
 #include "ads131m02.h"
 #include "game.h"
 
+#define HZ_MULT  1.0f   // tweak this to scale the displayed Hz
+
 static bool     g_baseline_done = false;
 static uint32_t g_baseline_until_ms = 0;
 static float    g_baseline_acc = 0.0f;
@@ -96,24 +98,38 @@ int main(void){
 
   while(1){
     // Update metrics about every ~100 ms for snappy UI
-    float hz = estimate_hz_window_ms(100);
+    float hz_raw = estimate_hz_window_ms(100);
 
     // accumulate baseline during the first 3 s after game_init()
-    (void)baseline_update(hz);
+    (void)baseline_update(hz_raw);
 
     // subtract baseline (floor at 0) before feeding UI
-    extern float g_baseline_hz; // if not in header; otherwise remove this line
-    float hz_adj = hz - g_baseline_hz; if (hz_adj < 0.0f) hz_adj = 0.0f;
-    uint8_t pct = clamp_u8((int)((hz_adj * 100.0f / 250.0f) + 0.5f), 0, 100);
-    game_set_metrics(hz_adj, pct);
+    extern float g_baseline_hz; // if not in header otherwise remove this line
+    float hz_adj = hz_raw - g_baseline_hz;
+    if (hz_adj < 0.0f) hz_adj = 0.0f;
+
+    // apply multiplier for displayed / gameplay intensity
+    float hz_scaled = hz_adj * HZ_MULT;
+    if (hz_scaled < 30.0f) hz_scaled = 0.0f;
+
+    uint8_t pct = clamp_u8((int)((hz_scaled * 100.0f / 250.0f) + 0.5f), 0, 100);
+    game_set_metrics(hz_scaled, pct);
 
     next_tick = millis() + 100u;
 
     // Console print ~4 Hz (150 ms window for a steadier number)
     if ((int32_t)(millis() - next_print) >= 0){
-      float hz_now = estimate_hz_window_ms(150);
+      float hz_now_raw = estimate_hz_window_ms(150);
       extern bool g_baseline_done; // if not in header; otherwise remove this line
-      if (g_baseline_done){ hz_now -= g_baseline_hz; if (hz_now < 0.0f) hz_now = 0.0f; }
+      float hz_now_adj = hz_now_raw;
+      if (g_baseline_done){
+        hz_now_adj -= g_baseline_hz;
+        if (hz_now_adj < 0.0f) hz_now_adj = 0.0f;
+      }
+
+      float hz_now = hz_now_adj * HZ_MULT;
+      if (hz_now < 0.0f) hz_now = 0.0f;
+
       uint8_t pct_now = clamp_u8((int)((hz_now * 100.0f / 250.0f) + 0.5f), 0, 100);
       printf("Hz=%.1f  INT=%u%%\n", hz_now, (unsigned)pct_now);
       next_print = millis() + 250u;
