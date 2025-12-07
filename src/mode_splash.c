@@ -1,3 +1,11 @@
+/*==============================================================================
+ * @file    mode_splash.c
+ * @brief   Mode-selection confirmation splash screen logic.
+ *
+ * Shows a short-lived splash indicating the selected game mode before
+ * transitioning into gameplay.
+ *============================================================================*/
+
 #include <stdio.h>
 #include <stdbool.h>
 #include "mode_splash.h"

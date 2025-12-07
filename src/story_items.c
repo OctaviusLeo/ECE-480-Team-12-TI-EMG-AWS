@@ -1,3 +1,11 @@
+/*==============================================================================
+ * @file    story_items.c
+ * @brief   Shared item definitions and random selection for Story/Tower.
+ *
+ * Items adjust player and enemy multipliers in battles; also provides a small
+ * RNG-backed picker for A/B item choices.
+ *============================================================================*/
+
 #include "story_items.h"
 #include "timer.h"
 

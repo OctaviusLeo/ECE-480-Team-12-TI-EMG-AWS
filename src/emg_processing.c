@@ -1,4 +1,18 @@
 /**
+ * @file emg_processing.c
+ * @brief Implementation of complete EMG processing pipeline.
+ *
+ * Pipeline:
+ *  - DC offset removal
+ *  - High-pass filtering
+ *  - 60 Hz notch filtering
+ *  - Rectification
+ *  - Low-pass envelope detection
+ *  - Baseline subtraction and tracking
+ *  - Activation detection with hysteresis and debouncing
+ */
+
+/**
  * emg_processing.c
  * Implementation of complete EMG processing pipeline
  */
@@ -344,4 +358,5 @@ float EMG_CalculateStdDev(int32_t *samples, uint16_t count, float mean) {
 void EMG_PrintStatus(EMGProcessor *emg) {
     // This will be implemented in main.c using UARTprintf
     // Just a placeholder here
+    (void)emg;
 }

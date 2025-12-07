@@ -1,3 +1,11 @@
+/*==============================================================================
+ * @file    process.c
+ * @brief   EMG envelope tracking, baseline stats, and round averaging.
+ *
+ * Implements exponential envelope followers for two channels plus helpers
+ * to compute baselines and per-round averages.
+ *============================================================================*/
+
 #include "process.h"
 #include <math.h>
 

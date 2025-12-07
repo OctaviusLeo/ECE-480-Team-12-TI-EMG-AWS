@@ -1,3 +1,11 @@
+/*==============================================================================
+ * @file    timer.c
+ * @brief   Millisecond timebase using SysTick plus simple delay helper.
+ *
+ * Provides a global `millis()` counter and a low-power delay function using
+ * WFI when possible, with a SysCtlDelay fallback.
+ *============================================================================*/
+
 #include <stdbool.h>
 #include "timer.h"
 #include "driverlib/sysctl.h"

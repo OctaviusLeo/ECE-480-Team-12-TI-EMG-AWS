@@ -1,3 +1,10 @@
+/*==============================================================================
+ * @file    logo_anim.c
+ * @brief   Boot-time TI/MSU logo flip animation for the OLED display.
+ *
+ * This file is part of the EMG flex-frequency game project and follows the
+ * project coding standard for file-level documentation.
+ *============================================================================*/
 #include <stdint.h>
 #include <stdbool.h>
 #include "timer.h"      // millis()
@@ -70,3 +77,4 @@ bool logo_anim_tick(void)
 
     return false;  // still animating
 }
+

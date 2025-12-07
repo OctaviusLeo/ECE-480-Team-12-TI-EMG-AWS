@@ -1,3 +1,11 @@
+/*==============================================================================
+ * @file    result1.c
+ * @brief   Animated single-player result screen and bar visualization.
+ *
+ * Renders averaged Hz, baseline, percentile rank, and an animated bar
+ * with rank cut-lines for the Playground result screen.
+ *============================================================================*/
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>

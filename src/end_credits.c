@@ -1,3 +1,11 @@
+/**
+ * @file end_credits.c
+ * @brief End-credits sequence state machine.
+ *
+ * Walks through logos, team members, sponsors, and an achievements
+ * slideshow, using a simple timed state machine advanced by tick().
+ */
+
 #include <stdio.h>
 #include <stdbool.h>
 #include "end_credits.h"
@@ -11,6 +19,9 @@
 #include "end_credits_logo.h"
 #include "cheevos.h"
 
+/**
+ * @brief Internal states for the end-credits sequence.
+ */
 typedef enum {
   ST_LOGO = 0,
   MEMBER_1,
@@ -26,22 +37,43 @@ typedef enum {
   ECS_CHEEVOS
 } ecs_state_t;
 
+/** Current end-credits state. */
 static ecs_state_t g_s;
+/** Start time (ms) of current state. */
 static uint32_t    g_t0;
+/** Dirty flag: true when screen needs a full redraw for current state. */
 static bool        g_dirty;
 
+/** Current achievements page index in ECS_CHEEVOS; 0xFF = unset. */
 static uint8_t g_ecs_cheevo_page = 0xFF;
 
+/**
+ * @brief Transition helper: set new state, reset timer, mark dirty.
+ *
+ * @param ns Next state to enter.
+ */
 static void s_goto(ecs_state_t ns){
   g_s     = ns;
   g_t0    = millis();
   g_dirty = true;
 }
 
+/**
+ * @brief Start the end-credits sequence from the initial logo state.
+ */
 void end_credits_start(void){
   s_goto(ST_LOGO);
 }
 
+/**
+ * @brief Advance the end-credits sequence by one frame.
+ *
+ * This function is non-blocking; it renders or updates only as needed.
+ *
+ * @return true when the end-credits sequence has fully finished and
+ *         the caller may exit to another mode; false while credits
+ *         are still ongoing.
+ */
 bool end_credits_tick(void){
   uint32_t dt = millis() - g_t0;
 

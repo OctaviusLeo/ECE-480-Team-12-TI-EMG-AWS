@@ -1,3 +1,11 @@
+/**
+ * @file test_signal_gen.h
+ * @brief Synthetic EMG-like signal generator for testing without hardware.
+ *
+ * Provides an abstract "SignalGenerator" object that can produce samples
+ * of different test waveforms (sine, square, EMG-like noise, ramp, noise).
+ */
+
 // Generates synthetic EMG-like signals for testing without hardware
 
 #ifndef TEST_SIGNAL_GEN_H_
@@ -6,7 +14,7 @@
 #include <stdint.h>
 
 /**
- * Signal generation modes
+ * @brief Signal generation modes.
  */
 typedef enum 
 {
@@ -18,7 +26,14 @@ typedef enum
 } SignalType;
 
 /**
- * Signal generator configuration
+ * @brief Signal generator configuration/state.
+ *
+ * type         - Waveform type.
+ * amplitude    - Peak amplitude in ADC units.
+ * frequency_hz - Waveform frequency in Hz.
+ * dc_offset    - DC bias in ADC units.
+ * noise_level  - Noise amplitude as a percentage (0–100).
+ * sample_count - Internal sample counter.
  */
 typedef struct 
 {
@@ -31,8 +46,32 @@ typedef struct
 } SignalGenerator;
 
 // Function prototypes
+
+/**
+ * @brief Initialize a signal generator instance.
+ *
+ * @param gen      Pointer to generator state object.
+ * @param type     Initial waveform type.
+ * @param amplitude Peak amplitude in ADC units.
+ */
 void SigGen_Init(SignalGenerator *gen, SignalType type, int32_t amplitude);
+
+/**
+ * @brief Get the next sample from the generator.
+ *
+ * Advances the internal sample counter and returns the next waveform value.
+ *
+ * @param gen Pointer to initialized generator.
+ * @return Next sample value in ADC units.
+ */
 int32_t SigGen_GetNext(SignalGenerator *gen);
+
+/**
+ * @brief Set the generator's output frequency.
+ *
+ * @param gen     Pointer to initialized generator.
+ * @param freq_hz New frequency in Hz.
+ */
 void SigGen_SetFrequency(SignalGenerator *gen, uint16_t freq_hz);
 
 #endif

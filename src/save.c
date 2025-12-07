@@ -1,3 +1,11 @@
+/*==============================================================================
+ * @file    save.c
+ * @brief   Flash-backed save/load helpers with CRC32 protection.
+ *
+ * Provides a small abstraction over flash read/write plus a CRC32-guarded
+ * `save_t` struct for persistent game data.
+ *============================================================================*/
+
 #include <string.h>
 #include "save.h"
 

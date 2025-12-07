@@ -1,3 +1,11 @@
+/**
+ * @file cheevos.c
+ * @brief Achievement (cheevos) system implementation.
+ *
+ * Tracks unlocked achievements in save_t, draws paginated panels,
+ * and renders transient "toast" overlays when new achievements unlock.
+ */
+
 #include "cheevos.h"
 #include "gfx.h"
 #include "project.h"
@@ -5,12 +13,14 @@
 
 #define CHEEVOS_PER_PAGE 8
 
+/** Pointer to bound save slot (must be set via cheevos_bind_save). */
 static save_t *g_save = 0;
 
 /* enum in cheevos.h runs from ACH_FIRST_WIN_PVP (=0) to ACH_TOWER_CLEAR (=29),
  * so total count is last-id + 1. */
 enum { CHEEVO_COUNT = ACH_TOWER_CLEAR + 1 };
 
+/** Human-readable names for each achievement ID. */
 static const char *NAMES[CHEEVO_COUNT] = {
     "NOT a newbie",     //ACH_TUTORIAL
     "You're Better",    // ACH_FIRST_WIN_PVP
@@ -45,13 +55,29 @@ static const char *NAMES[CHEEVO_COUNT] = {
     "Tower Clear"       // ACH_TOWER_CLEAR
 };
 
+/** Current toast achievement ID (if any). */
 static cheevo_t  g_toast_id    = (cheevo_t)(-1);
+/** Time (ms) when toast should expire. */
 static uint32_t  g_toast_until = 0;
 
+/**
+ * @brief Bind the achievement system to the active save.
+ *
+ * @param s Pointer to loaded save_t structure.
+ */
 void cheevos_bind_save(save_t *s){
     g_save = s;
 }
 
+/**
+ * @brief Unlock a specific achievement ID.
+ *
+ * Writes to the save (with CRC) and sets up the unlock toast.
+ *
+ * @param id Achievement ID to unlock.
+ * @return true if this call newly unlocked the achievement,
+ *         false if it was already unlocked or save unbound.
+ */
 bool cheevos_unlock(cheevo_t id){
     if (!g_save) return false;
     if (id < 0 || id >= CHEEVO_COUNT) return false;
@@ -71,8 +97,14 @@ bool cheevos_unlock(cheevo_t id){
     return true;    // newly unlocked
 }
 
-// Draw one page of achievements (0-based page index)
-// Each page shows at most 9 achievements.
+/**
+ * @brief Draw one page of achievements (0-based page index).
+ *
+ * Each page shows up to CHEEVOS_PER_PAGE achievements, with
+ * unlocked ones in green and locked ones in dark gray.
+ *
+ * @param page Zero-based page index to render.
+ */
 void cheevos_draw_panel_page(uint8_t page){
     // Total pages, rounded up
     uint8_t pages = (uint8_t)((CHEEVO_COUNT + CHEEVOS_PER_PAGE - 1) / CHEEVOS_PER_PAGE);
@@ -112,11 +144,19 @@ void cheevos_draw_panel_page(uint8_t page){
     gfx_text2(96, 120, buf, COL_DKGRAY, 1);
 }
 
-// Keep old API as "page 0"
+/**
+ * @brief Draw the default achievements panel (page 0).
+ */
 void cheevos_draw_panel(void){
     cheevos_draw_panel_page(0);
 }
 
+/**
+ * @brief Draw the transient "Achievement Unlocked!" toast, if active.
+ *
+ * Must be called regularly. When the toast times out, it stops drawing
+ * and clears its internal timer.
+ */
 void cheevos_draw_toast(void){
     // No save bound or no active toast -> nothing to draw
     if (!g_save) return;

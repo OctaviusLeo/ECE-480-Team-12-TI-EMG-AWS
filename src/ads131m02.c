@@ -1,3 +1,11 @@
+/**
+ * @file ads131m02.c
+ * @brief Minimal SPI bring-up and single-channel read helper for ADS131M02.
+ *
+ * Configures SSI2 on TM4C for communication with the ADS131M02 and
+ * provides a blocking function to read a sign-extended sample from CH1.
+ */
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -10,6 +18,7 @@
 
 #include "ads131m02.h"
 
+// Pin / peripheral mapping
 #define ADS_PERIPH_SSI       SYSCTL_PERIPH_SSI2
 #define ADS_PERIPH_GPIOB     SYSCTL_PERIPH_GPIOB
 #define ADS_PERIPH_GPIOE     SYSCTL_PERIPH_GPIOE
@@ -22,9 +31,14 @@
 #define ADS_PIN_RX           GPIO_PIN_6    // PB6 SSI2RX (MISO)
 #define ADS_PIN_TX           GPIO_PIN_7    // PB7 SSI2TX (MOSI)
 #define ADS_PIN_DRDY         GPIO_PIN_3    // PE3 DRDY (input)
+
+/** Assert chip-select (active low). */
 #define ADS_CS_LOW()         GPIOPinWrite(ADS_GPIOB_BASE, ADS_PIN_FSS, 0)
+/** Deassert chip-select. */
 #define ADS_CS_HIGH()        GPIOPinWrite(ADS_GPIOB_BASE, ADS_PIN_FSS, ADS_PIN_FSS)
+/** Check if DRDY pin is low (data ready). */
 #define ADS_DRDY_IS_LOW()    ((GPIOPinRead(ADS_GPIOE_BASE, ADS_PIN_DRDY) & ADS_PIN_DRDY) == 0)
+
 
 // SPI mode/speed
 // Many ADS13xx parts use CPOL=0, CPHA=1 (Motorola Mode 1). If datasheet
@@ -32,6 +46,12 @@
 #define ADS_SPI_MODE         SSI_FRF_MOTO_MODE_1
 #define ADS_SPI_HZ           1000000U   // 1 MHz to start conservatively
 
+/**
+ * @brief Single 8-bit SPI transfer on SSI2.
+ *
+ * @param tx Byte to transmit.
+ * @param rx Optional pointer to receive byte (may be NULL).
+ */
 static inline void ssi2_xfer8(uint8_t tx, uint8_t *rx){
   uint32_t r;
   SSIDataPut(SSI2_BASE, tx);
@@ -40,13 +60,24 @@ static inline void ssi2_xfer8(uint8_t tx, uint8_t *rx){
   if(rx) *rx = (uint8_t)r;
 }
 
+/**
+ * @brief Send a 24-bit command frame (3 bytes) to the ADS.
+ *
+ * @param b0 First byte.
+ * @param b1 Second byte.
+ * @param b2 Third byte.
+ */
 static void ads_send_cmd24(uint8_t b0, uint8_t b1, uint8_t b2){
   ADS_CS_LOW();
   ssi2_xfer8(b0, 0); ssi2_xfer8(b1, 0); ssi2_xfer8(b2, 0);
   ADS_CS_HIGH();
 }
 
-// Read one 24-bit word (big-endian) while clocking dummy bytes
+/**
+ * @brief Read one 24-bit word (big-endian) from ADS while clocking dummy bytes.
+ *
+ * @return 24-bit word, left-justified into a 32-bit container.
+ */
 static uint32_t ads_read_word24(void){
   uint8_t b0, b1, b2;
   ssi2_xfer8(0x00, &b0);
@@ -55,6 +86,13 @@ static uint32_t ads_read_word24(void){
   return ((uint32_t)b0<<16) | ((uint32_t)b1<<8) | (uint32_t)b2;
 }
 
+/**
+ * @brief Initialize GPIO and SSI2 for ADS131M02 communication.
+ *
+ * This is a minimal bring-up that configures pins and clocks, then
+ * performs a few dummy frames. Device-specific command sequences
+ * should be added per datasheet.
+ */
 void ads_init(void){
   // Clocks
   SysCtlPeripheralEnable(ADS_PERIPH_GPIOB);
@@ -99,6 +137,14 @@ void ads_init(void){
   // ads_send_cmd24(CMD_START_0, CMD_START_1, CMD_START_2);
 }
 
+/**
+ * @brief Blocking read of one sign-extended CH1 sample.
+ *
+ * Waits for DRDY falling edge, then reads STATUS + CH1 + CH2 (each
+ * 24-bit) and returns a downscaled 16-bit sample from CH1.
+ *
+ * @return 16-bit signed sample from CH1.
+ */
 int16_t ads_read_sample_ch1_blocking(void){
   // Wait for DRDY falling edge (active low)
   while(!ADS_DRDY_IS_LOW()){}
@@ -108,6 +154,9 @@ int16_t ads_read_sample_ch1_blocking(void){
   uint32_t ch1    = ads_read_word24();
   uint32_t ch2    = ads_read_word24();
   ADS_CS_HIGH();
+
+  (void)status;
+  (void)ch2;
 
   // Sign-extend 24-bit to 32, then scale to 16-bit for our processing
   // (If part is set to 32-bit words, adjust parsing.)

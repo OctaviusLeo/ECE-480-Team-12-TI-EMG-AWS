@@ -1,4 +1,12 @@
 /**
+ * @file ads131m04_driver.c
+ * @brief Driver implementation for ADS131M04 4-channel ADC.
+ *
+ * Provides SPI, GPIO, PWM clocking, register access, PGA configuration,
+ * and multi-channel readout utilities for the ADS131M04.
+ */
+
+/**
  * Implementation of ADS131M04 driver
  */
 
@@ -13,6 +21,11 @@
 #include "driverlib/ssi.h"
 #include "driverlib/sysctl.h"
 
+/**
+ * @brief Full-scale range table indexed by ADS_PGA_Gain.
+ *
+ * Each entry is the ±full-scale voltage for the corresponding gain.
+ */
 const float ADS_FSR_TABLE[8] = {
     1.2f,      // GAIN_1   = ±1.2V
     0.6f,      // GAIN_2   = ±600mV
@@ -26,7 +39,9 @@ const float ADS_FSR_TABLE[8] = {
 
 // TIMING MACROS
 
+/** Delay for x microseconds using SysCtlDelay. */
 #define DELAY_US(x) SysCtlDelay((SysCtlClockGet() / 3000000) * (x))
+/** Delay for x milliseconds using SysCtlDelay. */
 #define DELAY_MS(x) SysCtlDelay((SysCtlClockGet() / 3000) * (x))
 
 // CS control
@@ -318,9 +333,9 @@ void ADS_ReadAllChannels(int32_t *ch1, int32_t *ch2, int32_t *ch3, int32_t *ch4)
 /**
  * Convert ADC value to voltage
  * 
- * @param adc_value: Raw 24-bit ADC reading
- * @param vref: Reference voltage (use ADS_FSR_TABLE[gain] for correct value)
- * @return: Voltage in volts
+ * @param adc_value Raw 24-bit ADC reading
+ * @param vref      Reference voltage (use ADS_FSR_TABLE[gain] for correct value)
+ * @return Voltage in volts
  */
 float ADS_ToVoltage(int32_t adc_value, float vref) {
     const float ADC_MAX = 8388607.0f;  // 2^23 - 1

@@ -1,3 +1,11 @@
+/*==============================================================================
+ * @file    gfx.c
+ * @brief   Graphics helper routines for the SSD1351 OLED display.
+ *
+ * This file is part of the EMG flex-frequency game project and follows the
+ * project coding standard for file-level documentation.
+ *============================================================================*/
+
 #include <stdint.h>
 #include <stdbool.h>   
 #include <string.h>     

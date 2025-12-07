@@ -1,3 +1,11 @@
+/**
+ * @file board.h
+ * @brief Board-level hardware configuration and helpers.
+ *
+ * Centralizes clock configuration, OLED SPI pin mappings, and simple
+ * delay utilities for the Tiva-based EMG game platform.
+ */
+
 #ifndef BOARD_H
 #define BOARD_H
 
@@ -12,6 +20,7 @@
 #include "driverlib/ssi.h"
 #include "driverlib/pin_map.h"
 
+/** System core clock frequency in Hz. */
 #define SYSCLK_HZ 80000000u
 
 // SPI (SSI0) pins
@@ -31,6 +40,14 @@
 // CS on PA3 as GPIO
 #define OLED_PIN_CS          GPIO_PIN_3   
 
+/**
+ * @brief Busy-wait for approximately n core clock cycles.
+ *
+ * The delay is approximate and depends on compiler/inlining behavior,
+ * but is suitable for short hardware timing gaps.
+ *
+ * @param n Number of iterations (core cycles) to wait.
+ */
 static inline void delay_cycles(volatile uint32_t n){ while(n--) __asm(" nop"); }
 
 #endif

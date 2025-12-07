@@ -1,3 +1,10 @@
+/*==============================================================================
+ * @file    game.c
+ * @brief   Top-level game state manager, dispatching between modes and menu.
+ *
+ * This file is part of the EMG flex-frequency game project and follows the
+ * project coding standard for file-level documentation.
+ *============================================================================*/
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -13,119 +20,167 @@
 #include "game_tower.h"
 #include "end_credits.h"
 #include "mode_splash.h"
-
-#include "save.h"
-#include "cheevos.h"
 #include "menu.h"
+#include "cheevos.h"
 
-// private storage of latest metrics (read by modes via game_get_metrics)
-static bool     g_inited = false;
-// Current active mode (set by menu selection)
-static uint8_t  g_mode   = 3;   // 0 = playground, 1 = PVP, 2 = Story, 3 = Tower, 4 = Credits + Trophy
-static float    g_latest_hz = 0.0f;
-static uint8_t  g_latest_pct = 0;
-static float    g_baseline_disp_hz = 0.0f;
+// Game mode identifiers
+typedef enum {
+  MODE_PLAYGROUND = 0,
+  MODE_PVP,
+  MODE_STORY,
+  MODE_TOWER,
+  MODE_CREDITS
+} game_mode_t;
 
-static save_t   G_SAVE;
-static uint8_t  g_in_menu = 1;   // 1 = menu active, 0 = running a mode
+// Global game state
+static bool     g_inited   = false;
+static uint8_t  g_mode     = MODE_PLAYGROUND;
+static uint8_t  g_in_menu  = 1;
 
-void app_boot(void){
-  if (!save_load(&G_SAVE)) save_defaults(&G_SAVE);
-  cheevos_bind_save(&G_SAVE);
-}
+// Forward declarations
+static void app_boot(void);
 
-void game_get_metrics(float *hz, uint8_t *pct, float *baseline_hz){
-  if (hz)          *hz = g_latest_hz;
-  if (pct)         *pct = g_latest_pct;
-  if (baseline_hz) *baseline_hz = g_baseline_disp_hz;
-}
-
+// Initialize the entire game system.
 void game_init(void){
   if (!g_inited){
+    // Initialize the SSD1351 OLED display
     ssd1351_init();
-    gfx_clear(COL_BLACK);
-    g_inited = true;
+    gfx_init();
 
-    // Boot-time setup — run ONCE
-    app_boot();        // load save + bind cheevos before entering menu
+    // Initialize achievements / save data, etc.
+    app_boot();
+
+    // Start in menu state
     g_in_menu = 1;
     menu_start();
+
+    g_inited = true;
   }
 }
 
+// Set the current game mode (e.g., playground, PVP, story, tower, credits).
 void game_set_mode(uint8_t mode){
   // Use the mode that was selected by the menu
   g_mode = mode;
 
   // Initialize the chosen mode
-  if (g_mode == MODE_PLAYGROUND)      game_single_init();
-  else if (g_mode == MODE_PVP)        game_two_init();
-  else if (g_mode == MODE_STORY)      game_story_init();
-  else if (g_mode == MODE_TOWER)      game_tower_init();
-  else /* MODE_CREDITS */             end_credits_start();
-
-  // Start splash for the same selected mode
-  mode_splash_begin(g_mode); // brief overlay; next frames will tick it, not the menu
+  switch (g_mode){
+    case MODE_PLAYGROUND:
+      game_single_init();
+      break;
+    case MODE_PVP:
+      game_two_init();
+      break;
+    case MODE_STORY:
+      game_story_init();
+      break;
+    case MODE_TOWER:
+      game_tower_init();
+      break;
+    case MODE_CREDITS:
+      end_credits_init();
+      break;
+    default:
+      // Fallback to playground if an invalid mode is set
+      g_mode = MODE_PLAYGROUND;
+      game_single_init();
+      break;
+  }
 }
 
-void game_set_metrics(float hz, uint8_t intensity_pct){
-  g_latest_hz  = hz;
-  g_latest_pct = intensity_pct;
+// Get current EMG/Hz metrics from the active mode.
+// The active mode fills out hz, pct (percentile), and base (baseline Hz).
+void game_get_metrics(float *hz, uint8_t *pct, float *base){
+  if (!hz || !pct || !base) return;
+
+  switch (g_mode){
+    case MODE_PLAYGROUND:
+      game_single_metrics(hz, pct, base);
+      break;
+    case MODE_PVP:
+      game_two_metrics(hz, pct, base);
+      break;
+    case MODE_STORY:
+      game_story_metrics(hz, pct, base);
+      break;
+    case MODE_TOWER:
+      game_tower_metrics(hz, pct, base);
+      break;
+    default:
+      *hz   = 0.0f;
+      *pct  = 0u;
+      *base = 0.0f;
+      break;
+  }
 }
 
-void game_set_baseline(float baseline_hz){
-  g_baseline_disp_hz = baseline_hz;
-}
-
+// Main per-frame update for the entire game.
+// Returns when the game loop has finished one tick.
 void game_tick(void){
-  // 1) If splash is running, draw it and return (prevents menu from reappearing)
-  if (mode_splash_active()){
-    (void)mode_splash_tick();
+  if (!g_inited){
+    // Ensure initialization is complete before ticking
+    game_init();
     return;
   }
 
-  // 2) Menu loop until a mode is chosen
+  // If we are currently in the menu, tick the menu.
   if (g_in_menu){
-    uint8_t chosen;
-    if (menu_tick(&chosen)){
-      g_in_menu = 0;          // leave menu
-      game_set_mode(chosen);  // init selected mode (+starts splash)
+    uint8_t mode = 0xFFu;
+    if (menu_tick(&mode)){
+      // Menu has chosen a mode; switch out of the menu.
+      g_in_menu = 0;
+      game_set_mode(mode);
     }
-    return;                   // while in menu, never tick any mode
+    return;
   }
 
-  // 3) Dispatch to active mode (tick only)
-  if (g_mode == MODE_PLAYGROUND) {
-    if (game_single_tick()) {
-      g_in_menu = 1;
-      menu_start();
-    }
-  }
-  else if (g_mode == MODE_PVP) {
-    if (game_two_tick()) {
-      g_in_menu = 1;
-      menu_start();
-    }
-  }
-  else if (g_mode == MODE_STORY) {
-    if (game_story_tick()) {
-      g_in_menu = 1;
-      menu_start();
-    }
-  }
-  else if (g_mode == MODE_TOWER) {
-    if (game_tower_tick()) {
-      g_in_menu = 1;
-      menu_start();
-    }
-  }
-  else { // MODE_CREDITS
-    if (end_credits_tick()){
-      g_in_menu = 1;
-      menu_start();
-    }
+  // If we are here, we are in a gameplay/credits mode.
+  // Tick the current mode and handle return-to-menu if complete.
+  switch (g_mode){
+    case MODE_PLAYGROUND:
+      if (game_single_tick()){
+        g_in_menu = 1;
+        menu_start();
+      }
+      break;
+
+    case MODE_PVP:
+      if (game_two_tick()){
+        g_in_menu = 1;
+        menu_start();
+      }
+      break;
+
+    case MODE_STORY:
+      if (game_story_tick()){
+        g_in_menu = 1;
+        menu_start();
+      }
+      break;
+
+    case MODE_TOWER:
+      if (game_tower_tick()){
+        g_in_menu = 1;
+        menu_start();
+      }
+      break;
+
+    case MODE_CREDITS:
+    default:
+      if (end_credits_tick()){
+        g_in_menu = 1;
+        menu_start();
+      }
+      break;
   }
 
-  // overlay any active "Achievement Unlocked!" toast
+  // Overlay any active "Achievement Unlocked!" toast
   cheevos_draw_toast();
 }
+
+// Application boot-time setup: load save data, bind achievements, etc.
+static void app_boot(void){
+  // Future: load persistent data, initialize cheevos, etc.
+  cheevos_init();
+}
+

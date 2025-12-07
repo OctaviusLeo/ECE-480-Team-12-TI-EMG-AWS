@@ -1,3 +1,10 @@
+/*==============================================================================
+ * @file    intermission.c
+ * @brief   Intermission countdown screen between PVP rounds.
+ *
+ * This file is part of the EMG flex-frequency game project and follows the
+ * project coding standard for file-level documentation.
+ *============================================================================*/
 #include <string.h>
 #include <stdbool.h>
 #include "intermission.h"
@@ -5,6 +12,7 @@
 #include "gfx.h"     // gfx_clear, gfx_header, gfx_text2, gfx_bar
 #include "project.h"
 #include "game_two_logo.h"
+
 static uint8_t  g_active   = 0;
 static uint32_t g_end_ms   = 0;
 static char     g_title[24];
@@ -83,3 +91,4 @@ bool intermission_tick(void){
   }
   return false;    // still counting
 }
+

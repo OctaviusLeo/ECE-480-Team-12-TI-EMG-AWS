@@ -1,3 +1,10 @@
+/*==============================================================================
+ * @file    game_story.c
+ * @brief   Story mode state machine, battles, choices, and lore screens.
+ *
+ * This file is part of the EMG flex-frequency game project and follows the
+ * project coding standard for file-level documentation.
+ *============================================================================*/
 #include <stdio.h>
 #include <string.h>
 #include "timer.h"
@@ -36,10 +43,10 @@
 #include "cheevos.h"
 #include "enemy_icon.h"
 
-#define STORY_FLEX_MENU_HZ 20.0f   // Hz needed to exit to menu after too many deaths
-#define STORY_CHOICE_SPLIT_HZ 20.0f //A/B split threshold in Hz
-#define STORY_BAR_MAX_HZ 200.0f   // max scale for story battle bar tweak if...
-#define CHOICE_BAR_MAX_HZ 20.0f   // adjust based on what player Hz looks like
+#define STORY_FLEX_MENU_HZ 20.0f     // Hz needed to exit to menu after too many deaths
+#define STORY_CHOICE_SPLIT_HZ 20.0f  // A/B split threshold in Hz
+#define STORY_BAR_MAX_HZ 200.0f      // max scale for story battle bar tweak if...
+#define CHOICE_BAR_MAX_HZ 20.0f      // adjust based on what player Hz looks like
 
 typedef enum {
   STS_LOGO = 0,
@@ -49,12 +56,12 @@ typedef enum {
   STS_BATTLE,       // 10 s flex window; accumulate avg
   STS_RESULT,       // show pass/fail vs enemy
   STS_REWARD,       // echo chosen item
-  STS_DEATH,          // you died screen (on defeat)
+  STS_DEATH,        // you died screen (on defeat)
   STS_NEXT,         // advance chapter
-  STS_ENDING,        // final scene
-  STS_LORE_BRAND,     // global story intro lore text
-  STS_LORE_CHAPTER,   // per-chapter lore text
-  STS_LORE_ENDING,     // lore text before the final ending scene
+  STS_ENDING,       // final scene
+  STS_LORE_BRAND,   // global story intro lore text
+  STS_LORE_CHAPTER, // per-chapter lore text
+  STS_LORE_ENDING,  // lore text before the final ending scene
   STS_FLEX_RETURN   // flex after too many deaths to go back to menu
 } story_state_t;
 
@@ -129,14 +136,14 @@ static const enemy_sprite_t g_enemy_sprites[STORY_CHAPTERS] = {
   { STORY_CH5_ENEMY_W,  STORY_CH5_ENEMY_H,  STORY_CH5_ENEMY_IDX,  STORY_CH5_ENEMY_PAL  },
   // chapter 5 -> story_ch6.png
   { STORY_CH6_ENEMY_W,  STORY_CH6_ENEMY_H,  STORY_CH6_ENEMY_IDX,  STORY_CH6_ENEMY_PAL  },
-  // chapter 6 -> story_ch8.png
+  // chapter 6 -> story_ch7.png
   { STORY_CH7_ENEMY_W,  STORY_CH7_ENEMY_H,  STORY_CH7_ENEMY_IDX,  STORY_CH7_ENEMY_PAL  },
-  // chapter 7 -> story_ch9.png
+  // chapter 7 -> story_ch8.png
   { STORY_CH8_ENEMY_W,  STORY_CH8_ENEMY_H,  STORY_CH8_ENEMY_IDX,  STORY_CH8_ENEMY_PAL  },
-  // chapter 8 -> story_ch10.png
+  // chapter 8 -> story_ch9.png
   { STORY_CH9_ENEMY_W,  STORY_CH9_ENEMY_H,  STORY_CH9_ENEMY_IDX,  STORY_CH9_ENEMY_PAL  },
   // chapter 9 -> story_ch10.png
-  { STORY_CH10_ENEMY_W,  STORY_CH1_ENEMY_H,  STORY_CH10_ENEMY_IDX,  STORY_CH10_ENEMY_PAL  },
+  { STORY_CH10_ENEMY_W, STORY_CH10_ENEMY_H, STORY_CH10_ENEMY_IDX, STORY_CH10_ENEMY_PAL },
 };
 
 // Lore text data
@@ -291,16 +298,16 @@ static const uint8_t g_lore_ch9_count =
     sizeof(g_lore_ch9_lines)/sizeof(g_lore_ch9_lines[0]);
 
 static const char* g_lore_ch10_lines[] = {
-"[wow. WONDERFUL!!!]",
-"A unkown voice enter",
-"your head. [You did",
-"it, this wasn't supp",
-"-osed to happen...",
-"i'll remove you :)].",
-"Opening your eyes, a",
-"figure smile at you.",
-"They raise their arm",
-"but you rush in!!!"
+  "[wow. WONDERFUL!!!]",
+  "A unkown voice enter",
+  "your head. [You did",
+  "it, this wasn't supp",
+  "-osed to happen...",
+  "i'll remove you :)].",
+  "Opening your eyes, a",
+  "figure smile at you.",
+  "They raise their arm",
+  "but you rush in!!!"
 };
 static const uint8_t g_lore_ch10_count =
     sizeof(g_lore_ch10_lines)/sizeof(g_lore_ch10_lines[0]);
@@ -326,16 +333,16 @@ static const lore_block_t g_lore_chapters[STORY_CHAPTERS] = {
 
 // Ending lore lines
 static const char* g_lore_ending_lines[] = {
-"You slowly open your",
-"eyes. Mind is cloudy",
-"The dead Demon King",
-"lays at your feet.",
-"... you saved the wo",
-"ld. you raise a hand",
-"to the sky:YOU SAVED",
-"the world! You went",
-"back and spent your",
-"life a hero! @&($#)"
+  "You slowly open your",
+  "eyes. Mind is cloudy",
+  "The dead Demon King",
+  "lays at your feet.",
+  "... you saved the wo",
+  "ld. you raise a hand",
+  "to the sky:YOU SAVED",
+  "the world! You went",
+  "back and spent your",
+  "life a hero! @&($#)"
 };
 static const uint8_t g_lore_ending_count =
     sizeof(g_lore_ending_lines)/sizeof(g_lore_ending_lines[0]);
@@ -360,10 +367,10 @@ static void draw_lore_screen(const char* title,
 
 // Typewriter-style lore: slowly reveal text over time.
 // NOTE: does NOT clear the screen or draw header; caller does that once via g_dirty.
-static void draw_lore_typewriter(const char* const* lines,
-                                 uint8_t count,
-                                 uint32_t dt,
-                                 uint16_t ms_per_char)
+static void story_draw_lore_typewriter(const char* const* lines,
+                                       uint8_t count,
+                                       uint32_t dt,
+                                       uint16_t ms_per_char)
 {
   uint32_t chars = dt / ms_per_char;  // total characters across all lines
   uint8_t  y     = 24;                // first line Y
@@ -385,7 +392,7 @@ static void draw_lore_typewriter(const char* const* lines,
     }
 
     // Draw prefix of this line
-    char buf[32];  // adjust if you ever have >31-char lines
+    char buf[32];  // adjust if ever have >31-char lines
     if (this_chars > sizeof(buf) - 1u) {
       this_chars = sizeof(buf) - 1u;
     }

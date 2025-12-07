@@ -1,3 +1,10 @@
+/*==============================================================================
+ * @file    menu.c
+ * @brief   Main menu state machine and title/attract screens.
+ *
+ * This file is part of the EMG flex-frequency game project and follows the
+ * project coding standard for file-level documentation.
+ *============================================================================*/
 #include <stdio.h>
 #include <stdbool.h>
 #include "menu.h"
@@ -8,7 +15,7 @@
 #include "choice_input.h"         // choice_from_hz(), choice_draw_hint()
 #include "game_opening_screen_logo.h" // GAME_OPENING_SCREEN_LOGO_* & bitmap
 
-#define TITLE_LOAD_MS 2000u   // total time for 0–100% bar (5s)
+#define TITLE_LOAD_MS 2000u   // total time for 0–100% bar (2s)
 
 // Added MS_LOGO as first state
 typedef enum { MS_LOGO = 0, MS_TITLE, MS_SELECT, MS_ATTRACT } mstate_t;
@@ -54,12 +61,12 @@ bool menu_tick(uint8_t *out_mode)
     float   base = 0.0f;
     uint8_t pct  = 0;
     game_get_metrics(&hz, &pct, &base);
-    
+
     uint32_t now = millis();
 
     switch (g_ms) {
 
-    /*  show game_opening_screen_logo for 5 seconds */
+    /*  show game_opening_screen_logo for 3 seconds */
     case MS_LOGO: {
         if (g_dirty) {
             g_dirty = false;
@@ -75,7 +82,7 @@ bool menu_tick(uint8_t *out_mode)
                         GAME_OPENING_SCREEN_LOGO_PAL);
         }
 
-        // Stay on this screen for 5 seconds, then move on
+        // Stay on this screen for 3 seconds, then move on
         if ((now - g_t0) >= 3000u) {
             menu_goto(MS_TITLE);
         }
@@ -125,79 +132,74 @@ bool menu_tick(uint8_t *out_mode)
         snprintf(buf, sizeof(buf), "%3u%%", load_pct);
 
         // Rough center horizontally over the bar
-        uint8_t text_x = (uint8_t)(bar_x + (bar_w / 2) - 12); // tweak as needed
-        uint8_t text_y = (uint8_t)(bar_y);
+        uint8_t text_x = (uint8_t)(bar_x + (bar_w / 2) - 12);
+        uint8_t text_y = (uint8_t)(bar_y - 14);
         gfx_text2(text_x, text_y, buf, COL_WHITE, 1);
 
-        // Exit condition
-        // Either user flexes to skip, or bar hits 100%
-        if (hz > 3.0f || load_pct >= 100u) {
+        // When loading hits 100%, go to select
+        if (load_pct >= 100u) {
             menu_goto(MS_SELECT);
-            // reset scroll timer when entering select
-            g_last_input_ms = now;
         }
     } break;
 
     case MS_SELECT: {
-        const int base_y = 32;
-        const int row_h  = 18;
-
-        /* AUTO-SCROLL THROUGH MODES */
-        const uint32_t SCROLL_PERIOD_MS = 2000u;   // 1s per mode
-        const float    CONFIRM_THRESH   = 80.0f;
-
-        // Only auto-scroll when user is NOT strongly flexing
-        if (hz < (CONFIRM_THRESH * 0.5f)) {
-            if ((now - g_last_input_ms) >= SCROLL_PERIOD_MS) {
-                g_cursor = (uint8_t)((g_cursor + 1u) % 5u);
-                g_last_input_ms = now;
-                g_dirty = true;   // highlight changed -> redraw needed
-            }
-        }
-
-        /* Hold > 1.0 s above threshold to confirm selection */
-        static uint32_t hold_t0  = 0;
-        static bool     holding  = false;
-
-        if (hz >= CONFIRM_THRESH) {
-            if (!holding) {
-                holding  = true;
-                hold_t0  = now;
-            } else if ((now - hold_t0) >= 500u) {
-                if (out_mode) {
-                    *out_mode = g_cursor;   // MODE_*
-                }
-                return true;  // selection made
-            }
-        } else {
-            holding = false;
-        }
-
-        /* DRAW ONLY WHEN DIRTY */
         if (g_dirty) {
             g_dirty = false;
-
             gfx_clear(COL_BLACK);
-            gfx_header("FLEX to SELECT", COL_WHITE);
+            gfx_header("PULSEBOUND", COL_WHITE);
             gfx_bar(0, 18, 128, 1, COL_DKGRAY);
+        }
 
-            for (int i = 0; i < 5; ++i) {
-                uint16_t bg = (i == g_cursor) ? COL_GREEN : COL_BLACK;
-                uint16_t fg = (i == g_cursor) ? COL_BLACK : COL_WHITE;
-                if (i == g_cursor) {
-                    gfx_bar(6, base_y + i * row_h - 2, 116, row_h, bg);
-                }
-                gfx_text2(10, base_y + i * row_h,
-                          mode_name((uint8_t)i), fg, 1);
+        // Simple text menu
+        const char* items[] = {
+            "Playground",
+            "PVP",
+            "Story",
+            "Tower",
+            "Credits + Trophy"
+        };
+        const uint8_t n_items = (uint8_t)(sizeof(items)/sizeof(items[0]));
+
+        // Up/Down selection from Hz input
+        int choice = choice_from_hz(hz, 5);
+        if (choice >= 0) {
+            g_cursor = (uint8_t)choice;
+            g_last_input_ms = now;
+        }
+
+        // Draw items
+        uint8_t y = 28;
+        for (uint8_t i = 0; i < n_items; ++i) {
+            uint16_t col = (i == g_cursor) ? COL_CYAN : COL_WHITE;
+            gfx_text2(8, y, items[i], col, 1);
+            y = (uint8_t)(y + 10);
+        }
+
+        // Hints and bar
+        choice_draw_hint(8, 90);
+        choice_draw_bar(8, 100, 112, 8, hz);
+
+        // A “select” threshold: if you maintain a high Hz for some time,
+        // confirm the current cursor as the mode to enter.
+        if ((now - g_last_input_ms) > 1500u && hz > 25.0f) {
+            if (out_mode) {
+                *out_mode = g_cursor;
             }
-
-            choice_draw_hint(base_y + 5 * row_h + 6);
+            return true;
         }
     } break;
 
-    case MS_ATTRACT:
-        break;
+    case MS_ATTRACT: {
+        // Not used in this build; placeholder for idle animation.
+        // Could run an attract mode / demo loop here.
+        if (g_dirty) {
+            g_dirty = false;
+            gfx_clear(COL_BLACK);
+            gfx_header("ATTRACT", COL_WHITE);
+        }
+    } break;
     }
 
     return false;
 }
+

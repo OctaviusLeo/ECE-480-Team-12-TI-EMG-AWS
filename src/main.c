@@ -1,3 +1,10 @@
+/*==============================================================================
+ * @file    main.c
+ * @brief   Program entry, baseline EMG measurement, and main game loop.
+ *
+ * This file is part of the EMG flex-frequency game project and follows the
+ * project coding standard for file-level documentation.
+ *============================================================================*/
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -110,32 +117,21 @@ int main(void){
 
     // apply multiplier for displayed / gameplay intensity
     float hz_scaled = hz_adj * HZ_MULT;
-    if (hz_scaled < 30.0f) hz_scaled = 0.0f;
 
-    uint8_t pct = clamp_u8((int)((hz_scaled * 100.0f / 250.0f) + 0.5f), 0, 100);
-    game_set_metrics(hz_scaled, pct);
+    uint32_t now = millis();
 
-    next_tick = millis() + 100u;
-
-    // Console print ~4 Hz (150 ms window for a steadier number)
-    if ((int32_t)(millis() - next_print) >= 0){
-      float hz_now_raw = estimate_hz_window_ms(150);
-      extern bool g_baseline_done; // if not in header; otherwise remove this line
-      float hz_now_adj = hz_now_raw;
-      if (g_baseline_done){
-        hz_now_adj -= g_baseline_hz;
-        if (hz_now_adj < 0.0f) hz_now_adj = 0.0f;
-      }
-
-      float hz_now = hz_now_adj * HZ_MULT;
-      if (hz_now < 0.0f) hz_now = 0.0f;
-
-      uint8_t pct_now = clamp_u8((int)((hz_now * 100.0f / 250.0f) + 0.5f), 0, 100);
-      printf("Hz=%.1f  INT=%u%%\n", hz_now, (unsigned)pct_now);
-      next_print = millis() + 250u;
+    // Print debug to UART/ITM periodically
+    if ((int32_t)(now - next_print) >= 0){
+      next_print = now + 500u;
+      printf("RAW=%.1f BASE=%.1f ADJ=%.1f SCALED=%.1f\n",
+             hz_raw, g_baseline_hz, hz_adj, hz_scaled);
     }
 
-    // Advance OLED/game UI (non-blocking)
-    game_tick();
+    // Call game tick at ~60 Hz or similar
+    if ((int32_t)(now - next_tick) >= 0){
+      next_tick = now + 16u;
+      game_tick();
+    }
   }
 }
+

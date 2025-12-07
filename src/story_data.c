@@ -1,3 +1,11 @@
+/*==============================================================================
+ * @file    story_data.c
+ * @brief   Story chapter metadata: titles, enemy names, and thresholds.
+ *
+ * Defines the `g_story` table used by Story mode to label chapters and set
+ * baseline enemy Hz thresholds.
+ *============================================================================*/
+
 #include "story_data.h"
 
 const story_chapter_t g_story[STORY_CHAPTERS] = {

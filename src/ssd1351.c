@@ -1,3 +1,11 @@
+/*==============================================================================
+ * @file    ssd1351.c
+ * @brief   SSD1351 OLED low-level driver (SPI, init, drawing primitives).
+ *
+ * Handles SPI setup, command sequencing, drawing rectangles, and filling the
+ * 128x128 RGB565 display.
+ *============================================================================*/
+
 #include "ssd1351.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -158,4 +166,3 @@ void ssd1351_init(void){
 
   ssd1351_fill(0x0000);
 }
-

@@ -1,3 +1,12 @@
+/*==============================================================================
+ * @file    winner2.c
+ * @brief   PVP results screen with animated dual bar graph for P1 and P2.
+ *
+ * Animates two horizontal bars to show each player's average flex frequency
+ * (0–250 Hz range) and keeps the screen visible for a short duration before
+ * returning control to the PVP flow.
+ *============================================================================*/
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>

@@ -1,3 +1,11 @@
+/*==============================================================================
+ * @file    game_tower.c
+ * @brief   Tower mode floors, battles, item choices, and lore sequences.
+ *
+ * This file is part of the EMG flex-frequency game project and follows the
+ * project coding standard for file-level documentation.
+ *============================================================================*/
+
 #include <stdio.h>
 #include <string.h>
 #include "timer.h"

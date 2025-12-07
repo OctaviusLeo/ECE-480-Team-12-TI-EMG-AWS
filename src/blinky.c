@@ -1,4 +1,13 @@
 /**
+ * @file blinky.c
+ * @brief Complete EMG System with Test Suite + Full Signal Processing.
+ *
+ * Combines:
+ * - Software test suite (filters, buffers, signal generators)
+ * - Hardware ADC acquisition with complete EMG pipeline
+ */
+
+/**
  * main.c
  * Complete EMG System with Test Suite + Full Signal Processing
  * 
@@ -47,6 +56,10 @@ CircularBuffer buffer_ch2_old;
 SignalGenerator sig_gen;
 
 // LED CONFIGURATION
+
+/**
+ * @brief Configure on-board LEDs for activation feedback.
+ */
 void ConfigureLED(void) {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF)) {}
@@ -58,6 +71,12 @@ void ConfigureLED(void) {
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, 0);
 }
 
+/**
+ * @brief Set LED state based on channel activation.
+ *
+ * @param ch1_active Activation state for channel 1 (red).
+ * @param ch2_active Activation state for channel 2 (green).
+ */
 void LED_SetActivation(bool ch1_active, bool ch2_active) {
     uint8_t led_state = 0;
     
@@ -68,6 +87,10 @@ void LED_SetActivation(bool ch1_active, bool ch2_active) {
 }
 
 // UART CONFIGURATION
+
+/**
+ * @brief Configure UART0 for text output using UARTstdio.
+ */
 void ConfigureUART(void) {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
@@ -202,9 +225,6 @@ void Test_SignalTypes(void) {
  */
 void Run_TestSuite(void) {
     UARTprintf("\n");
-    UARTprintf("╔═══════════════════════════════════════════╗\n");
-    UARTprintf("║  SOFTWARE TEST SUITE                      ║\n");
-    UARTprintf("╚═══════════════════════════════════════════╝\n");
     
     Test_FilterStepResponse();
     Test_BufferWraparound();
@@ -212,21 +232,24 @@ void Run_TestSuite(void) {
     Test_SignalTypes();
     
     UARTprintf("\n");
-    UARTprintf("╔═══════════════════════════════════════════╗\n");
-    UARTprintf("║  ALL TESTS COMPLETE ✓                     ║\n");
-    UARTprintf("╚═══════════════════════════════════════════╝\n");
 }
 
 // CALIBRATION PROCEDURE
+
+/**
+ * @brief Perform EMG baseline calibration for both channels.
+ *
+ * Guides the user via UART, measures DC offsets, collects baseline
+ * samples, and configures thresholds.
+ *
+ * @return true on successful calibration for both channels.
+ */
 bool PerformCalibration(void) {
     int32_t ch1_raw, ch2_raw, ch3_raw, ch4_raw;
     uint16_t samples_collected = 0;
     uint16_t progress_updates = 0;
     
     UARTprintf("\n");
-    UARTprintf("╔══════════════════════════════════════════╗\n");
-    UARTprintf("║        CALIBRATION PROCEDURE             ║\n");
-    UARTprintf("╚══════════════════════════════════════════╝\n\n");
     
     UARTprintf("Instructions:\n");
     UARTprintf("  1. Relax all muscles\n");
@@ -316,15 +339,19 @@ bool PerformCalibration(void) {
 }
 
 // HARDWARE EMG ACQUISITION
+
+/**
+ * @brief Run real-time EMG acquisition and activation display.
+ *
+ * Streams readings via UART and uses LEDs (optionally) for activation
+ * feedback until a key is pressed.
+ */
 void Run_EMG_Acquisition(void) {
     int32_t ch1_raw, ch2_raw, ch3_raw, ch4_raw;
     uint32_t sample_count = 0;
     uint32_t last_display_time = 0;
     
     UARTprintf("\n");
-    UARTprintf("╔══════════════════════════════════════════╗\n");
-    UARTprintf("║     EMG ACQUISITION STARTED              ║\n");
-    UARTprintf("╚══════════════════════════════════════════╝\n\n");
     
     UARTprintf("Real-time muscle activation detection enabled!\n");
 #if LED_FEEDBACK_ENABLE
@@ -332,9 +359,6 @@ void Run_EMG_Acquisition(void) {
 #endif
     UARTprintf("Press any key to stop.\n\n");
     
-    // Print table header
-    UARTprintf("Time  | CH1 Raw | CH1 Env | CH1 | CH2 Raw | CH2 Env | CH2 | Status\n");
-    UARTprintf("------+---------+---------+-----+---------+---------+-----+--------\n");
     
     while(1) {
         if(ADS_IsDataReady()) {
@@ -360,6 +384,9 @@ void Run_EMG_Acquisition(void) {
                 
                 float v1_raw = ADS_ToVoltage(ch1_raw, ADS_FSR_TABLE[ADS_GAIN_8]);
                 float v2_raw = ADS_ToVoltage(ch2_raw, ADS_FSR_TABLE[ADS_GAIN_8]);
+                
+                (void)v1_raw;
+                (void)v2_raw;
                 
                 const char* status;
                 if(ch1_active && ch2_active) {
@@ -395,9 +422,6 @@ void Run_EMG_Acquisition(void) {
     
     // Final statistics
     UARTprintf("\n");
-    UARTprintf("╔══════════════════════════════════════════╗\n");
-    UARTprintf("║     ACQUISITION STOPPED                  ║\n");
-    UARTprintf("╚══════════════════════════════════════════╝\n\n");
     
     UARTprintf("Summary:\n");
     UARTprintf("  Total samples: %lu\n", sample_count);
@@ -410,6 +434,10 @@ void Run_EMG_Acquisition(void) {
 
 
 // MAIN PROGRAM
+
+/**
+ * @brief Entry point: optional software tests, then hardware EMG acquisition.
+ */
 int main(void) {
     
     // System clock to 80 MHz
@@ -420,29 +448,10 @@ int main(void) {
     ConfigureUART();
     ConfigureLED();
     
-    // Startup banner
-    UARTprintf("\n\n");
-    UARTprintf("╔═══════════════════════════════════════════════════╗\n");
-    UARTprintf("║                                                   ║\n");
-    UARTprintf("║    ADVANCED EMG SIGNAL PROCESSING SYSTEM          ║\n");
-    UARTprintf("║    TM4C123 + ADS131M04                            ║\n");
-    UARTprintf("║                                                   ║\n");
-    UARTprintf("║    Features:                                      ║\n");
-    UARTprintf("║    • DC offset removal                            ║\n");
-    UARTprintf("║    • High-pass filtering (cardiac removal)        ║\n");
-    UARTprintf("║    • 60 Hz notch filter                           ║\n");
-    UARTprintf("║    • Adaptive baseline subtraction                ║\n");
-    UARTprintf("║    • Real-time activation detection               ║\n");
-    UARTprintf("║                                                   ║\n");
-    UARTprintf("╚═══════════════════════════════════════════════════╝\n\n");
-    
     UARTprintf("System clock: %d MHz\n", SysCtlClockGet() / 1000000);
     UARTprintf("Build: %s %s\n\n", __DATE__, __TIME__);
     
-    //------------------------------------------------------------------------
     // RUN SOFTWARE TEST SUITE (if enabled)
-    //------------------------------------------------------------------------
-    
 #if ENABLE_TEST_SUITE
     UARTprintf(">> Running software test suite...\n");
     Run_TestSuite();
@@ -510,10 +519,8 @@ int main(void) {
     UARTprintf("Set RUN_HARDWARE_TEST=1 to enable.\n");
 #endif
     
-    //------------------------------------------------------------------------
-    // IDLE
-    //------------------------------------------------------------------------
     
+    // IDLE
     UARTprintf("\nSystem halted. Reset to restart.\n");
     
     while(1) {
@@ -523,6 +530,12 @@ int main(void) {
 
 // DEBUG ERROR HANDLER
 #ifdef DEBUG
+/**
+ * @brief TivaWare debug error hook.
+ *
+ * @param pcFilename Source filename where error occurred.
+ * @param ui32Line   Line number of error.
+ */
 void __error__(char *pcFilename, uint32_t ui32Line) {
     UARTprintf("Error in %s, line %d\n", pcFilename, ui32Line);
     while(1);

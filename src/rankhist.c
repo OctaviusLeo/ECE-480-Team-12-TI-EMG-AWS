@@ -1,3 +1,10 @@
+/*==============================================================================
+ * @file    rankhist.c
+ * @brief   Rank histogram accumulation for single and two-player modes.
+ *
+ * Stores counts per rank band for single-player and P1/P2 in PVP.
+ *============================================================================*/
+
 #include "rankhist.h"
 
 static uint16_t g_single[9] = {0};
