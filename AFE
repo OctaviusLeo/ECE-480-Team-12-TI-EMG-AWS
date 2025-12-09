@@ -1,1 +1,148 @@
+* AFE - TEAM 12
 
+
+
+* --- INCLUDE STATEMENTS ---
+
+* Include the OPA333 + INA 333 SPICE model
+* Feel free to change this if you have a different pathway
+.INC /Users/zacharyelakel/Downloads/sboc084g/OPAx333.LIB
+.INC /Users/zacharyelakel/Downloads/sbom382g/INA333.LIB
+
+
+
+* --- INPUTS DEFINITIONS ---
+
+* 1. LDO3.3 (Power Supply Input)
+V_LDO LDO3_3 0 DC 3.3V
+
+* 2. VDIFF+ and VDIFF- (Differential Signal Inputs)
+* Define a Common-Mode Bias Node (VCM) at 1.65V (LDO3.3 / 2)
+V_CM_SRC VCM 0 DC 1.65V
+* Signal Sources for VDIFF+ and VDIFF- (Example: 100Hz differential signal)
+V_P VDIFF_P VCM SIN(0 1m 100)
+V_M VDIFF_M VCM SIN(0 -1m 100)
+
+* Noisy input
+V_CM_NOISE VCM_NOISY VCM SIN(0 10m 60)
+
+
+* --- POWER SUPPLY CIRCUITRY ---
+
+* Voltage Divider (Creates 1.65V on node DIV_OUT)
+* Uses two equal 10k resistors (R_DIV1, R_DIV2)
+R_DIV1 LDO3_3 DIV_OUT 10K
+R_DIV2 DIV_OUT 0 10K
+
+* OPA333 Unity-Gain Buffer (U1)
+* Converts the high-impedance DIV_OUT signal into a low-impedance 1.65V reference (VREFELEC)
+* X[RefDes] [IN+] [IN-] [V+] [V-] [OUT] [ModelName]
+XULDO DIV_OUT LDO1_65 LDO3_3 0 LDO1_65 OPAx333
+
+
+
+* --- BYPASS CAPACITORS ---
+* Important for stable operation and noise rejection
+* Place as close as possible to IC power pins in physical layout
+
+* Bypass cap for INA333
+C_BYP_INA LDO3_3 0 0.1u
+
+* Bypass cap for OPA333 LDO Buffer
+C_BYP_LDO LDO3_3 0 0.1u
+
+* Bypass cap for OPA333 Bandpass Filter
+C_BYP_BP LDO3_3 0 0.1u
+
+* Bypass cap for OPA333 RLD
+C_BYP_RLD LDO3_3 0 0.1u
+
+
+
+* --- INSTRUMENTATION AMPLIFIER (INA333) ---
+
+* Gain resistor definition
+.PARAM RG1_VALUE = 464
+.PARAM RG2_VALUE = 464
+
+* INA_P1 and INA_P8 are the connection points for the external gain resistor network.
+RG_1 INA_P1 RG_MID {RG1_VALUE}
+RG_2 RG_MID INA_P8 {RG2_VALUE}
+
+* INA333 Amplifier Instance (U2)
+* X[RefDes] [Pin1] [Pin2] [Pin3] [Pin4] [Pin5] [Pin6] [Pin7] [Pin8] [ModelName]
+* Pins: [RG1] [VDIFF+] [VDIFF-] [GND] [VREF/1.65V] [INAOUTPUT] [V+/3.3V] [RG2]
+XUINA INA_P1 VDIFF_P VDIFF_M 0 LDO1_65 INAOUTPUT LDO3_3 INA_P8 INA333
+
+
+
+
+* --- BAND-PASS IMPLEMENTATION ---
+*     Simple Inverting Bandpass Filter (20-450 Hz, Gain = -22x)
+
+.PARAM R1_BP_VAL = 10k
+.PARAM C1_BP_VAL = 0.82u
+.PARAM R2_BP_VAL = 220k
+.PARAM C2_BP_VAL = 1.6n
+
+* Input High-Pass Network (20 Hz cutoff)
+R1_BP INAOUTPUT BP_IN {R1_BP_VAL}
+C1_BP BP_IN BP_MINUS {C1_BP_VAL}
+
+* Feedback Low-Pass Network (450 Hz cutoff)
+R2_BP BP_MINUS OUT_PREAMP {R2_BP_VAL}
+C2_BP BP_MINUS OUT_PREAMP {C2_BP_VAL}
+
+* Inverting Bandpass Op-Amp
+XUBP LDO1_65 BP_MINUS LDO3_3 0 OUT_PREAMP OPAx333
+
+
+
+* --- RIGHT-LEG DRIVE (RLD) OPA333 ---
+
+* RLD Component Values
+.PARAM R5_RLD_VAL = 100k
+.PARAM R6_RLD_VAL = 1Meg
+.PARAM C6_RLD_VAL = 0.1u
+.PARAM R7_RLD_VAL = 100k
+
+* Input resistor from RG_MID to OPA negative input
+R5_RLD_ELEC RG_MID RLD_MINUS {R5_RLD_VAL}
+
+* Feedback network R6 || C6 (output to negative input)
+R6_RLD_FB RLD_OUT RLD_MINUS {R6_RLD_VAL}
+C6_RLD_FB RLD_OUT RLD_MINUS {C6_RLD_VAL}
+
+* Output current limiting resistor
+R7_RLD_OUT RLD_OUT DryElectrodeVREF {R7_RLD_VAL}
+
+* RLD Op-Amp (OPA333)
+XURRLD LDO1_65 RLD_MINUS LDO3_3 0 RLD_OUT OPAx333
+
+
+
+* --- OUTPUTS DEFINITIONS ---
+
+* OUTPUT NODES (These are circuit nodes that will be driven by the components)
+* Define ADCOUTPUT as the gain stage output
+VLINK ADCOUTPUT OUT_PREAMP 0
+
+
+
+* --- SIMULATION COMMANDS ---
+
+* 1. DC Operating Point - Check all DC voltages
+* .OP
+
+* 2. Transient Analysis - View ADC output waveform
+.TRAN 0.5m 50m
+
+* 3. AC Analysis - Verify bandpass filter response
+* .AC DEC 10 1 10k
+
+* Probe commands (for viewing results)
+.PROBE V(LDO1_65) V(RLD_OUT) V(DryElectrodeVREF)
+.PROBE V(INAOUTPUT) V(ADCOUTPUT)
+.PROBE V(VDIFF_P) V(VDIFF_M)
+
+.END
