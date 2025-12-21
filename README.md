@@ -8,6 +8,8 @@ Arm Wrestling Evaluation System using EMG (Team 12 MSU ECE 480 Fall 2025)
 
 A no-contact arm-wrestling challenge powered by surface EMG. A dry electrode armband measures muscle activation, our analog front end conditions the signal and streams it to a microcontroller for real time strength visualization and two player head to head comparison.
 
+Demo: https://youtu.be/2_F4ziM3Mrs
+
 **Not a medical device. Research/education prototype only.**
 
 **Why this exists**
