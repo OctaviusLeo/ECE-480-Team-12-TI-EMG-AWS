@@ -14,7 +14,7 @@ Demo: https://youtu.be/2_F4ziM3Mrs
 
 **My role**
 ---
-Symaedchit Leo: sole software member of a four-person Texas Instruments-sponsored senior design team (Fall 2025). Wrote the C firmware turning filtered surface-EMG (windowed RMS/peak envelope) into real-time game input for four modes.
+Symaedchit Leo: sole software member of a four-person Texas Instruments-sponsored senior design team (Fall 2025). Wrote the TM4C123 C firmware in `src/` and `include/`: the ADS131M02 SPI ADC driver, SSD1351 OLED graphics, the menus and four game modes (Playground, PVP, Tower, Story), and the EMG measure (rate of rising zero-crossings over 100 ms windows, corrected by a 3 s rest baseline). Also wrote the `image_converter` tool.
 
 **Why this exists**
 ---
@@ -43,7 +43,7 @@ High CMRR front end designed to tolerate motion and 50/60 Hz mains.
 
 Configurable gain partition (INA vs. post-filter) to prevent saturation.
 
-Latency aware comparator (windowed RMS/peak envelope with tunable window).
+EMG measure: rate of rising zero-crossings over 100 ms windows, corrected by a 3 s rest baseline.
 
 Safety & UX: input protection, strain relief, sanitize between users flow.
 
@@ -85,6 +85,7 @@ Any errors, you can exclude that file (and fix later) or fix that specific error
 Make this change if needed: 
 In startup_ccs.c, find:
 
+```c
 #pragma DATA_SECTION(g_pfnVectors, ".intvecs")
 void (* const g_pfnVectors[])(void) =
 {
@@ -94,10 +95,11 @@ void (* const g_pfnVectors[])(void) =
     FaultISR,
     ...
 };
-
+```
 
 Change it to:
 
+```c
 __attribute__((section(".intvecs"), used))
 void (* const g_pfnVectors[])(void) =
 {
@@ -107,7 +109,7 @@ void (* const g_pfnVectors[])(void) =
     FaultISR,      // The hard fault handler
     ...
 };
-
+```
 
 and delete the #pragma DATA_SECTION line.
 
@@ -118,7 +120,7 @@ and delete the #pragma DATA_SECTION line.
 5. "File" -> "Import Projects" -> ...\ti\TivaWare_C_Series-2.2.0.295\examples\boards\ek-tm4c123gxl\project0
 6. "Project" -> "Build All"
 7. Download include and source files (here) to same folder containing "project0".
-8. Right click "Project0" in Explorer (on the left) -> "Add files/folders" -> "Select files to link" -> link ALL of source and include files.
+8. Right click "Project0" in Explorer (on the left) -> "Add files/folders" -> "Select files to link" -> link ALL of source and include files except `src/blinky.c` (a separate signal-chain test program with its own `main()`).
 9. Connect your pc to MCU using the given cable.
 10. "Project" -> "Build All" -> "Run" -> "Debug Project"
 11. in DEBUG window -> "Resume" -> Should work
@@ -193,23 +195,10 @@ Contributing (course context)
 ---
 **Team 12**
 -
-Ervin Alaij - Hardware
-Doc Handler
-Budget Manager
-
-Symaedchit Leo - Software
-Online Coordinator
-Meeting/Recorder and Scribe
-DOM
-
-Andrew Perez - Hardware
-Lab Coordinator
-Project Demo Manager
-
-Pratijit Podder - Hardware
-Project Manager
-Presentation Handler
-Communications Handler
+- Ervin Alaij - Hardware: Doc Handler, Budget Manager
+- Symaedchit Leo - Software: Online Coordinator, Meeting/Recorder and Scribe, DOM
+- Andrew Perez - Hardware: Lab Coordinator, Project Demo Manager
+- Pratijit Podder - Hardware: Project Manager, Presentation Handler, Communications Handler
 
 **Facilitator**
 -
