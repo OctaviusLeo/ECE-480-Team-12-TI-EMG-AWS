@@ -12,6 +12,10 @@ Demo: https://youtu.be/2_F4ziM3Mrs
 
 **Not a medical device. Research/education prototype only.**
 
+**My role**
+---
+Symaedchit Leo: sole software member of a four-person Texas Instruments-sponsored senior design team (Fall 2025). Wrote the C firmware turning filtered surface-EMG (windowed RMS/peak envelope) into real-time game input for four modes.
+
 **Why this exists**
 ---
 
@@ -24,11 +28,11 @@ Deliver a repeatable, safe, and explainable user experience for Design Day.
                                         
 **Key behaviors**
 ---
-Playground Mode: Clear EMG detected indication (single-user).
-PVP Mode: simultaneous readout + winner decision logic.
-Tower Mode: Challenge every difficulty tear by flexing.
-Story Mode: Actual store with lore, decisions and battles determined by flexing.
-END + TROPHY: Shows credit to all members, university, sponsor, and achievements of user.
+- Playground Mode: Clear EMG detected indication (single-user).
+- PVP Mode: simultaneous readout + winner decision logic.
+- Tower Mode: Challenge every difficulty tier by flexing.
+- Story Mode: An actual story with lore, decisions and battles determined by flexing.
+- END + TROPHY: Shows credit to all members, university, sponsor, and achievements of user.
 
 
 **Features**
@@ -53,7 +57,7 @@ Prototype analog chain & firmware
 
 UI polish & stretch PC dashboard
 
-See Milestones for the public timeline.
+See [Milestones](#milestones-public-timeline-fall-2025) for the public timeline.
 
 ---
 **Quickstart**
@@ -70,7 +74,7 @@ MCU (developed in Code Composer Studio).
 
 Indicators: LCD and/or LED bar, optional HDMI/USB to PC dashboard.
 
-BOM: See /docs/bom.md (placeholders provided, fill with final part numbers).
+BOM: not included in this repository. The analog front end is described by the SPICE netlist in [`AFE`](AFE) and the schematic in [`AFE_Schematic.png`](AFE_Schematic.png).
 
 
 **Software**
@@ -107,17 +111,17 @@ void (* const g_pfnVectors[])(void) =
 
 and delete the #pragma DATA_SECTION line.
 
-1. Download the Software Developement Kit: https://www.ti.com/tool/SW-TM4C?utm_source=google&utm_medium=cpc&utm_campaign=epd-null-null-44700045336317887_prodfolderdynamic-cpc-pf-google-ww_en_int&utm_content=prodfolddynamic&ds_k=DYNAMIC+SEARCH+ADS&DCM=yes&gclsrc=aw.ds&gad_source=1&gad_campaignid=12236057696&gbraid=0AAAAAC068F23ah0bGYvpOZEGrYN7NGfCW&gclid=CjwKCAiAt8bIBhBpEiwAzH1w6TN2LpLLjL4gkm1rOxRtDTfot4sC7BeKlQ9Beu3hVgtyNW1VzUM2lhoCFucQAvD_BwE#downloads
+1. Download the Software Development Kit: https://www.ti.com/tool/SW-TM4C
 2. Download CCS (Code Composer Studio).
-4. CCS -> "File" -> "Import Projects" -> ...\driverlib\ccs\Debug\driverlib.lib
-5. "Project" -> "Build All"
-6. "File" -> "Import Projects" -> ...\ti\TivaWare_C_Series-2.2.0.295\examples\boards\ek-tm4c123gxl\project0
-7. "Project" -> "Build All"
-8. Download include and source files (here) to same folder containing "project0".
-9. Right click "Project0" in Explorer (on the left) -> "Add files/folders" -> "Select files to link" -> link ALL of source and include files.
-10. Connect your pc to MCU using the given cable.
-11. "Project" -> "Build All" -> "Run" -> "Debug Project"
-12. in DEBUG window -> "Resume" -> Should work
+3. CCS -> "File" -> "Import Projects" -> ...\driverlib\ccs\Debug\driverlib.lib
+4. "Project" -> "Build All"
+5. "File" -> "Import Projects" -> ...\ti\TivaWare_C_Series-2.2.0.295\examples\boards\ek-tm4c123gxl\project0
+6. "Project" -> "Build All"
+7. Download include and source files (here) to same folder containing "project0".
+8. Right click "Project0" in Explorer (on the left) -> "Add files/folders" -> "Select files to link" -> link ALL of source and include files.
+9. Connect your pc to MCU using the given cable.
+10. "Project" -> "Build All" -> "Run" -> "Debug Project"
+11. in DEBUG window -> "Resume" -> Should work
 
 Errors: After "Project" -> "Build All", check "Project" -> "Properties" -> "Arm Linker" look over all options
 Also check: "Run" -> "Debug Properties" -> lookover all 4 windows.
@@ -133,6 +137,10 @@ Repository Structure
 |- src
 
 |- image_converter
+
+|- AFE (SPICE netlist of the analog front end)
+
+|- AFE_Schematic.png
 
 |_ README.md
 
