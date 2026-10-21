@@ -1,0 +1,4 @@
+# Python virtual environments (recreate with image_converter/requirements.txt)
+.venv/
+__pycache__/
+*.pyc
