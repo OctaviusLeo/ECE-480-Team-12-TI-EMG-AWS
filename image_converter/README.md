@@ -48,3 +48,15 @@ python png2pal4.py story_ch1.png STORY_CH1 --max-size 128
 ```
 
 writes a `story_ch1.c` whose palette and pixel data are identical to `src/story_ch1.c` (the tests check this for `story_ch1`), and `you_died.png` does the same for `src/you_died.c`. Other assets may differ if they were generated with another size or another Pillow version.
+
+## Tests
+
+From this folder:
+
+```
+pip install -r requirements-dev.txt
+ruff check .
+pytest
+```
+
+The tests run the converter on generated images, decode the output arrays back to pixels, compile the generated C with `gcc -Wall -Wextra -Werror` (skipped when gcc is not installed), and compare `story_ch1` with the palette and pixel data committed in `src/`. CI runs the same two commands (`.github/workflows/image-converter.yml`).
