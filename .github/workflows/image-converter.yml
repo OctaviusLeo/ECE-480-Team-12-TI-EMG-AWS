@@ -1,0 +1,45 @@
+name: image_converter
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "image_converter/**"
+      - "src/story_ch1.c"
+      - ".github/workflows/image-converter.yml"
+  pull_request:
+    paths:
+      - "image_converter/**"
+      - "src/story_ch1.c"
+      - ".github/workflows/image-converter.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: image_converter
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: image_converter/requirements*.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: ruff check .
+
+      # Tests run the converter on generated images, compile its C output
+      # with gcc -Wall -Wextra -Werror, and compare story_ch1 against the
+      # firmware asset committed in src/.
+      - name: Test
+        run: pytest
