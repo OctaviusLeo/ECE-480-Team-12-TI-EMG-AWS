@@ -4,14 +4,26 @@
 # - Packed 4-bit index array (2 pixels per byte)
 #
 # Usage:
-#   python png2pal4.py <image.png> <SYMBOL_NAME>
+#   python png2pal4.py <image.png> <SYMBOL_NAME> [--out-dir DIR] [--max-size N]
 # Example:
 #   python png2pal4.py GAME_SINGLE_LOGO.png GAME_SINGLE_LOGO
+#
+# Run "python png2pal4.py --help" for the full option list.
 
+import argparse
+import re
 import sys
 from pathlib import Path
 
 from PIL import Image
+
+# Default bounding box (pixels) the image is shrunk into, kept from the
+# original hard-coded value. Larger assets such as full-screen story art
+# are generated with a larger --max-size (the OLED is 128x128).
+DEFAULT_MAX_SIZE = 30
+
+# The symbol becomes part of C identifiers and header-guard names.
+_C_IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 
 
 def rgb_to_rgb565(r, g, b):
@@ -30,13 +42,18 @@ def rgb_to_rgb565(r, g, b):
     return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
 
 
-def emit_pal4(image_path: Path, symbol: str):
+def emit_pal4(
+    image_path: Path,
+    symbol: str,
+    out_dir: Path = Path("."),
+    max_size: int = DEFAULT_MAX_SIZE,
+):
     """
     Convert a PNG image into a pair of C files: <symbol>.h and <symbol>.c.
 
     The image is:
       - Loaded as RGBA
-      - Thumbnail-constrained to 30x30 while keeping aspect ratio
+      - Thumbnail-constrained to max_size x max_size while keeping aspect ratio
       - Quantized down to 16 colors (palette mode)
       - Exported as:
           * <symbol>_PAL[] : RGB565 palette (16 entries)
@@ -45,14 +62,18 @@ def emit_pal4(image_path: Path, symbol: str):
     Args:
         image_path (Path): Path to the source PNG image.
         symbol (str):      C symbol prefix (e.g., GAME_SINGLE_LOGO).
+        out_dir (Path):    Directory the .h/.c files are written to
+                           (created if missing). Defaults to the current
+                           working directory.
+        max_size (int):    Bounding box edge length in pixels. Defaults to 30.
     """
     # Load image as RGBA
     img = Image.open(image_path).convert("RGBA")
 
     # Optionally could resize to a fixed size; here we keep aspect ratio
-    # but bound the image to 30x30 pixels.
+    # but bound the image to max_size x max_size pixels.
     # img = img.resize((96, 96), Image.LANCZOS)
-    img.thumbnail((30, 30), Image.LANCZOS)
+    img.thumbnail((max_size, max_size), Image.LANCZOS)
     w, h = img.size
 
     # Quantize to 16 colors using an adaptive palette
@@ -88,11 +109,16 @@ def emit_pal4(image_path: Path, symbol: str):
 
     # Derive base name for C files (e.g. GAME_SINGLE_LOGO -> game_single_logo)
     base = symbol.lower()
-    h_name = f"{base}.h"
-    c_name = f"{base}.c"
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    h_name = out_dir / f"{base}.h"
+    c_name = out_dir / f"{base}.c"
+
+    # Files are always written with LF endings so the output is identical on
+    # every OS (the repository stores text files with LF).
 
     # Emit C header: declaration of dimensions, palette, and index array
-    with open(h_name, "w", encoding="utf-8") as fh:
+    with open(h_name, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(f"#ifndef {symbol}_H\n")
         fh.write(f"#define {symbol}_H\n\n")
         fh.write("#include <stdint.h>\n\n")
@@ -106,7 +132,7 @@ def emit_pal4(image_path: Path, symbol: str):
         fh.write(f"#endif // {symbol}_H\n")
 
     # Emit C file: definitions of palette and packed index data
-    with open(c_name, "w", encoding="utf-8") as fc:
+    with open(c_name, "w", encoding="utf-8", newline="\n") as fc:
         fc.write("#include <stdint.h>\n")
         fc.write(f'#include "{base}.h"\n\n')
 
@@ -139,24 +165,60 @@ def emit_pal4(image_path: Path, symbol: str):
     print(f"Generated {h_name} and {c_name} for {image_path.name} ({w}x{h})")
 
 
-def main():
+def parse_args(argv=None):
+    """
+    Build the command-line parser and parse argv (defaults to sys.argv[1:]).
+    """
+    parser = argparse.ArgumentParser(
+        prog="png2pal4.py",
+        description=(
+            "Convert an image into a 4-bit paletted C asset (<symbol>.h and "
+            "<symbol>.c) for the SSD1351 OLED: a 16-entry RGB565 palette "
+            "plus packed 4-bit pixel indices, two pixels per byte."
+        ),
+        epilog=(
+            "example: python png2pal4.py GAME_SINGLE_LOGO.png GAME_SINGLE_LOGO"
+        ),
+    )
+    parser.add_argument("image", type=Path, help="source image (PNG, JPG, ...)")
+    parser.add_argument(
+        "symbol",
+        help="C symbol prefix, e.g. GAME_SINGLE_LOGO; output files are the "
+        "lowercase name (game_single_logo.h / game_single_logo.c)",
+    )
+    parser.add_argument(
+        "--out-dir",
+        type=Path,
+        default=Path("."),
+        metavar="DIR",
+        help="directory for the generated files (default: current directory)",
+    )
+    parser.add_argument(
+        "--max-size",
+        type=int,
+        default=DEFAULT_MAX_SIZE,
+        metavar="N",
+        help="shrink the image to fit inside N x N pixels, keeping aspect "
+        f"ratio (default: {DEFAULT_MAX_SIZE}; use 128 for full-screen art)",
+    )
+    args = parser.parse_args(argv)
+
+    if not _C_IDENTIFIER.fullmatch(args.symbol):
+        parser.error(f"SYMBOL_NAME is not a valid C identifier: {args.symbol!r}")
+    if args.max_size < 1:
+        parser.error("--max-size must be at least 1")
+    if not args.image.is_file():
+        parser.error(f"input file not found: {args.image}")
+    return args
+
+
+def main(argv=None):
     """
     CLI entry point: parse arguments, validate paths, and call emit_pal4().
     """
-    if len(sys.argv) != 3:
-        print("Usage: python png2pal4.py <image.png> <SYMBOL_NAME>")
-        print("Example: python png2pal4.py GAME_SINGLE_LOGO.png GAME_SINGLE_LOGO")
-        sys.exit(1)
-
-    img_path = Path(sys.argv[1])
-    symbol = sys.argv[2]
-
-    if not img_path.is_file():
-        print(f"Input file not found: {img_path}")
-        sys.exit(1)
-
-    emit_pal4(img_path, symbol)
+    args = parse_args(argv)
+    emit_pal4(args.image, args.symbol, args.out_dir, args.max_size)
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
