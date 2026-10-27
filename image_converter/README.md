@@ -47,4 +47,4 @@ Larger assets such as `story_ch1` and `you_died` need a bigger bounding box than
 python png2pal4.py story_ch1.png STORY_CH1 --max-size 128
 ```
 
-writes a `story_ch1.c` that is byte-for-byte identical to `src/story_ch1.c`; `you_died.png` does the same for `src/you_died.c`. Other assets may differ if they were generated with another size or another Pillow version.
+writes a `story_ch1.c` whose palette and pixel data are identical to `src/story_ch1.c` (the tests check this for `story_ch1`), and `you_died.png` does the same for `src/you_died.c`. Other assets may differ if they were generated with another size or another Pillow version.

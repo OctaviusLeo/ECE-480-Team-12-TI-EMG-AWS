@@ -117,19 +117,23 @@ def emit_pal4(
     # Files are always written with LF endings so the output is identical on
     # every OS (the repository stores text files with LF).
 
-    # Emit C header: declaration of dimensions, palette, and index array
+    # Two pixels per byte, rounded up so an odd pixel count still fits.
+    idx_len = f"(({symbol}_W * {symbol}_H) + 1) / 2"
+
+    # Emit C header: declaration of dimensions, palette, and index array.
+    # The include guard must not be "<symbol>_H": that name is the image
+    # height macro below, and defining it twice is a redefinition warning.
+    guard = f"{symbol}_PAL4_H"
     with open(h_name, "w", encoding="utf-8", newline="\n") as fh:
-        fh.write(f"#ifndef {symbol}_H\n")
-        fh.write(f"#define {symbol}_H\n\n")
+        fh.write(f"#ifndef {guard}\n")
+        fh.write(f"#define {guard}\n\n")
         fh.write("#include <stdint.h>\n\n")
         fh.write(f"#define {symbol}_W {w}\n")
         fh.write(f"#define {symbol}_H {h}\n")
         fh.write(f"#define {symbol}_PAL_SIZE 16\n\n")
         fh.write(f"extern const uint16_t {symbol}_PAL[{symbol}_PAL_SIZE];\n")
-        fh.write(
-            f"extern const uint8_t  {symbol}_IDX[({symbol}_W * {symbol}_H) / 2];\n\n"
-        )
-        fh.write(f"#endif // {symbol}_H\n")
+        fh.write(f"extern const uint8_t  {symbol}_IDX[{idx_len}];\n\n")
+        fh.write(f"#endif // {guard}\n")
 
     # Emit C file: definitions of palette and packed index data
     with open(c_name, "w", encoding="utf-8", newline="\n") as fc:
@@ -149,9 +153,7 @@ def emit_pal4(
         fc.write("};\n\n")
 
         # Index data
-        fc.write(
-            f"const uint8_t {symbol}_IDX[({symbol}_W * {symbol}_H) / 2] = {{\n"
-        )
+        fc.write(f"const uint8_t {symbol}_IDX[{idx_len}] = {{\n")
         line = "    "
         for i, b in enumerate(packed):
             line += f"0x{b:02X}, "
