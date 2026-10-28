@@ -172,7 +172,7 @@ Validation & Verification (V&V) Summary
 ---
 Signal detection: Medium: The frequencies (Hz) from sEMG -> ADC -> MCU
 
-Latency: Medium: Detects every 0.5 seconds.
+Latency: Medium: The EMG measure is recomputed every 100 ms (one 100 ms sample window per loop); the UART debug line prints every 500 ms.
 
 Repeatability: Medium: Every part can be bought.
 
