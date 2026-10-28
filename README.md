@@ -12,6 +12,7 @@ Demo: https://youtu.be/2_F4ziM3Mrs
 **Contents**
 
 - [My role](#my-role)
+- [How this was built](#how-this-was-built)
 - [Why this exists](#why-this-exists)
 - [Key behaviors](#key-behaviors)
 - [Features](#features)
@@ -29,6 +30,10 @@ Demo: https://youtu.be/2_F4ziM3Mrs
 **My role**
 ---
 Symaedchit Leo: sole software member of a four-person Texas Instruments-sponsored senior design team (Fall 2025). Wrote the TM4C123 C firmware in `src/` and `include/`: the ADS131M02 SPI ADC driver, SSD1351 OLED graphics, the menus and four game modes (Playground, PVP, Tower, Story), and the EMG measure (rate of rising zero-crossings over 100 ms windows, corrected by a 3 s rest baseline). Also wrote the `image_converter` tool.
+
+**How this was built**
+---
+The firmware in `src/` and `include/` and the hardware are the Fall 2025 team project described here. Since October 2026 I have maintained this repository with Claude Code (Anthropic's agentic coding tool): the README corrections, the `image_converter` command-line options, bug fixes and tests, and its CI workflow. Those commits carry a `Co-Authored-By` trailer naming the model that helped write them, and none of them changed the firmware. I am accountable for those changes and can explain any part of this code.
 
 **Why this exists**
 ---
