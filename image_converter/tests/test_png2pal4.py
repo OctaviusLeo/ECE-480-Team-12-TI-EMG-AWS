@@ -154,6 +154,16 @@ def test_invalid_symbol_is_rejected(tmp_path, symbol):
     assert exc.value.code == 2
 
 
+@pytest.mark.parametrize("size", ["0", "-5"])
+def test_max_size_below_one_is_rejected(tmp_path, size, capsys):
+    src = make_image(tmp_path / "in.png", (4, 4))
+    with pytest.raises(SystemExit) as exc:
+        png2pal4.main([str(src), "X", "--max-size", size, "--out-dir", str(tmp_path / "out")])
+    assert exc.value.code == 2
+    assert "--max-size must be at least 1" in capsys.readouterr().err
+    assert not (tmp_path / "out").exists()
+
+
 def test_missing_input_is_rejected(tmp_path):
     with pytest.raises(SystemExit) as exc:
         png2pal4.main([str(tmp_path / "missing.png"), "X"])
