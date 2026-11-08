@@ -170,6 +170,16 @@ def test_missing_input_is_rejected(tmp_path):
     assert exc.value.code == 2
 
 
+def test_non_image_input_is_rejected(tmp_path, capsys):
+    src = tmp_path / "notes.png"
+    src.write_text("not an image\n")
+    with pytest.raises(SystemExit) as exc:
+        png2pal4.main([str(src), "X", "--out-dir", str(tmp_path / "out")])
+    assert exc.value.code == 2
+    assert "is not an image Pillow can read" in capsys.readouterr().err
+    assert not (tmp_path / "out").exists()
+
+
 def test_help_exits_zero(capsys):
     with pytest.raises(SystemExit) as exc:
         png2pal4.main(["--help"])

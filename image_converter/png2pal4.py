@@ -15,7 +15,7 @@ import re
 import sys
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 
 # Default bounding box (pixels) the image is shrunk into, kept from the
 # original hard-coded value. Larger assets such as full-screen story art
@@ -211,6 +211,10 @@ def parse_args(argv=None):
         parser.error("--max-size must be at least 1")
     if not args.image.is_file():
         parser.error(f"input file not found: {args.image}")
+    try:
+        Image.open(args.image).close()
+    except UnidentifiedImageError:
+        parser.error(f"input file is not an image Pillow can read: {args.image}")
     return args
 
 
